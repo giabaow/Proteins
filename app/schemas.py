@@ -3,9 +3,9 @@ from pydantic import BaseModel, Field
 
 
 class DiscoverRequest(BaseModel):
-    extra_terms: list[str] = []          # extra queries on top of the built-in EU platform set
+    extra_terms: list[str] = []
     per_query: int = Field(default=8, ge=1, le=20)
-    max_queries: Optional[int] = Field(default=None, ge=1)  # cap the sweep (each query ~1 Serper credit)
+    max_queries: Optional[int] = Field(default=None, ge=1)
 
 
 class DiscoveredCompanyOut(BaseModel):
@@ -19,7 +19,7 @@ class DiscoveredCompanyOut(BaseModel):
     description: str
     source_query: str
     mention_count: int
-    profiled: bool
+    analysed: bool
 
 
 class DiscoveredArticleOut(BaseModel):
@@ -31,16 +31,26 @@ class DiscoveredArticleOut(BaseModel):
     source_query: str
 
 
-class ProfileRequest(BaseModel):
+class AnalyzeRequest(BaseModel):
     company_name: str
-    urls: list[str] = []                 # optional - if empty, the agent searches
+    urls: list[str] = []
 
 
-class CompetitorProfileOut(BaseModel):
+class RankRequest(BaseModel):
+    top_n: int = Field(default=5, ge=1, le=50)
+
+
+class SuccessFactor(BaseModel):
+    factor: str
+    evidence: str = ""
+
+
+class CompanyOut(BaseModel):
     id: int
-    company_name: str
+    name: str
     domain: str
     country: str
+
     what_they_do: str
     technology_approach: str
     detection_modality: str
@@ -51,24 +61,7 @@ class CompetitorProfileOut(BaseModel):
     funding_summary: str
     key_partnerships: list[str]
     differentiators: list[str]
-    source_urls: list[str]
 
-
-class AnalyzeRequest(BaseModel):
-    company_name: str
-    urls: list[str] = []
-
-
-class SuccessFactor(BaseModel):
-    factor: str
-    evidence: str = ""
-
-
-class LeaderInsightOut(BaseModel):
-    id: int
-    company_name: str
-    domain: str
-    country: str
     leader_name: str
     leader_role: str
     leader_background: str
@@ -78,6 +71,17 @@ class LeaderInsightOut(BaseModel):
     market_route_suggestions: list[str]
     route_summary: str
     confidence: str
+
+    score_platform: int
+    score_stage: int
+    score_route: int
+    score_evidence: int
+    score_ecosystem: int
+    score_notes: dict
+    relevance_score: float
+    rank: int
+    is_leader: bool
+
     source_urls: list[str]
 
 

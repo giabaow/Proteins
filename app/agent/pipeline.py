@@ -1,13 +1,16 @@
 """
-Competitor profiling: for one European platform company, collect its own pages
-(+ SEC / trial / FDA records where relevant), store the raw text in Chroma, and
-LLM-extract a structured profile into SQLite.
+Company analysis + ranking.
 
-Discipline:
-  - the LLM only ever summarises text it was actually given, never recalls from
-    memory;
-  - every profile keeps its source_urls;
-  - a fact not in the text becomes null / [] - never a guess.
+  analyze_company()  - for one European platform company: collect its own pages
+                       (+ SEC / trial / FDA records), store the raw text in
+                       Chroma, and LLM-extract into ONE `companies` row -
+                       structured facts + the playbook worth learning from.
+  rank_companies()   - score every analysed company on relevance to Proteins.1
+                       with a fixed formula and flag the top ones is_leader.
+
+Discipline: the LLM only ever summarises text it was given; every row keeps its
+source_urls; a fact not in the text is "" / [], never a guess. The ranking is
+pure arithmetic over those outputs - no LLM, so it is repeatable.
 """
 import json
 import re
@@ -18,7 +21,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.chroma_store import add_chunks
-from app.database import CompetitorProfile, DiscoveredCompany, LeaderInsight
+from app.database import Company, DiscoveredCompany
 from app.agent.tools import (
     search_web,
     search_sec_filings,
@@ -46,8 +49,7 @@ def _llm_json(system_prompt: str, user_text: str, max_tokens: int = 4000) -> dic
     """Call the model and parse its JSON reply. Returns {} on any failure.
 
     NOTE: claude-sonnet-5 emits a thinking block that also draws on max_tokens,
-    so keep max_tokens generous (>= ~3000) or the text reply is truncated to
-    nothing.
+    so keep max_tokens generous (>= ~3000) or the text reply is truncated away.
     """
     if not settings.anthropic_api_key or not user_text.strip():
         return {}
@@ -73,6 +75,10 @@ def _llm_json(system_prompt: str, user_text: str, max_tokens: int = 4000) -> dic
         return {}
 
 
+# ---------------------------------------------------------------------------
+# Step 1 - extract facts from each fetched page
+# ---------------------------------------------------------------------------
+
 PROFILE_SYSTEM_PROMPT = """You build a structured profile of a diagnostics / life-science company from \
 provided text excerpts, for a competitive-landscape database. The company is being studied as a \
 possible peer of a single-molecule, enzyme-free protein-detection platform.
@@ -86,22 +92,87 @@ Rules:
 
 Schema:
 {
-  "what_they_do": string | null,            // 1-2 plain sentences
-  "technology_approach": string | null,     // the detection mechanism, in their terms
-  "detection_modality": string | null,      // "protein" | "DNA" | "RNA" | "multi-omic" | other stated
-  "sensitivity_claim": string | null,       // verbatim
-  "sample_requirement": string | null,      // volume / type, verbatim
-  "target_applications": [string, ...],     // e.g. "oncology", "neurology", "immunology"
-  "stage": string | null,                   // "research use only" | "clinical" | "commercial" | other stated
-  "funding_summary": string | null,         // rounds / totals / investors, only if stated
-  "key_partnerships": [string, ...],        // named organisations
-  "differentiators": [string, ...]          // concrete claimed advantages
+  "what_they_do": string | null,
+  "technology_approach": string | null,
+  "detection_modality": string | null,
+  "sensitivity_claim": string | null,
+  "sample_requirement": string | null,
+  "target_applications": [string, ...],
+  "stage": string | null,
+  "funding_summary": string | null,
+  "key_partnerships": [string, ...],
+  "differentiators": [string, ...]
 }
 """
 
 _LIST_FIELDS = ("target_applications", "key_partnerships", "differentiators")
 _STR_FIELDS = ("what_they_do", "technology_approach", "detection_modality",
                "sensitivity_claim", "sample_requirement", "stage", "funding_summary")
+
+
+def _extract_profile(text_excerpt: str) -> dict:
+    empty = {f: None for f in _STR_FIELDS} | {f: [] for f in _LIST_FIELDS}
+    parsed = _llm_json(PROFILE_SYSTEM_PROMPT, text_excerpt[:12000], max_tokens=4000)
+    out = dict(empty)
+    for f in _STR_FIELDS:
+        if isinstance(parsed.get(f), str) and parsed[f].strip():
+            out[f] = parsed[f].strip()
+    for f in _LIST_FIELDS:
+        if isinstance(parsed.get(f), list):
+            out[f] = [str(x).strip() for x in parsed[f] if str(x).strip()]
+    return out
+
+
+def _merge(base: dict, new: dict) -> dict:
+    for f in _STR_FIELDS:
+        if not base.get(f) and new.get(f):
+            base[f] = new[f]
+    for f in _LIST_FIELDS:
+        seen = {s.lower() for s in base.get(f, [])}
+        base[f] = base.get(f, []) + [x for x in new.get(f, []) if x.lower() not in seen]
+    return base
+
+
+# ---------------------------------------------------------------------------
+# Step 2 - synthesise the playbook (leader, what worked, what P1 should copy)
+# ---------------------------------------------------------------------------
+
+PLAYBOOK_SYSTEM_PROMPT = """You analyse ONE company as a possible role model for Proteins.1 - a seed-stage \
+Finnish deep-tech company (VTT spinout) with a physics-based, ENZYME-FREE platform that amplifies and \
+reads single protein molecules, detecting biomarkers across DNA, RNA and proteins from very small \
+samples at a sensitivity current instruments cannot reach. Early targets: oncology, neurology, \
+immunology in RESEARCH use; regulated clinical diagnostics to follow.
+
+You are given text excerpts about the company (its own pages, filings, news) plus a structured fact \
+sheet. Answer three questions.
+
+Grounding rules:
+- leader_name, leader_role, leader_background, why_worth_studying, success_factors: use ONLY the \
+provided text. If the person is not named in the text, set leader_name to null. Never invent a name.
+- success_factors must be CONCRETE (a named partner, a specific deal, a regulatory milestone, a \
+funding event, a product decision) - not vague adjectives. Each needs a one-line "evidence" quote \
+or paraphrase from the text.
+- application_suggestions and market_route_suggestions are YOUR recommendations FOR Proteins.1, \
+reasoned from what THIS company actually did. They may go beyond the text but must stay tied to this \
+company's playbook. Keep them specific and actionable.
+- route_summary: 2-4 sentences - the sequence you would advise Proteins.1 to follow, citing this \
+company as the precedent.
+- confidence: "high" if the person and >=3 success factors are clearly in the text; "medium" if \
+partial; "low" if the text is thin.
+
+Return ONLY JSON, no markdown fences:
+{
+  "leader_name": string | null,
+  "leader_role": string | null,
+  "leader_background": string | null,
+  "why_worth_studying": string | null,
+  "success_factors": [ {"factor": string, "evidence": string} ],
+  "application_suggestions": [string],
+  "market_route_suggestions": [string],
+  "route_summary": string | null,
+  "confidence": "high" | "medium" | "low"
+}
+"""
 
 
 def _sec_filing_url(hit: dict) -> str | None:
@@ -122,16 +193,12 @@ def _sec_filing_url(hit: dict) -> str | None:
     return None
 
 
-def _collect_source_urls(company_name: str, urls: list[str]) -> list[str]:
-    if urls:
-        return urls
-
+def _collect_source_urls(company_name: str, extra_query: str) -> list[str]:
     found: list[str] = []
-    for hit in search_web(f"{company_name} technology platform sensitivity applications", max_results=5):
+    for hit in search_web(f"{company_name} {extra_query}", max_results=5):
         url = hit.get("href")
         if url and url not in found:
             found.append(url)
-
     try:
         for hit in search_sec_filings(company_name)[:1]:
             url = _sec_filing_url(hit)
@@ -139,7 +206,6 @@ def _collect_source_urls(company_name: str, urls: list[str]) -> list[str]:
                 found.append(url)
     except Exception as exc:  # noqa: BLE001
         print(f"[pipeline] SEC search failed for {company_name}: {exc}")
-
     for search_fn, label in ((search_openfda_devices, "openFDA"), (search_clinical_trials, "ClinicalTrials.gov")):
         try:
             for hit in search_fn(company_name, limit=1):
@@ -148,170 +214,50 @@ def _collect_source_urls(company_name: str, urls: list[str]) -> list[str]:
                     found.append(url)
         except Exception as exc:  # noqa: BLE001
             print(f"[pipeline] {label} search failed for {company_name}: {exc}")
-
     return found
 
 
-def _extract_profile(text_excerpt: str) -> dict:
-    empty = {f: None for f in _STR_FIELDS} | {f: [] for f in _LIST_FIELDS}
-    parsed = _llm_json(PROFILE_SYSTEM_PROMPT, text_excerpt[:12000], max_tokens=4000)
-    out = dict(empty)
-    for f in _STR_FIELDS:
-        if isinstance(parsed.get(f), str) and parsed[f].strip():
-            out[f] = parsed[f].strip()
-    for f in _LIST_FIELDS:
-        if isinstance(parsed.get(f), list):
-            out[f] = [str(x).strip() for x in parsed[f] if str(x).strip()]
-    return out
-
-
-def _merge(base: dict, new: dict) -> dict:
-    """Fill blanks in base from new; union list fields."""
-    for f in _STR_FIELDS:
-        if not base.get(f) and new.get(f):
-            base[f] = new[f]
-    for f in _LIST_FIELDS:
-        seen = {s.lower() for s in base.get(f, [])}
-        base[f] = base.get(f, []) + [x for x in new.get(f, []) if x.lower() not in seen]
-    return base
-
-
-def research_competitor(db: Session, company_name: str, urls: list[str] | None = None) -> dict:
-    """Profile one competitor end to end; upsert a CompetitorProfile row."""
-    company = db.query(DiscoveredCompany).filter(DiscoveredCompany.name == company_name).first()
-    source_urls = _collect_source_urls(company_name, urls or [])
-
-    profile = {f: None for f in _STR_FIELDS} | {f: [] for f in _LIST_FIELDS}
-    used, failed = [], []
-    for url in source_urls[:6]:
-        text, error = fetch_page_text(url, return_error=True)
-        if not text:
-            failed.append({"url": url, "error": error})
-            continue
-        add_chunks(company_name, url, chunk_text(text), topic="competitor-profile", record_type="competitor")
-        _merge(profile, _extract_profile(text))
-        used.append(url)
-
-    row = db.query(CompetitorProfile).filter(CompetitorProfile.company_name == company_name).first()
-    if row is None:
-        row = CompetitorProfile(company_name=company_name)
-        db.add(row)
-    row.domain = company.domain if company else ""
-    row.country = company.country if company else ""
-    for f in _STR_FIELDS:
-        setattr(row, f, profile[f] or "")
-    for f in _LIST_FIELDS:
-        setattr(row, f, json.dumps(profile[f]))
-    row.source_urls = json.dumps(used)
-    if company is not None:
-        company.profiled = True
-    db.commit()
-    db.refresh(row)
-
-    return {
-        "company_name": company_name,
-        "sources_used": used,
-        "failed_sources": failed,
-        "profile": {**{f: profile[f] for f in _STR_FIELDS}, **{f: profile[f] for f in _LIST_FIELDS}},
-    }
-
-
-# ---------------------------------------------------------------------------
-# Leader / strategy synthesis - answers three questions per competitor:
-#   1. the leader worth studying
-#   2. what made them succeed
-#   3. application + market-route suggestions FOR Proteins.1
-# ---------------------------------------------------------------------------
-
-LEADER_SYSTEM_PROMPT = """You analyse ONE company as a possible role model for Proteins.1 - a seed-stage \
-Finnish deep-tech company (VTT spinout) with a physics-based, ENZYME-FREE platform that amplifies and \
-reads single protein molecules, detecting biomarkers across DNA, RNA and proteins from very small \
-samples at a sensitivity current instruments cannot reach. Early targets: oncology, neurology, \
-immunology in RESEARCH use; regulated clinical diagnostics to follow.
-
-You are given text excerpts about the company (its own pages, filings, news) plus a structured fact \
-sheet. Answer three questions.
-
-Grounding rules:
-- leader_name, leader_role, leader_background, why_worth_studying, success_factors: use ONLY the \
-provided text. If the leader is not named in the text, set leader_name to null. Never invent a name.
-- success_factors must be CONCRETE (a named partner, a specific deal, a regulatory milestone, a \
-sequencing choice, a funding event) - not vague adjectives. Each needs a one-line "evidence" quote/paraphrase from the text.
-- application_suggestions and market_route_suggestions are YOUR recommendations FOR Proteins.1, \
-reasoned from what THIS company actually did. They may go beyond the text but must stay tied to this \
-company's playbook. Keep them specific and actionable.
-- route_summary: 2-4 sentences - the sequence you would advise Proteins.1 to follow, citing this \
-company as the precedent.
-- confidence: "high" if the leader and >=3 success factors are clearly in the text; "medium" if \
-partial; "low" if the text is thin.
-
-Return ONLY JSON, no markdown fences:
-{
-  "leader_name": string | null,
-  "leader_role": string | null,
-  "leader_background": string | null,
-  "why_worth_studying": string | null,
-  "success_factors": [ {"factor": string, "evidence": string} ],
-  "application_suggestions": [string],
-  "market_route_suggestions": [string],
-  "route_summary": string | null,
-  "confidence": "high" | "medium" | "low"
-}
-"""
-
-
-def _profile_factsheet(row: CompetitorProfile | None) -> str:
-    if row is None:
-        return ""
-    def _l(v):
-        try:
-            return ", ".join(json.loads(v or "[]"))
-        except json.JSONDecodeError:
-            return ""
-    lines = [
-        f"what_they_do: {row.what_they_do}",
-        f"technology_approach: {row.technology_approach}",
-        f"detection_modality: {row.detection_modality}",
-        f"sensitivity_claim: {row.sensitivity_claim}",
-        f"sample_requirement: {row.sample_requirement}",
-        f"stage: {row.stage}",
-        f"funding_summary: {row.funding_summary}",
-        f"target_applications: {_l(row.target_applications)}",
-        f"key_partnerships: {_l(row.key_partnerships)}",
-        f"differentiators: {_l(row.differentiators)}",
+def _factsheet(profile: dict) -> str:
+    lines = [f"{k}: {profile.get(k)}" for k in _STR_FIELDS] + [
+        f"target_applications: {', '.join(profile.get('target_applications', []))}",
+        f"key_partnerships: {', '.join(profile.get('key_partnerships', []))}",
+        f"differentiators: {', '.join(profile.get('differentiators', []))}",
     ]
-    return "STRUCTURED FACT SHEET:\n" + "\n".join(l for l in lines if not l.endswith(": ") and not l.endswith(": None"))
+    return "STRUCTURED FACT SHEET:\n" + "\n".join(
+        l for l in lines if not l.endswith(": None") and not l.endswith(": ") and not l.endswith(": []")
+    )
 
 
-def analyze_leader(db: Session, company_name: str, urls: list[str] | None = None) -> dict:
-    """Retrieve leadership / strategy material, synthesise answers to the three
-    questions, and upsert a LeaderInsight row."""
-    company = db.query(DiscoveredCompany).filter(DiscoveredCompany.name == company_name).first()
-    profile = db.query(CompetitorProfile).filter(CompetitorProfile.company_name == company_name).first()
+def analyze_company(db: Session, company_name: str, urls: list[str] | None = None) -> dict:
+    """Collect a company's pages, extract facts, synthesise the playbook, and
+    upsert one `companies` row. Does NOT score - call rank_companies() for that."""
+    disc = db.query(DiscoveredCompany).filter(DiscoveredCompany.name == company_name).first()
 
-    seed_urls = list(urls or [])
-    if profile and profile.source_urls:
-        try:
-            seed_urls += [u for u in json.loads(profile.source_urls) if u not in seed_urls]
-        except json.JSONDecodeError:
-            pass
+    fact_urls = list(urls or []) or _collect_source_urls(company_name, "technology platform sensitivity applications")
+    play_urls = list(fact_urls)
     for hit in search_web(f"{company_name} founder CEO history funding go-to-market strategy milestones", max_results=5):
         u = hit.get("href")
-        if u and u not in seed_urls:
-            seed_urls.append(u)
+        if u and u not in play_urls:
+            play_urls.append(u)
 
-    parts, used, failed = [], [], []
-    for url in seed_urls[:7]:
+    # --- facts ---------------------------------------------------------------
+    profile = {f: None for f in _STR_FIELDS} | {f: [] for f in _LIST_FIELDS}
+    used, failed, page_text = [], [], []
+    for url in play_urls[:7]:
         text, error = fetch_page_text(url, return_error=True)
         if not text:
             failed.append({"url": url, "error": error})
             continue
-        add_chunks(company_name, url, chunk_text(text), topic="leader-analysis", record_type="leader")
-        parts.append(f"[SOURCE] {url}\n{text[:6000]}")
+        add_chunks(company_name, url, chunk_text(text), topic="company", record_type="company")
+        if url in fact_urls:
+            _merge(profile, _extract_profile(text))
+        page_text.append(f"[SOURCE] {url}\n{text[:6000]}")
         used.append(url)
+    profile = {k: (v if v is not None else ("" if k in _STR_FIELDS else [])) for k, v in profile.items()}
 
-    context = _profile_factsheet(profile) + "\n\n" + "\n\n".join(parts)
-    data = _llm_json(LEADER_SYSTEM_PROMPT, f"COMPANY: {company_name}\n\n{context}"[:60000], max_tokens=6000)
+    # --- playbook ---------------------------------------------------------
+    context = _factsheet(profile) + "\n\n" + "\n\n".join(page_text)
+    data = _llm_json(PLAYBOOK_SYSTEM_PROMPT, f"COMPANY: {company_name}\n\n{context}"[:60000], max_tokens=6000)
 
     def _slist(key):
         v = data.get(key)
@@ -324,12 +270,18 @@ def analyze_leader(db: Session, company_name: str, urls: list[str] | None = None
         elif isinstance(f, str) and f.strip():
             factors.append({"factor": f.strip(), "evidence": ""})
 
-    row = db.query(LeaderInsight).filter(LeaderInsight.company_name == company_name).first()
+    # --- upsert -------------------------------------------------------------
+    row = db.query(Company).filter(Company.name == company_name).first()
     if row is None:
-        row = LeaderInsight(company_name=company_name)
+        row = Company(name=company_name)
         db.add(row)
-    row.domain = company.domain if company else (profile.domain if profile else "")
-    row.country = company.country if company else (profile.country if profile else "")
+    row.domain = disc.domain if disc else ""
+    row.country = disc.country if disc else ""
+    for f in _STR_FIELDS:
+        setattr(row, f, profile[f])
+    row.target_applications = json.dumps(profile["target_applications"])
+    row.key_partnerships = json.dumps(profile["key_partnerships"])
+    row.differentiators = json.dumps(profile["differentiators"])
     row.leader_name = (data.get("leader_name") or "").strip()
     row.leader_role = (data.get("leader_role") or "").strip()
     row.leader_background = (data.get("leader_background") or "").strip()
@@ -340,6 +292,8 @@ def analyze_leader(db: Session, company_name: str, urls: list[str] | None = None
     row.route_summary = (data.get("route_summary") or "").strip()
     row.confidence = (data.get("confidence") or "").strip().lower()
     row.source_urls = json.dumps(used)
+    if disc is not None:
+        disc.analysed = True
     db.commit()
     db.refresh(row)
 
@@ -349,8 +303,136 @@ def analyze_leader(db: Session, company_name: str, urls: list[str] | None = None
         "failed_sources": failed,
         "leader_name": row.leader_name,
         "success_factors": factors,
-        "application_suggestions": _slist("application_suggestions"),
-        "market_route_suggestions": _slist("market_route_suggestions"),
-        "route_summary": row.route_summary,
         "confidence": row.confidence,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Step 3 - rank the analysed companies; flag the leaders
+# ---------------------------------------------------------------------------
+
+WEIGHTS = {"platform": 2.0, "stage": 1.5, "route": 1.5, "evidence": 1.0, "ecosystem": 1.0}
+MAXPTS = {"platform": 5, "stage": 5, "route": 5, "evidence": 3, "ecosystem": 2}
+MAX_TOTAL = sum(WEIGHTS[k] * MAXPTS[k] for k in WEIGHTS)  # 32.5
+
+_PLATFORM_SCORE = {
+    "single-molecule detection / digital assay": 5,
+    "single-molecule protein sequencing": 5,
+    "enzyme-free signal amplification": 5,
+    "nanopore protein sensing": 5,
+    "mass photometry": 4,
+    "affinity / photonic single-molecule readout": 4,
+    "microfluidic protein analysis": 3,
+    "proximity extension assay (PEA)": 2,
+}
+_NORDIC = {"Finland", "Sweden", "Norway", "Denmark", "Iceland"}
+_ROUTE_KEYS = ("spinout", "spin-out", "spin out", "university", "research use", "research-use", " ruo",
+               "grant", "non-dilutive", "nondilutive", "seed round", "series a", "series b", "staged",
+               "benchmark", "publication", "peer-reviewed", "clinical partnership", "pilot",
+               "regulatory clearance", "accreditation", "iso 15189", "mhra", "ce mark", "ce-mark",
+               "510(k)", "de novo")
+
+
+def _score_platform(company: Company, disc: DiscoveredCompany | None):
+    pt = (disc.platform_type if disc else "") or ""
+    if pt in _PLATFORM_SCORE:
+        return _PLATFORM_SCORE[pt], pt
+    t = (company.technology_approach or "").lower()
+    if any(k in t for k in ("single molecule", "single-molecule", "nanopore", "enzyme-free", "enzyme free")):
+        return 5, "single-molecule (from tech description)"
+    if any(k in t for k in ("mass photometry", "interferometric", "plasmon", "photonic")):
+        return 4, "label-free single-molecule optics"
+    if any(k in t for k in ("microfluidic", "diffusional")):
+        return 3, "microfluidic protein analysis"
+    if "proximity extension" in t:
+        return 2, "affinity / high-plex proteomics"
+    if any(k in t for k in ("mass spectrometry", "chromatography", "sample prep", "sample-prep")):
+        return 1, "MS / sample-prep, adjacent"
+    return 2, "mechanism unclassified"
+
+
+def _score_stage(company: Company):
+    blob = " ".join([company.stage or "", company.funding_summary or "", company.what_they_do or ""]).lower()
+    if any(k in blob for k in ("acquired", "nasdaq", "public company", "ipo", "thermo fisher")):
+        return 2, "later-stage / acquired / public"
+    if any(k in blob for k in ("early access", "series a", "series b", "recently launched", "spinout", "spin-out", "seed round")):
+        return 5, "at the RUO->commercial transition"
+    if "research use" in blob or "research-use" in blob:
+        return 4, "research-use instrument company"
+    if "commercial" in blob:
+        return 3, "established commercial"
+    if any(k in blob for k in ("service", "characterization tool", "characterisation tool")):
+        return 2, "characterisation tool / services"
+    return 3, "stage unclear"
+
+
+def _score_route(company: Company):
+    blob = " ".join([
+        company.route_summary or "",
+        " ".join(json.loads(company.market_route_suggestions or "[]")),
+        " ".join(f.get("factor", "") for f in json.loads(company.success_factors or "[]") if isinstance(f, dict)),
+    ]).lower()
+    hits = sorted({k.strip() for k in _ROUTE_KEYS if k in blob})
+    val = min(5, round(len(hits) / 2))
+    label = "spinout / RUO-first / staged-funding pattern" if val >= 4 else (
+        "partly transferable path" if val >= 2 else "path hard to copy directly")
+    return val, label
+
+
+def _score_evidence(company: Company):
+    c = (company.confidence or "").lower()
+    return {"high": 3, "medium": 2, "low": 1}.get(c, 0), f"{c or 'unrated'} confidence"
+
+
+def _score_ecosystem(company: Company):
+    c = company.country or ""
+    if c in _NORDIC:
+        return 2, f"{c} - shares regulators, funders, talent pool with a Finnish company"
+    if c:
+        return 1, f"{c} - European, same regulatory frame (IVDR / EMA)"
+    return 0, "location unresolved"
+
+
+def rank_companies(db: Session, top_n: int = 5) -> dict:
+    """Score every analysed company; flag the top `top_n` is_leader. Pure
+    arithmetic over the stored fields - no LLM, re-runnable."""
+    discovered = {d.name: d for d in db.query(DiscoveredCompany)}
+    rows = db.query(Company).all()
+
+    scored = []
+    for row in rows:
+        parts = {
+            "platform": _score_platform(row, discovered.get(row.name)),
+            "stage": _score_stage(row),
+            "route": _score_route(row),
+            "evidence": _score_evidence(row),
+            "ecosystem": _score_ecosystem(row),
+        }
+        total = round(sum(WEIGHTS[k] * parts[k][0] for k in parts), 2)
+        row.score_platform = parts["platform"][0]
+        row.score_stage = parts["stage"][0]
+        row.score_route = parts["route"][0]
+        row.score_evidence = parts["evidence"][0]
+        row.score_ecosystem = parts["ecosystem"][0]
+        row.score_notes = json.dumps({k: parts[k][1] for k in parts})
+        row.relevance_score = total
+        scored.append((total, row))
+
+    scored.sort(key=lambda t: -t[0])
+    for i, (total, row) in enumerate(scored, 1):
+        row.rank = i
+        row.is_leader = i <= top_n
+    db.commit()
+
+    return {
+        "ranked": len(scored),
+        "leaders": [r.name for _t, r in scored[:top_n]],
+        "max_score": MAX_TOTAL,
+        "table": [
+            {"rank": r.rank, "name": r.name, "country": r.country, "score": r.relevance_score,
+             "is_leader": r.is_leader,
+             "parts": {"platform": r.score_platform, "stage": r.score_stage, "route": r.score_route,
+                       "evidence": r.score_evidence, "ecosystem": r.score_ecosystem}}
+            for _t, r in scored
+        ],
     }

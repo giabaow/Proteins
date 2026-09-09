@@ -1,11 +1,11 @@
 """
 SQLite via SQLAlchemy. One file, no server to run.
 
-Two tiers of collected data:
   - DiscoveredCompany : the census - every European single-molecule / ultra-
     sensitive protein-detection platform the discovery sweep turns up.
-  - CompetitorProfile : a structured deep profile for the ones worth detailing,
-    LLM-extracted from their own pages (facts only, never guessed).
+  - Company           : an analysed company - structured facts + playbook
+    synthesis (LLM, facts-only) + a relevance score. The high scorers are
+    flagged is_leader: the companies actually worth studying.
   - DiscoveredArticle : background literature / news on the technology space.
 
 Raw page text lives in ChromaDB (see chroma_store.py), source-tagged.
@@ -13,7 +13,7 @@ Raw page text lives in ChromaDB (see chroma_store.py), source-tagged.
 import os
 from datetime import datetime, timezone
 
-from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean, Float
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config import settings
@@ -26,87 +26,75 @@ Base = declarative_base()
 
 
 class DiscoveredCompany(Base):
-    """One European company building a Proteins.1-type platform (single-molecule
-    / ultra-sensitive protein detection, novel signal amplification, single-
-    molecule protein sequencing/sizing). Keyed by registrable domain so repeat
-    sweeps de-duplicate."""
+    """One European company building a Proteins.1-type platform. Keyed by
+    registrable domain so repeat sweeps de-duplicate."""
     __tablename__ = "discovered_companies"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, default="")
     domain = Column(String, unique=True, index=True, nullable=False)
     homepage_url = Column(String, default="")
-    country = Column(String, default="", index=True)     # best-guess, "" if undetermined
+    country = Column(String, default="", index=True)
     is_european = Column(Boolean, default=True)
-    platform_type = Column(String, default="")           # e.g. "mass photometry", "PEA", "nanopore"
-    description = Column(Text, default="")               # best search snippet seen
+    platform_type = Column(String, default="")
+    description = Column(Text, default="")
     source_query = Column(String, default="")
     mention_count = Column(Integer, default=0)
-    profiled = Column(Boolean, default=False)            # has a CompetitorProfile row
+    analysed = Column(Boolean, default=False)      # has a Company row
     first_seen = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-class CompetitorProfile(Base):
-    """Structured, source-traceable profile of one competitor. Every string field
-    is either a fact stated on the company's own pages or null - never inferred.
-    List fields are JSON-encoded strings."""
-    __tablename__ = "competitor_profiles"
+class Company(Base):
+    """An analysed company: what it does (facts from its own pages), the playbook
+    worth learning from, and a relevance score to Proteins.1. Every string field
+    is a fact from the sources or "" - never inferred. List fields are JSON."""
+    __tablename__ = "companies"
 
     id = Column(Integer, primary_key=True)
-    company_name = Column(String, index=True, nullable=False)
+    name = Column(String, unique=True, index=True, nullable=False)
     domain = Column(String, default="")
-    country = Column(String, default="")
+    country = Column(String, default="", index=True)
 
-    what_they_do = Column(Text, default="")             # 1-2 sentence plain summary
-    technology_approach = Column(Text, default="")      # the mechanism, in their words
-    detection_modality = Column(String, default="")     # protein / DNA / RNA / multi-omic
-    sensitivity_claim = Column(Text, default="")        # verbatim if stated
-    sample_requirement = Column(Text, default="")       # volume / type if stated
-    target_applications = Column(Text, default="[]")    # JSON list: oncology, neurology, ...
-    stage = Column(String, default="")                  # research-use / clinical / commercial
+    # --- what they do (facts, from their own pages) -------------------------
+    what_they_do = Column(Text, default="")
+    technology_approach = Column(Text, default="")
+    detection_modality = Column(String, default="")       # protein / DNA / RNA / multi-omic
+    sensitivity_claim = Column(Text, default="")          # verbatim
+    sample_requirement = Column(Text, default="")         # verbatim
+    target_applications = Column(Text, default="[]")      # JSON list
+    stage = Column(String, default="")                    # research-use / clinical / commercial
     funding_summary = Column(Text, default="")
-    key_partnerships = Column(Text, default="[]")       # JSON list
-    differentiators = Column(Text, default="[]")        # JSON list of concrete claims
-    source_urls = Column(Text, default="[]")            # JSON list
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    key_partnerships = Column(Text, default="[]")         # JSON list
 
-
-class LeaderInsight(Base):
-    """Per-competitor synthesis that answers the three study questions:
-      1. the leader worth studying (name / role / background - from sources)
-      2. what made them succeed (concrete, evidenced factors - from sources)
-      3. application + market-route suggestions FOR Proteins.1 (recommendation,
-         reasoned from this company's actual playbook)
-    List fields are JSON-encoded."""
-    __tablename__ = "leader_insights"
-
-    id = Column(Integer, primary_key=True)
-    company_name = Column(String, index=True, nullable=False)
-    domain = Column(String, default="")
-    country = Column(String, default="")
-
-    # Q1
-    leader_name = Column(String, default="")
+    # --- the playbook (synthesis, grounded in sources) --------------------
+    leader_name = Column(String, default="")              # founder / CEO named in the sources
     leader_role = Column(String, default="")
     leader_background = Column(Text, default="")
     why_worth_studying = Column(Text, default="")
-
-    # Q2  -> JSON list of {"factor": ..., "evidence": ...}
-    success_factors = Column(Text, default="[]")
-
-    # Q3  -> JSON lists of strings + a prose sequence
-    application_suggestions = Column(Text, default="[]")
-    market_route_suggestions = Column(Text, default="[]")
+    success_factors = Column(Text, default="[]")          # JSON list of {factor, evidence}
+    differentiators = Column(Text, default="[]")          # JSON list
+    application_suggestions = Column(Text, default="[]")  # JSON list - for Proteins.1
+    market_route_suggestions = Column(Text, default="[]") # JSON list - for Proteins.1
     route_summary = Column(Text, default="")
+    confidence = Column(String, default="")              # high / medium / low - documentation quality
 
-    confidence = Column(String, default="")             # high / medium / low
+    # --- relevance score (see app/agent/pipeline.py rank_companies) -------
+    score_platform = Column(Integer, default=0)           # 0-5  mechanism closeness
+    score_stage = Column(Integer, default=0)              # 0-5  proximity to RUO->commercial
+    score_route = Column(Integer, default=0)              # 0-5  transferable go-to-market pattern
+    score_evidence = Column(Integer, default=0)           # 0-3  documentation quality
+    score_ecosystem = Column(Integer, default=0)          # 0-2  Nordic / close-EU proximity
+    score_notes = Column(Text, default="{}")             # JSON {axis: one-line reason}
+    relevance_score = Column(Float, default=0.0)
+    rank = Column(Integer, default=0)
+    is_leader = Column(Boolean, default=False, index=True)
+
     source_urls = Column(Text, default="[]")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 class DiscoveredArticle(Base):
-    """A background article / paper / news item on the single-molecule /
-    ultra-sensitive protein-detection field. Keyed by normalised URL."""
+    """A background article / paper / news item on the field. Keyed by URL."""
     __tablename__ = "discovered_articles"
 
     id = Column(Integer, primary_key=True)
