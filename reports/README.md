@@ -7,6 +7,7 @@ database — each script reads it and emits a standalone HTML page or JSON.
 |---|---|
 | `build_companies_page.py` | **Companies** — every analysed company as a briefing: what they do, the leader to study, what made them succeed, application + market-route suggestions for Proteins.1. Score-flagged leaders are badged. Writes `companies.html`. |
 | `build_leaders_page.py` | **The Leaders** — the companies the relevance score flags `is_leader`, as deep briefings, plus the full ranking table and the reason each non-leader was cut. Writes `leaders.html`. |
+| `build_explorer_page.py` | **Explorer** — one interactive page over *all* the data: census, analysed companies, and articles, with search / filter / sort, rendered client-side from an embedded copy. Writes `explorer.html`. |
 | `export_json.py` | Dumps `discovered_companies`, `companies`, `discovered_articles` to `reports/data/*.json` (the `.db` itself is gitignored). |
 | `data/*.json` | Committed snapshot of the census and the analysed companies. |
 
@@ -28,6 +29,7 @@ PYTHONPATH=. python scripts/collect.py     # discover -> analyze_company -> rank
 python reports/export_json.py              # refresh reports/data/*.json
 python reports/build_companies_page.py     # -> reports/companies.html
 python reports/build_leaders_page.py       # -> reports/leaders.html
+python reports/build_explorer_page.py      # -> reports/explorer.html
 ```
 
 Leader name and success factors are extracted only from cited sources; the
