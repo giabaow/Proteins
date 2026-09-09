@@ -129,23 +129,90 @@ def search_free_research_sources(query: str, max_results: int = 5) -> list[dict]
 
     if len(results) >= max_results:
         return results[:max_results]
+    results.extend(search_clinical_trials(query, limit=max_results - len(results)))
+    return results[:max_results]
+
+
+def search_clinical_trials(term: str, limit: int = 5) -> list[dict]:
+    """ClinicalTrials.gov v2 - free, no key. Good for evidence on trial phase,
+    cohort size, sponsor and endpoints behind an opportunity or a company."""
     try:
         response = requests.get(
             "https://clinicaltrials.gov/api/v2/studies",
-            params={"query.term": query, "pageSize": max_results - len(results)},
+            params={"query.term": term, "pageSize": limit, "sort": "LastUpdatePostDate:desc"},
             headers=HEADERS,
             timeout=20,
         )
         response.raise_for_status()
-        for study in response.json().get("studies", []):
-            protocol = study.get("protocolSection", {})
-            identification = protocol.get("identificationModule", {})
-            nct_id = identification.get("nctId")
-            if nct_id:
-                results.append({"title": identification.get("briefTitle", nct_id), "href": f"https://clinicaltrials.gov/study/{nct_id}", "body": ""})
+        studies = response.json().get("studies", [])
     except (requests.RequestException, ValueError) as exc:
-        print(f"[search_free_research_sources] ClinicalTrials.gov failed: {exc}")
-    return results[:max_results]
+        print(f"[search_clinical_trials] failed for {term!r}: {exc}")
+        return []
+
+    out = []
+    for study in studies:
+        protocol = study.get("protocolSection", {})
+        nct_id = protocol.get("identificationModule", {}).get("nctId")
+        if not nct_id:
+            continue
+        status = protocol.get("statusModule", {}).get("overallStatus", "")
+        phases = ", ".join(protocol.get("designModule", {}).get("phases", []) or [])
+        sponsor = protocol.get("sponsorCollaboratorsModule", {}).get("leadSponsor", {}).get("name", "")
+        summary = protocol.get("descriptionModule", {}).get("briefSummary", "")
+        blurb = " | ".join(p for p in (status, f"phase {phases}" if phases else "", f"sponsor: {sponsor}" if sponsor else "") if p)
+        out.append({
+            "title": protocol.get("identificationModule", {}).get("briefTitle", nct_id),
+            "href": f"https://clinicaltrials.gov/study/{nct_id}",
+            "body": f"{blurb}. {summary}".strip(),
+        })
+    return out
+
+
+def search_openfda_devices(term: str, limit: int = 5) -> list[dict]:
+    """openFDA 510(k) + PMA device databases - free, no key (IP rate-limited).
+
+    Matches on the applicant/company name, newest decisions first. This is the
+    regulatory-path evidence the pipeline otherwise can't get: clearance type,
+    decision date, product code, predicate.
+    """
+    endpoints = (
+        ("510k", "https://api.fda.gov/device/510k.json",
+         "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMN/pmn.cfm?ID={}", "k_number", "device_name"),
+        ("pma", "https://api.fda.gov/device/pma.json",
+         "https://www.accessdata.fda.gov/scripts/cdrh/cfdocs/cfPMA/pma.cfm?id={}", "pma_number", "trade_name"),
+    )
+    out: list[dict] = []
+    seen: set[str] = set()  # PMA supplements repeat the same number
+    for kind, api_url, page_tmpl, id_field, name_field in endpoints:
+        try:
+            response = requests.get(
+                api_url,
+                params={"search": f'applicant:"{term}"', "limit": limit, "sort": "decision_date:desc"},
+                headers=HEADERS,
+                timeout=20,
+            )
+            if response.status_code == 404:  # openFDA's "no matches"
+                continue
+            response.raise_for_status()
+            records = response.json().get("results", [])
+        except (requests.RequestException, ValueError) as exc:
+            print(f"[search_openfda_devices] {kind} failed for {term!r}: {exc}")
+            continue
+
+        for rec in records:
+            record_id = rec.get(id_field)
+            if not record_id or record_id in seen:
+                continue
+            seen.add(record_id)
+            decided = rec.get("decision_date", "")
+            desc = rec.get("decision_description") or rec.get("decision_code", "")
+            product_code = rec.get("product_code", "")
+            out.append({
+                "title": f"{rec.get(name_field) or record_id} ({kind.upper()} {record_id})",
+                "href": page_tmpl.format(record_id),
+                "body": f"{rec.get('applicant', '')} - decided {decided} ({desc}); product code {product_code}".strip(),
+            })
+    return out
 
 
 def search_sec_filings(company: str, form_type: str = "S-1") -> list[dict]:

@@ -21,7 +21,14 @@ from sqlalchemy.orm import Session
 from app.config import settings
 from app.chroma_store import add_chunks
 from app.database import CaseStudy, Company
-from app.agent.tools import search_web, search_sec_filings, fetch_page_text, chunk_text
+from app.agent.tools import (
+    search_web,
+    search_sec_filings,
+    search_openfda_devices,
+    search_clinical_trials,
+    fetch_page_text,
+    chunk_text,
+)
 
 _client: anthropic.Anthropic | None = None
 
@@ -96,6 +103,17 @@ def _collect_source_urls(company_name: str, urls: list[str], query_hint: str | N
                 found.append(url)
     except Exception as exc:  # noqa: BLE001
         print(f"[pipeline] SEC search failed for {company_name}: {exc}")
+
+    # Structured regulatory / clinical sources - these give traceable evidence
+    # (clearance dates, trial phases, sponsors) that a web snippet can't.
+    for search_fn, label in ((search_openfda_devices, "openFDA"), (search_clinical_trials, "ClinicalTrials.gov")):
+        try:
+            for hit in search_fn(company_name, limit=2):
+                url = hit.get("href")
+                if url and url not in found:
+                    found.append(url)
+        except Exception as exc:  # noqa: BLE001
+            print(f"[pipeline] {label} search failed for {company_name}: {exc}")
 
     return found
 
