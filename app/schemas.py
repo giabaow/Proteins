@@ -73,3 +73,29 @@ class CaseStudyIn(BaseModel):
 
 class CaseStudyOut(CaseStudyIn):
     id: int
+
+
+class DiscoverRequest(BaseModel):
+    extra_terms: list[str] = []          # extra queries on top of the built-in landscape set
+    per_query: int = Field(default=8, ge=1, le=20)
+    max_queries: Optional[int] = Field(default=None, ge=1)  # cap the sweep (each query ~1 Serper credit)
+
+
+class DiscoveredCompanyOut(BaseModel):
+    id: int
+    name: str
+    domain: str
+    homepage_url: str
+    description: str
+    category: str
+    source_query: str
+    mention_count: int
+
+
+class DiscoveredArticleOut(BaseModel):
+    id: int
+    title: str
+    url: str
+    domain: str
+    snippet: str
+    source_query: str
