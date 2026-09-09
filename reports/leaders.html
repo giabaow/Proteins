@@ -1,0 +1,623 @@
+<title>Leaders Worth Studying</title>
+<meta name="description" content="European single-molecule / ultra-sensitive protein-detection peers — the leader to study, what made them succeed, and what Proteins.1 should copy.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600&display=swap">
+<style>
+:root {
+  --ground:#F5F7F8; --surface:#FFFFFF; --panel:#EBF0F1;
+  --ink:#16201F; --ink-soft:#47585A; --ink-faint:#7B8A8C; --rule:#D6DDDE;
+  --accent:#0E7C86; --accent-line:#0E7C8633; --accent-wash:#0E7C860F;
+  --good:#2E7D4F; --mid:#8A6414; --low:#7C8A8C;
+  --measure:66ch;
+}
+:root:not([data-theme="light"]) { }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#0E1416; --surface:#151D1F; --panel:#182224;
+    --ink:#E7ECEC; --ink-soft:#A6B3B4; --ink-faint:#6C7C7E; --rule:#26312F;
+    --accent:#43B7C1; --accent-line:#43B7C140; --accent-wash:#43B7C114;
+    --good:#63BA88; --mid:#D2A452; --low:#7E8C8E;
+  }
+}
+:root[data-theme="dark"] {
+  --ground:#0E1416; --surface:#151D1F; --panel:#182224;
+  --ink:#E7ECEC; --ink-soft:#A6B3B4; --ink-faint:#6C7C7E; --rule:#26312F;
+  --accent:#43B7C1; --accent-line:#43B7C140; --accent-wash:#43B7C114;
+  --good:#63BA88; --mid:#D2A452; --low:#7E8C8E;
+}
+
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+.wrap { max-width:900px; margin:0 auto; padding:64px 28px 120px; }
+a { color:var(--accent); text-decoration:none; }
+a:hover { text-decoration:underline; }
+a:focus-visible, tr:focus-within a { outline:2px solid var(--accent); outline-offset:2px; border-radius:2px; }
+.mono { font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace; }
+.none { color:var(--ink-faint); font-style:italic; }
+.k { display:block; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--ink-faint); margin-bottom:3px; }
+
+/* masthead */
+header.top { border-bottom:1px solid var(--rule); padding-bottom:28px; margin-bottom:36px; }
+.eyebrow-top { font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.14em;
+  text-transform:uppercase; color:var(--accent); }
+h1 { font-size:2.55rem; line-height:1.1; font-weight:600; margin:.35em 0 .3em; text-wrap:balance;
+  letter-spacing:-.015em; }
+.lede { max-width:var(--measure); color:var(--ink-soft); font-size:1.05rem; margin:0; }
+.progress { margin:18px 0 0; font-family:"IBM Plex Mono",monospace; font-size:12.5px;
+  color:var(--mid); }
+
+/* summary strip */
+.summary { display:flex; flex-wrap:wrap; gap:10px 26px; margin:24px 0 4px;
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; color:var(--ink-soft); }
+.summary b { color:var(--ink); font-weight:600; }
+
+/* chips */
+.chip { display:inline-block; font-family:"IBM Plex Mono",monospace; font-size:11px;
+  letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border-radius:2px;
+  border:1px solid var(--rule); color:var(--ink-soft); white-space:nowrap; }
+.chip-high { color:var(--good); border-color:color-mix(in srgb,var(--good) 45%,transparent); }
+.chip-medium { color:var(--mid); border-color:color-mix(in srgb,var(--mid) 45%,transparent); }
+.chip-low, .chip-unrated { color:var(--low); }
+
+/* overview table */
+h2 { font-size:1.05rem; font-weight:600; letter-spacing:.02em; margin:44px 0 14px;
+  font-family:"IBM Plex Mono",monospace; text-transform:uppercase; font-size:12px;
+  letter-spacing:.12em; color:var(--ink-faint); }
+.tbl-scroll { overflow-x:auto; border:1px solid var(--rule); border-radius:3px; background:var(--surface); }
+table { border-collapse:collapse; width:100%; font-size:14px; }
+th, td { text-align:left; padding:10px 14px; border-bottom:1px solid var(--rule); vertical-align:top; }
+thead th { font-family:"IBM Plex Mono",monospace; font-size:10.5px; letter-spacing:.1em;
+  text-transform:uppercase; color:var(--ink-faint); background:var(--panel); position:sticky; top:0; }
+tbody tr:last-child td { border-bottom:none; }
+tbody tr:hover { background:var(--accent-wash); }
+td.dim { color:var(--ink-faint); }
+
+/* briefing cards */
+.brief { padding:40px 0 8px; border-top:1px solid var(--rule); margin-top:40px; }
+.brief:first-of-type { border-top:none; }
+.brief-h { display:flex; justify-content:space-between; align-items:baseline; gap:18px; flex-wrap:wrap; }
+.brief-id h3 { font-size:1.7rem; font-weight:600; margin:0; letter-spacing:-.01em; }
+.brief-id .meta { font-size:12px; color:var(--ink-faint); }
+.brief-links { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.home { font-size:12px; }
+.ctx { max-width:var(--measure); color:var(--ink-soft); margin:14px 0 0; font-size:.97rem; }
+.ctx-tech { font-size:.9rem; }
+.ctx-tech .k { display:inline; margin-right:6px; }
+
+.blk { margin-top:26px; }
+.eyebrow { display:block; font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--accent); padding-bottom:8px; border-bottom:1px solid var(--accent-line);
+  margin-bottom:14px; }
+
+.leader .l-name { font-size:1.15rem; font-weight:600; margin:0; }
+.leader .l-role { font-weight:400; color:var(--ink-soft); font-size:.95rem; margin-left:8px; }
+.leader .l-bg { font-family:"Source Serif 4",Georgia,serif; font-size:1.02rem; color:var(--ink-soft);
+  max-width:var(--measure); margin:8px 0 0; }
+.leader .l-why { max-width:var(--measure); margin:12px 0 0; font-size:.95rem; }
+.leader .l-why .k { display:inline; margin-right:6px; }
+
+ul.factors { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:12px; }
+ul.factors li { max-width:var(--measure); }
+.f-claim { display:block; font-weight:500; }
+.f-ev { display:block; font-family:"Source Serif 4",Georgia,serif; font-size:.95rem;
+  color:var(--ink-soft); padding-left:14px; border-left:2px solid var(--rule); margin-top:4px; }
+
+.rec { background:var(--accent-wash); border:1px solid var(--accent-line); border-radius:4px;
+  padding:22px 22px 24px; }
+.rec .eyebrow { border-bottom-color:var(--accent-line); }
+.rec-cols { display:grid; grid-template-columns:1fr 1fr; gap:22px 30px; }
+ul.sugg { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; font-size:.94rem; }
+ul.sugg li { padding-left:16px; position:relative; }
+ul.sugg li::before { content:"→"; position:absolute; left:0; color:var(--accent); }
+.route { margin-top:20px; padding-top:18px; border-top:1px solid var(--accent-line); }
+.route p { font-family:"Source Serif 4",Georgia,serif; font-size:1.08rem; line-height:1.55;
+  margin:4px 0 0; max-width:var(--measure); color:var(--ink); }
+
+.brief-f { margin-top:24px; font-size:11.5px; color:var(--ink-faint); }
+.brief-f a { color:var(--ink-soft); }
+
+footer.pg { margin-top:72px; padding-top:20px; border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--ink-faint); }
+
+@media (max-width:620px) {
+  .wrap { padding:44px 20px 90px; }
+  h1 { font-size:2rem; }
+  .rec-cols { grid-template-columns:1fr; }
+  .brief-h { flex-direction:column; gap:8px; }
+}
+@media (prefers-reduced-motion:reduce) { * { transition:none!important; animation:none!important; } }
+</style>
+
+<div class="wrap">
+<header class="top">
+  <span class="eyebrow-top">Proteins.1 · competitive intelligence</span>
+  <h1>Leaders Worth Studying</h1>
+  <p class="lede">European companies building a Proteins.1-type platform — single-molecule and
+  ultra-sensitive protein detection, enzyme-free amplification, single-molecule protein
+  sequencing. For each: the leader to study, what made them succeed, and what Proteins.1
+  should copy.</p>
+  <p class="progress">Collection in progress — 10 of ~15 European peers profiled so far. This page refreshes as the run completes.</p>
+  <div class="summary">
+    <span><b>10</b> peers analysed</span>
+    <span><b>9</b> with a named leader</span>
+    <span><b>50</b> in the EU census</span>
+    <span><b>141</b> background sources</span>
+  </div>
+  <div class="summary"><span>Confidence&nbsp;&nbsp;<span class="chip chip-high">high 9</span> · <span class="chip chip-medium">medium 1</span></span></div>
+  <div class="summary"><span>Countries&nbsp;&nbsp;United Kingdom (3), Germany (3), Switzerland (1), Denmark (1), Sweden (1), France (1)</span></div>
+</header>
+
+<h2>All peers at a glance</h2>
+<div class="tbl-scroll">
+  <table>
+    <thead><tr><th>Company</th><th>Leader</th><th>Role</th><th>Country</th><th>Modality</th><th>Conf.</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><a href="#c-attomarker">Attomarker</a></td>
+        <td class="mono">Andrew Shaw</td>
+        <td>CEO &amp; Founder, Attomarker; Associate Professor of Physical Chemistry, University of Exeter</td>
+        <td class="mono">United Kingdom</td>
+        <td class="mono dim">protein</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-biognosys">Biognosys</a></td>
+        <td class="mono">Oliver Rinner</td>
+        <td>Founder and CEO (Ph.D.)</td>
+        <td class="mono">Switzerland</td>
+        <td class="mono dim">protein</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-dynamic-biosensors">Dynamic Biosensors</a></td>
+        <td class="mono">Ulrich Rant</td>
+        <td>Co-founder &amp; CEO of Dynamic Biosensors from its founding in 2012 until the 2024 Bruker acquisition; now Chief Scientific Officer of Bruker Biosensors</td>
+        <td class="mono">Germany</td>
+        <td class="mono dim">multi-omic</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-evosep">Evosep</a></td>
+        <td class="mono">Ole Vorm</td>
+        <td>Founder</td>
+        <td class="mono">Denmark</td>
+        <td class="mono dim">protein</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-nanotemper-technologies">NanoTemper Technologies</a></td>
+        <td class="mono">Stefan Duhr and Philipp Baaske</td>
+        <td>Co-founders and Co-CEOs</td>
+        <td class="mono">Germany</td>
+        <td class="mono dim">protein</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-oxford-nanopore-technologies">Oxford Nanopore Technologies</a></td>
+        <td class="mono">Gordon Sanghera</td>
+        <td>Founder and former CEO (held CEO post until 2026, now advisory role)</td>
+        <td class="mono">United Kingdom</td>
+        <td class="mono dim">multi-omic</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-pixelgen-technologies">Pixelgen Technologies</a></td>
+        <td class="mono">Simon Fredriksson</td>
+        <td>CEO &amp; Co-founder, Pixelgen Technologies</td>
+        <td class="mono">Sweden</td>
+        <td class="mono dim">protein</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-preomics">PreOmics</a></td>
+        <td class="mono">Dr. Garwin Pichler and Dr. Nils A. Kulak</td>
+        <td>Co-Founders and Managing Directors, PreOmics GmbH</td>
+        <td class="mono">Germany</td>
+        <td class="mono dim">protein</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-refeyn">Refeyn</a></td>
+        <td class="mono">Gerry Mackay</td>
+        <td>CEO</td>
+        <td class="mono">United Kingdom</td>
+        <td class="mono dim">multi-omic</td>
+        <td><span class="chip chip-high">high</span></td>
+      </tr>      <tr>
+        <td><a href="#c-depixus">Depixus</a></td>
+        <td class="mono"><span class="none">not named</span></td>
+        <td></td>
+        <td class="mono">France</td>
+        <td class="mono dim">multi-omic</td>
+        <td><span class="chip chip-medium">medium</span></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+  <article class="brief" id="c-attomarker">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Attomarker</h3>
+        <span class="mono meta">United Kingdom</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://attomarker.com/" rel="noopener">attomarker.com</a>
+      </div>
+    </header>
+    <p class="ctx">Attomarker develops point-of-care antibody testing devices, including a Triple Antibody Test for COVID-19 that detects antibodies to three different viral proteins in seven minutes.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> A multiplex platform that simultaneously tests for multiple clinically relevant biomarkers against the SARS-CoV-2 virus: three virus proteins (Spike 1, Spike 2 &amp; N) and three classes of antibodies (IgM, IgG and IgA), giving a quantitative profile of the patient&#x27;s immune response.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Andrew Shaw
+          <span class="l-role">CEO &amp; Founder, Attomarker; Associate Professor of Physical Chemistry, University of Exeter</span></p>
+        <p class="l-bg">Leads the University of Exeter research laboratory (Prof Shaw&#x27;s research laboratory) whose translational research over many years produced the gold-nanoparticle plasmon multiplex platform; personally led the team that ran the first patient trial at St Thomas&#x27; Hospital in March 2020 and is credited in company materials as the scientist behind the technology&#x27;s development into the Triple Antibody Test.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Attomarker shows a clear, repeatable playbook for a university spin-out with a physics-based, label-free multiplex protein/antibody detection platform: fast pivot of an EPSRC-funded research idea into a real-world clinical validation (St Thomas&#x27; Hospital) within weeks of a crisis, rapid regulatory clearance (MHRA/CE/UKCA), a manufacturing partnership with an established industrial player (Smiths Detection) to scale production, and now diversification into a broader immune-profiling pipeline (Long COVID endotyping, liver, fertility, allergy) plus non-dilutive/crowd equity funding routes (Exeter alumni appeal, Crowdcube Acceleration Round) and disease-area co-development deals (EpitogenX). This is directly analogous to Proteins.1&#x27;s path from research-use biomarker detection toward regulated diagnostics.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Rapid real-world clinical validation partnership with a major hospital</span><span class="f-ev">Attomarker printed gold arrays with minimal validation and began a collaboration with St Thomas&#x27; Hospital on 23rd March 2020, obtaining first patient results the same afternoon.</span></li><li><span class="f-claim">Peer-reviewed publication to support credibility and regulatory submission</span><span class="f-ev">Results from the St Thomas&#x27; pilot (119 tests, 74 patients) were published in the Royal Society of Chemistry journal Analyst, later supplemented by a second paper with 200 more patients showing up to 96% sensitivity.</span></li><li><span class="f-claim">Regulatory clearance milestone (MHRA authorisation) before scale-up</span><span class="f-ev">The Medicines and Healthcare products Regulatory Agency (MHRA) approved Attomarker&#x27;s Triple Antibody Test for NHS use in the UK following the St Thomas&#x27; trial.</span></li><li><span class="f-claim">Manufacturing partnership with an established industrial player to scale device production</span><span class="f-ev">Smiths Detection collaborated with Attomarker since April 2020, manufacturing 10 pre-production devices at its Hemel Hempstead site with ability to ramp up volume, each device testing up to 50 blood samples per day.</span></li><li><span class="f-claim">Non-dilutive community/alumni funding to bootstrap the first clinical trial</span><span class="f-ev">The trial was fully funded by the University of Exeter&#x27;s COVID-19 Emergency Appeal which raised a record £120,000 from over 1,000 alumni.</span></li><li><span class="f-claim">Disease-area co-development deal to extend the platform beyond the original indication</span><span class="f-ev">Attomarker recently signed a strategic co-development agreement with EpitogenX to leverage their next generation antigen technology, targeting Lyme disease and Hashimoto&#x27;s disease.</span></li><li><span class="f-claim">Equity crowdfunding as a growth-stage financing route</span><span class="f-ev">Attomarker launched an Acceleration Round hosted on Crowdcube, the UK&#x27;s regulated equity crowdfunding platform, to support commercial rollout and regulatory progress.</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Run a rapid &#x27;crisis-anchored&#x27; pilot at a single leading hospital or research centre with a small, well-characterised patient cohort to generate a first real-world dataset quickly, as Attomarker did at St Thomas&#x27; within days of first contact.</li><li>Publish early pilot data in a peer-reviewed analytical chemistry/diagnostics journal (e.g. Analyst-type venue) to build third-party credibility ahead of any regulatory submission.</li><li>Seek a co-manufacturing partner with existing precision-instrument production capability (akin to Smiths Detection) to move from lab prototype to a robust, scalable point-of-need device rather than building manufacturing in-house.</li><li>Design the platform around a flexible, swappable biomarker panel (as Attomarker did, adding CRP, PAG, and viral proteins rapidly) so the same core physics engine can be re-targeted across oncology, neurology and immunology research panels without a full redesign.</li><li>Pursue a low-cost, non-dilutive proof-of-concept funding source (alumni/community appeal, translational grant) to fund the first pilot study before seeking larger venture or crowdfunding rounds.</li><li>Consider equity crowdfunding (e.g. Crowdcube-style rounds) once initial clinical/regulatory milestones are hit, as a route to fund late seed/Series A commercial rollout while building public visibility.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Start in research-use-only sales to academic and hospital labs performing biomarker discovery, using early pilot partnerships (hospital collaborations) as reference sites, mirroring Attomarker&#x27;s St Thomas&#x27; Hospital entry point.</li><li>Target a first regulatory clearance in a single high-need, well-defined indication (e.g. a specific oncology or neurology biomarker panel) via a fast-track pathway analogous to Attomarker&#x27;s MHRA/CE Triple Antibody Test authorisation, rather than attempting broad clinical diagnostics clearance at once.</li><li>License or co-develop with an established diagnostics/instrumentation manufacturer for device production and distribution once a validated assay exists, following the Smiths Detection manufacturing partnership model.</li><li>Expand indication-by-indication through targeted co-development deals with antigen/reagent specialists (as with EpitogenX) to reach underserved disease markets (e.g. specific neuro-immunology or oncology biomarkers) without needing to build every assay internally.</li><li>Once clinical validation and initial regulatory milestones are achieved, use a phased financing approach: philanthropic/alumni-style seed funding for pilot studies, followed by an equity crowdfunding or accelerator round to fund commercial rollout and further regulatory work.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow Attomarker&#x27;s precedent: secure a fast, low-cost pilot at a marquee clinical site to generate real-world validation data, publish it to build scientific credibility, and use that evidence to obtain an initial regulatory clearance in a narrowly defined indication. Then partner with an established instrumentation manufacturer (as Attomarker did with Smiths Detection) to scale device production, while expanding the biomarker panel indication-by-indication through targeted co-development deals (as with EpitogenX) and financing growth through a mix of philanthropic seed funding and equity crowdfunding.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://attomarker.com/mhra-authorised-covid-antibody-test/" rel="noopener">attomarker.com</a> · <a href="https://attomarker.com/" rel="noopener">attomarker.com</a> · <a href="https://www.smiths.com/news-and-insights/news/2020/smiths-detection-announces-collaboration-with-attomarker" rel="noopener">www.smiths.com</a> · <a href="https://attomarker.com/attomarker-technology-overview/" rel="noopener">attomarker.com</a> · <a href="https://www.smithsdetection.com/press-releases/smiths-detection-collaborates-with-attomarker-in-the-development-of-a-triple-antibody-testing-device-for-covid-19/" rel="noopener">www.smithsdetection.com</a> · <a href="https://attomarker.com/attomarker-launches-acceleration-round/" rel="noopener">attomarker.com</a> · <a href="https://attomarker.com/category/investment-news/" rel="noopener">attomarker.com</a></footer>
+  </article>  <article class="brief" id="c-biognosys">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Biognosys</h3>
+        <span class="mono meta">Switzerland</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://biognosys.com/" rel="noopener">biognosys.com</a>
+      </div>
+    </header>
+    <p class="ctx">Biognosys is a proteomics company that provides mass spectrometry-based discovery and targeted proteomics technologies, software, kits, and contract research services for protein expression, function, and structure analysis.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> Mass spectrometry-based workflows including Data Independent Acquisition (DIA) via their patented Hyper Reaction Monitoring (HRM) technology for discovery proteomics, targeted acquisition methods (PRM, SureQuant, MRM) with stable isotope-labeled standard peptides for absolute quantification, and Limited Proteolysis-Mass Spectrometry (LiP-MS) for probing protein structural changes via altered proteolytic cleavage kinetics.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Oliver Rinner
+          <span class="l-role">Founder and CEO (Ph.D.)</span></p>
+        <p class="l-bg">Identified in company press materials as &#x27;Dr. Oliver Rinner, Founder and CEO of Biognosys.&#x27; No further educational or career background is given in the provided text beyond his title and repeated quotes as CEO and Co-Founder driving the company&#x27;s strategy toward clinical proteomics.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Biognosys shows how a platform-technology company (MS-based proteomics) can build a defensible moat through patents/exclusive licenses (HRM, iRT, LiP-MS), monetize via a layered CRO + software + kit business model (TrueDiscovery/TrueTarget/TrueSignature/Spectronaut/PQ500), and progress from academic-origin tech to biopharma and clinical-trial deployment through sequential strategic partnerships (Bruker, SISCAPA) and funding rounds (Series G) rather than a single big pharma deal - a relevant precedent for Proteins.1 as it moves from research-use amplification/detection technology toward regulated diagnostics.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Exclusive academic technology license (LiP-MS from ETH Zurich)</span><span class="f-ev">&quot;LiP-MS was invented by Biognosys&#x27; scientific advisor Prof. Paola Picotti at ETH Zurich... Biognosys is the sole, exclusive provider of proteomics solutions based on LiP-MS technology.&quot;</span></li><li><span class="f-claim">Strategic instrument-platform partnership with Bruker</span><span class="f-ev">&quot;Biognosys will participate in the activities of its strategic partner, Bruker... A major launch arising from the strategic partnership is the combination of Biognosys&#x27; iRT kit together with the Bruker ProteoScape product.&quot;</span></li><li><span class="f-claim">Exclusive collaboration with SISCAPA for end-to-end high-sensitivity workflow</span><span class="f-ev">&quot;SISCAPA Assay Technologies... and Biognosys... today announced an exclusive strategic collaboration to offer biopharma customers a streamlined end-to-end solution for high-sensitivity protein analysis - from early protein biomarker and drug target discovery, all the way to targeted enrichment and protein quantification in preclinical studies and clinical trials.&quot;</span></li><li><span class="f-claim">Series G financing to build GCP-certified clinical infrastructure and expand global commercial reach</span><span class="f-ev">&quot;The funds will be invested into building a new GCP-certified facility in Switzerland, increasing current operational capacity as well as enhancing the company&#x27;s sales force, further expanding its commercial presence in the US (both East and West Coast), Europe, and Asia.&quot;</span></li><li><span class="f-claim">Development of a standardized reference-peptide kit (PQ500) to enable cross-platform comparability for large cohort studies</span><span class="f-ev">&quot;Our PQ500™ Reference Peptides kit, an optimized set of 804 SIS peptides targeting 582 proteins, offers... greatly improved comparability across analytical platforms, making it especially helpful in large studies and cohort sizes.&quot;</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Package Proteins.1&#x27;s core detection platform as a tiered service model analogous to TrueDiscovery (broad research discovery) and TrueSignature (targeted, precise biomarker monitoring), letting research customers &#x27;graduate&#x27; from exploratory biomarker discovery to validated, reproducible targeted panels.</li><li>Develop a reference-standard kit (like PQ500) with defined synthetic/spike-in controls for Proteins.1&#x27;s readout modality to enable cross-lab, cross-instrument reproducibility - critical for adoption in multi-site academic and pharma studies.</li><li>Seek an exclusive academic license or scientific-advisor relationship (as Biognosys did with Prof. Picotti/ETH Zurich for LiP-MS) to anchor Proteins.1&#x27;s enzyme-free amplification method in a defensible, patent-protected niche application (e.g., structural/PTM biomarker profiling) that competitors cannot easily replicate.</li><li>Build software/analysis tooling (a &#x27;Spectronaut&#x27;-equivalent) around the raw signal output to lock in customers through a combined hardware+software+consumables ecosystem rather than selling instruments alone.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Start as a CRO/service-and-kit provider to oncology, neurology and immunology researchers (mirroring Biognosys&#x27; TrueDiscovery/TrueTarget/TrueSignature CRO model) before pursuing regulated diagnostics, to generate revenue and real-world validation data early.</li><li>Form a strategic co-marketing/technology partnership with an established instrument or platform vendor (Biognosys-Bruker precedent) to gain distribution credibility and technical integration rather than building a standalone sales channel from scratch.</li><li>Pursue an exclusive complementary-technology partnership with a specialized enrichment/detection technology provider (as with SISCAPA) to offer an &#x27;end-to-end&#x27; discovery-to-clinical-biomarker workflow, increasing stickiness with biopharma clients doing preclinical and clinical trial work.</li><li>Use a growth-stage funding round explicitly earmarked for building GCP/GLP-compliant infrastructure (as Biognosys&#x27; Series G funded a GCP facility) to signal clinical-market readiness to investors and pharma partners before formal regulatory submissions.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow Biognosys&#x27; precedent: first establish Proteins.1&#x27;s platform as an indispensable research tool via CRO-style discovery and targeted-quantification services layered with proprietary kits and analysis software, using research-use adoption (oncology, neurology, immunology) to build a large publication and reproducibility track record. In parallel, secure an exclusive academic or technology partnership to protect a specific technical edge (as Biognosys did with LiP-MS/ETH Zurich) and a strategic partnership with an established instrument/enrichment provider (as with Bruker and SISCAPA) to extend reach and credibility. Use a dedicated funding round to build GCP/GLP-compliant infrastructure before formally entering the regulated clinical diagnostics market, mirroring Biognosys&#x27; Series G-funded expansion into clinical trials.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://biognosys.com/our-technology/" rel="noopener">biognosys.com</a> · <a href="https://biognosys.com/news/biognosys-launches-spectronaut-18-and-presents-advances-in-proteomics-depth-sensitivity-and-scalability-at-the-asms-2023-annual-conference/" rel="noopener">biognosys.com</a> · <a href="https://biognosys.com/news/siscapa-and-biognosys-announce-strategic-collaboration-to-deliver-end-to-end-high-sensitivity-targeted-protein-quantification-solutions/" rel="noopener">biognosys.com</a> · <a href="https://biognosys.com/resources/unlocking-discoveries-from-plasma-bridging-depth-throughput-and-sensitivity/" rel="noopener">biognosys.com</a> · <a href="https://biognosys.com/using-proteomics-solutions-large-scale-plasma-serum-analysis/" rel="noopener">biognosys.com</a> · <a href="https://clinicaltrials.gov/study/NCT07202390" rel="noopener">clinicaltrials.gov</a> · <a href="https://biognosys.com/news/biognosys-completes-series-g-financing-round-to-accelerate-its-expansion-into-clinical-trials-market/" rel="noopener">biognosys.com</a></footer>
+  </article>  <article class="brief" id="c-dynamic-biosensors">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Dynamic Biosensors</h3>
+        <span class="mono meta">Germany</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://dynamic-biosensors.com/" rel="noopener">dynamic-biosensors.com</a>
+      </div>
+    </header>
+    <p class="ctx">Dynamic Biosensors develops biosensor instruments and assay technologies to help scientists characterize molecular interactions and accelerate drug discovery. The company was acquired by Bruker in 2024, forming the Bruker Biosensors business.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> switchSENSE® technology combined with single-cell Interaction Cytometry (scIC), run on heliX / heliX+ biosensor instruments (and heliXcyto for cell-based measurements)</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Ulrich Rant
+          <span class="l-role">Co-founder &amp; CEO of Dynamic Biosensors from its founding in 2012 until the 2024 Bruker acquisition; now Chief Scientific Officer of Bruker Biosensors</span></p>
+        <p class="l-bg">Rant led Dynamic Biosensors from inception, turning what colleagues describe as &#x27;seemingly crazy ideas to analyze molecular interactions&#x27; into commercial products. The company itself was a spinout from Technical University of Munich (TUM), based on research jointly conducted by TUM and Fujitsu, developing the switchSENSE electro-switchable DNA nanolever biosensor technology. After leading the company through product development, commercial expansion and the Bruker acquisition, Rant moved from CEO to CSO to refocus on science and technology.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Dynamic Biosensors is a strong role-model precedent for Proteins.1 because it is a university deep-tech spinout (TUM/Fujitsu, comparable to a VTT spinout) that built a physics-based, label-agnostic biosensor platform (DNA nanolever electro-switching rather than enzymatic amplification) reaching femtomolar sensitivity across proteins, DNA and RNA - conceptually parallel to Proteins.1&#x27;s enzyme-free, physics-based single-molecule platform. It scaled purely through Research Use Only sales into academic and pharma R&amp;D (oncology, immunology, neurology, drug discovery), built credibility via peer-reviewed publications with top academic labs, raised staged VC rounds from regional/deep-tech investors, and ultimately exited via strategic acquisition into a major analytical-instruments company (Bruker) to gain global commercial reach - a plausible playbook for Proteins.1 to follow from seed stage to scale.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Staged, regionally-anchored VC financing (Series A 2013, Series B 2015) from deep-tech-focused investors</span><span class="f-ev">Dynamic Biosensors closed a €5m ($6m) series B round featuring Unternehmertum Venture Capital Partners, Bayern Kapital and BayBG, having previously raised a Series A in 2013 from Unternehmertum, Bayern Kapital, Biom and Extorel.</span></li><li><span class="f-claim">Strategic acquisition by a global instrumentation leader (Bruker, 2024) to gain commercial scale</span><span class="f-ev">Bruker Corporation announced the acquisition of Dynamic Biosensors GmbH, combining DBS&#x27;s switchSENSE/scIC technologies with Bruker&#x27;s SPR portfolio to form the Bruker Biosensors business, giving DBS &#x27;global commercial reach and support infrastructure.&#x27;</span></li><li><span class="f-claim">Deep, publication-generating academic partnerships that validated the technology and drove visibility</span><span class="f-ev">Collaborations with Harald Kolmar&#x27;s lab at TU Darmstadt, Alessio Ciulli&#x27;s Centre for Targeted Protein Degradation, and Fraunhofer IZI-BB produced peer-reviewed papers (e.g., in Antibodies, eLife, RSC Chemical Biology) showcasing switchSENSE applications in bispecific antibodies, PROTACs and RNA biology.</span></li><li><span class="f-claim">Clear Research-Use-Only positioning avoiding early regulatory burden while building a broad application base</span><span class="f-ev">Product labeling explicitly states &#x27;For Research Use Only. Not for use in clinical diagnostic procedures,&#x27; allowing the company to sell into pharma/academic drug-discovery markets (oncology, immunotherapy, virology, neurology) without navigating clinical regulatory pathways.</span></li><li><span class="f-claim">Differentiated, hard-to-replicate technical capability (world-first dual-color detection, single-cell kinetics) as a commercial moat</span><span class="f-ev">The DRX² analyzer is described as the &#x27;world&#x27;s first double color analyzer of its kind,&#x27; and heliXcyto is noted as enabling on-cell kon/koff measurement &#x27;previously not possible,&#x27; per testimonial from Prof. Harald Kolmar.</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Launch Proteins.1&#x27;s platform first as a Research-Use-Only tool for oncology, neurology and immunology biomarker discovery (mirroring DBS&#x27;s RUO-first strategy) to build revenue and validation data before pursuing regulated diagnostics.</li><li>Target niche high-value use cases where existing instruments fail - e.g., ultra-low-abundance biomarker detection from minimal sample volumes - similar to how DBS carved out PROTAC ternary-complex kinetics and on-cell kinetics as differentiated app notes.</li><li>Co-develop application notes and joint publications with leading academic groups (e.g., a Finnish/European equivalent of the Kolmar or Ciulli labs) in oncology and immunotherapy to generate third-party validation data attractive to pharma customers.</li><li>Emphasize the enzyme-free, physics-based detection as a unique selling differentiator in marketing materials and app notes, just as DBS emphasized DNA-nanolever electro-switching versus conventional enzymatic/PCR-based methods.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Sequence funding the DBS way: seed/Series A from national deep-tech and university-linked VC funds (Business Finland, Finnish state funds, VTT-linked investors), followed by a Series B focused on scaling sales/marketing once RUO product-market fit in oncology/immunology research is shown.</li><li>Build a portfolio of peer-reviewed collaborations with academic KOLs in oncology, neurology and immunology to generate the kind of steady app-note/publication pipeline DBS used for credibility and lead generation.</li><li>Plan for an eventual strategic exit or partnership with a larger life-science instrumentation player (a Bruker-, Illumina-, or Thermo-type acquirer) once the RUO platform has commercial traction, using that acquirer&#x27;s global distribution and support infrastructure to scale - the same route DBS took in 2024.</li><li>Delay clinical diagnostics ambitions until after establishing a strong RUO revenue base and regulatory-agnostic reputation, then use accumulated performance and partnership data to support a later regulated-diagnostics push.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow the Dynamic Biosensors precedent: start as a university-linked deep-tech spinout selling a physics-based, enzyme-free detection platform purely for Research Use in oncology, neurology and immunology, financed through staged regional/deep-tech VC rounds. Build credibility and market pull through joint publications and app notes with leading academic labs, using genuinely novel technical capabilities (e.g., single-molecule/ultra-sensitive detection) as the differentiator. Once RUO traction and application breadth are proven, pursue a strategic partnership or acquisition by a global life-science instrumentation company to scale commercially, deferring regulated clinical diagnostics until after this RUO-stage growth, exactly as Dynamic Biosensors did en route to its 2024 acquisition by Bruker.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://www.dynamic-biosensors.com/" rel="noopener">www.dynamic-biosensors.com</a> · <a href="https://www.dynamic-biosensors.com/project/switchsense-biophysical-analysis-with-electro-switchable-biosurfaces/" rel="noopener">www.dynamic-biosensors.com</a> · <a href="https://www.bruker.com/en/products-and-solutions/biosensors-for-molecular-interactions/switchsense-technology/helix-plus.html" rel="noopener">www.bruker.com</a> · <a href="https://www.dynamic-biosensors.com/project_information_type/app-tech-note/" rel="noopener">www.dynamic-biosensors.com</a> · <a href="https://ir.bruker.com/press-releases/press-release-details/2024/Bruker-Acquires-Dynamic-Biosensors-a-Pioneer-of-Single-Cell-Interaction-Cytometry-Systems-for-Drug-Discovery/default.aspx" rel="noopener">ir.bruker.com</a> · <a href="https://www.linkedin.com/posts/ulrich-rant-61000848_after-many-years-at-the-helm-as-ceo-since-activity-7221763906111733760-O8DU" rel="noopener">www.linkedin.com</a> · <a href="https://globalventuring.com/university/dynamic-biosensors-detects-6m/" rel="noopener">globalventuring.com</a></footer>
+  </article>  <article class="brief" id="c-evosep">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Evosep</h3>
+        <span class="mono meta">Denmark</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://evosep.com/" rel="noopener">evosep.com</a>
+      </div>
+    </header>
+    <p class="ctx">Evosep develops the Evosep One, a standardized liquid chromatography (LC) platform that integrates sample preparation with LC-MS analysis for high-throughput proteomics workflows.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> A standardized, robust LC system using low-pressure pumps and the Evotip Pure sample introduction device, which integrates desalting with LC-MS sample introduction and uses a &#x27;partial elution concept&#x27; where peptides are eluted while contaminants and large hydrophobic molecules remain on the disposable Evotip.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Ole Vorm
+          <span class="l-role">Founder</span></p>
+        <p class="l-bg">Started working with protein mass spectrometry in 1989; founded his first company Protana in 1997 (first commercial nano-electrospray sources/emitters, first 2D-gel spot-picking robot). Protana was acquired by MDS Proteomics (2000); a management buyout formed Proxeon (2002), which developed the EASY-nLC and was acquired by Thermo Scientific (2010), where the EASY-Spray ion source was invented. In 2014-2017 the team designed the Bruker Daltonics nanoElute. Ole Vorm and team founded Evosep in 2016 and launched Evosep One at HUPO Dublin about 18 months later.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Evosep shows how a founder with 20+ years of deep domain experience and repeated exits/acquisitions (Protana -&gt; MDS Proteomics -&gt; Proxeon -&gt; Thermo Scientific -&gt; Bruker collaboration) can rapidly commercialize a hardware-plus-consumable platform (Evosep One + Evotip) into a standardized, high-throughput research tool, then progressively expand into clinical-adjacent applications (diabetes monitoring, plasma proteome, single-cell proteomics) via an ecosystem of instrument and automation partners rather than going straight to regulated diagnostics.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Founder&#x27;s serial track record and deep proteomics network before founding Evosep</span><span class="f-ev">Ole Vorm started working with protein mass spectrometry back in 1989 and founded his first company in 1997... Most of our employees have been involved in the field for many years as well, working together with Ole Vorm in different companies long before Evosep saw the light of day.</span></li><li><span class="f-claim">Prior acquisition exits validating the technology lineage (Proxeon acquired by Thermo Scientific in 2010)</span><span class="f-ev">The EASY-nLC proved quite successful and Proxeon was acquired by Thermo Scientific in 2010.</span></li><li><span class="f-claim">Fast time-to-market: founded 2016, launched Evosep One at HUPO Dublin in ~18 months</span><span class="f-ev">This enabled Ole Vorm and team to found Evosep in 2016 and launch the Evosep One to the market at HUPO in Dublin just one and a half years after Evosep was born.</span></li><li><span class="f-claim">Consumable-integrated hardware model via the patented Evotip, creating a disposable/recurring revenue component</span><span class="f-ev">Patented approach: Innovative sample introduction and separation technology (US20200041467B1, US20190250130B1)... The Evotip Pure is the heart of the Evosep technology... integrating desalting with LC-MS sample introduction.</span></li><li><span class="f-claim">Broad instrument-ecosystem partnerships (Thermo Scientific, Agilent, IonOpticks, cellenONE, Opentrons, Rapid Novor, Resyn Biosciences) to embed Evosep One into existing workflows</span><span class="f-ev">The combination of the Aurora Elite column from IonOpticks, Whisper methods on the Evosep One, and dia-PASEF on the timsTOF-SCP provides a powerful combination... Another key contributor to this performance level is the nanoscale sample preparation workflow on the cellenONE platform.</span></li><li><span class="f-claim">Growth capital from a specialist financial investor (Nordic Capital) enabling scale-up</span><span class="f-ev">Who are Evosep&#x27;s investors? Nordic Capital has invested in Evosep... Evosep has raised $46M.</span></li><li><span class="f-claim">Staged clinical-application showcases (e.g., diabetes glycated albumin assay) built on the research platform before pursuing regulated diagnostics</span><span class="f-ev">At ASMS, Evosep presents a fully automated Evosep-MRM workflow for the quantification of glycated albumin at a throughput of 500 samples per day (per system) and showing significantly improved intra-day and inter-day precision for diabetes monitoring.</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Package Proteins.1&#x27;s amplification/reading platform with a proprietary, disposable sample-introduction consumable (like the Evotip) so each run generates recurring consumable revenue and locks in workflow standardization.</li><li>Launch first as a research-use-only instrument with a small number of standardized, well-documented methods (Evosep&#x27;s &#x27;six standard methods&#x27;) covering different throughput/sensitivity tradeoffs, to shorten the learning curve for early adopters.</li><li>Use blood/pinprick or dried-blood-spot sample formats as an early low-friction entry point (as Evosep did for diabetes monitoring) to demonstrate real-world clinical-adjacent utility while remaining in research use.</li><li>Publish head-to-head performance benchmarks (e.g., % cost-per-sample reduction, % increase in instrument utilization, reproducibility metrics) as Evosep did, to give researchers concrete adoption criteria.</li><li>Pursue single-cell and phosphoproteomics-style niche applications first, where sensitivity is the differentiator, before broadening to population-scale screening.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Co-develop and validate with mass-spec/automation leaders (analogous to Thermo Scientific, Agilent, IonOpticks, cellenONE, Opentrons) so Proteins.1&#x27;s platform is positioned as a plug-in module in established proteomics/genomics workflows rather than a standalone system requiring a whole new ecosystem.</li><li>Seek an eventual acquisition or deep partnership with an established platform vendor (mirroring the Protana -&gt; MDS Proteomics -&gt; Proxeon -&gt; Thermo Scientific path) as a strategic exit or scale-up mechanism once the core technology is validated in research markets.</li><li>Target specialist life-science growth investors (like Nordic Capital funding Evosep) once research-market traction is shown, to finance scale-up of manufacturing/production facilities.</li><li>Build clinical-adjacent proof points (disease-specific biomarker assays such as Evosep&#x27;s diabetes glycated-albumin workflow) within academic/hospital collaborations to create a bridge narrative toward eventual regulated diagnostics, without prematurely seeking clinical approval.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow Evosep&#x27;s precedent: launch fast (they went from founding to market launch in 18 months) as a standardized, easy-to-adopt research-use platform bundled with a proprietary consumable (Evotip) that locks in recurring revenue and workflow control. Build credibility and reach through partnerships with established instrument and automation vendors (Thermo Scientific, Agilent, IonOpticks, cellenONE) rather than building an entire ecosystem alone, and demonstrate concrete performance/cost benchmarks to drive adoption. Use disease-specific showcases (e.g., diabetes monitoring from pinprick blood) to build a clinical narrative while remaining research-use-only, setting up either a strategic acquisition by a larger platform company or growth-equity-backed scale-up (as Evosep did with Nordic Capital) as the path to regulated diagnostics.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://www.evosep.com/evosep-one/" rel="noopener">www.evosep.com</a> · <a href="https://www.evosep.com/support/documentation-old/" rel="noopener">www.evosep.com</a> · <a href="https://www.evosep.com/evosep-eno/" rel="noopener">www.evosep.com</a> · <a href="https://www.news-medical.net/news/20220613/Evosep-One-enables-robust-high-throughput-single-cell-proteomics.aspx" rel="noopener">www.news-medical.net</a> · <a href="https://clinicaltrials.gov/study/NCT06841536" rel="noopener">clinicaltrials.gov</a> · <a href="https://www.evosep.com/project/the-story-of-evosep/" rel="noopener">www.evosep.com</a> · <a href="https://pitchbook.com/profiles/company/167505-22" rel="noopener">pitchbook.com</a></footer>
+  </article>  <article class="brief" id="c-nanotemper-technologies">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>NanoTemper Technologies</h3>
+        <span class="mono meta">Germany</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://nanotempertech.com/" rel="noopener">nanotempertech.com</a>
+      </div>
+    </header>
+    <p class="ctx">Dianthus is a biophysical instrument platform that measures binding affinity between proteins and other molecules (e.g., fragments, ligands, PROTACs) directly in solution. It is used in drug discovery for screening and characterizing hard-to-study targets.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> Two complementary in-solution technologies: Spectral Shift, which detects binding by measuring spectral shifts in the emission spectrum of a fluorescently labeled target, and TRIC (Temperature Related Intensity Change), which measures fluorescence changes after a brief temperature increase to confirm hits with an orthogonal signal.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Stefan Duhr and Philipp Baaske
+          <span class="l-role">Co-founders and Co-CEOs</span></p>
+        <p class="l-bg">Both were PhD students in the Department of Physics and Center for NanoScience at Ludwig-Maximilians-Universität (LMU) Munich in the late 2000s. Stefan Duhr came from a biochemistry background; Philipp Baaske from physics/engineering. They collaborated on a project doing rapid laser-heated measurements of dsDNA unfolding using a fluorophore, then repurposed the heat/fluorophore principle (building on Charles Soret&#x27;s 1879 thermodiffusion theory) into a new method for measuring protein-molecule binding affinity in solution, which became MicroScale Thermophoresis (MST) and the basis of NanoTemper.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> NanoTemper is a strong role model because it shows how a physics-based, label-based (not enzyme-based) biophysical measurement technology born from an academic PhD project can be built, without early VC funding, into a global instrument company trusted by pharma/biotech and academia, expanding from a single core technology (MST) into a multi-platform ecosystem (Monolith, Prometheus/nanoDSF, Seismos/SAW, Dianthus/Spectral Shift+TRIC) serving drug discovery, with deep penetration into real industry workflows (cited in ~20% of new biotherapeutics development) before any move toward more regulated or specialized use cases.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Bootstrapped growth via non-dilutive grants instead of early VC money</span><span class="f-ev">&quot;We did not have a business plan... No funding rounds. No VC money. No exit strategy... We started applying to business grants in Munich and found they were getting awarded, so we kept working.&quot; (Stefan Duhr)</span></li><li><span class="f-claim">University spin-off support structure (LMU Spin-Off service) enabled early formation</span><span class="f-ev">&quot;Big thank you to the Spin-Off service of the Ludwig-Maximilians-Universität München... who strongly supported us in our early days.&quot;</span></li><li><span class="f-claim">Deliberate technology platform expansion by acquisition and internal development to cover complementary biophysical readouts</span><span class="f-ev">&quot;The recently acquired Surface Acoustic Wave (SAW) technology measures binding kinetics&quot; and &quot;In 2015, a novel product line represented by the Prometheus NT.48 instrument was launched offering nanoDSF technology,&quot; alongside Dianthus&#x27;s dual Spectral Shift + TRIC readouts.</span></li><li><span class="f-claim">Deliberate US market entry via a dedicated fully-owned subsidiary to capture pharma/biotech demand</span><span class="f-ev">&quot;NanoTemper Technologies announces the foundation of a fully owned subsidiary in San Francisco, California... to meet the ever increasing demand in the North American market for our MST instruments.&quot; (Stefan Duhr, CEO)</span></li><li><span class="f-claim">Deep embedding in real pharma R&amp;D workflows validated by scientific citation volume</span><span class="f-ev">&quot;our instruments have been cited in more than 15,000 scientific publications. Our products are involved in the development of around 20% of all new biotherapeutics.&quot; (Philipp Baaske)</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Follow NanoTemper&#x27;s grant-first, VC-later funding path: pursue Finnish/EU non-dilutive innovation grants (e.g., Business Finland, EIC Accelerator, VTT-linked funding) before raising large VC rounds, to preserve technical focus and equity in the seed stage.</li><li>Design the platform to output two complementary, orthogonal signals (as NanoTemper does with Spectral Shift + TRIC) so that Proteins.1&#x27;s amplification/reading method can cross-validate hits and rule out artifacts - this builds trust with skeptical pharma/academic buyers evaluating a new physics-based method.</li><li>Prioritize research-use instrument placement in academic and pharma discovery labs first (oncology, neurology, immunology single-molecule biomarker work) to accumulate publications and citations, mirroring NanoTemper&#x27;s 15,000+ citation base, before pursuing regulated clinical diagnostics.</li><li>Build a software/data ecosystem (a &#x27;Hub&#x27; style platform with structured, machine-readable exports and APIs) early, so that Proteins.1&#x27;s biomarker data integrates into existing pharma/biotech analysis pipelines and automation, increasing stickiness similar to NanoTemper&#x27;s Hub apps and open API strategy.</li><li>Leverage the VTT spin-off relationship the same way NanoTemper leveraged LMU&#x27;s spin-off office - use VTT&#x27;s tech-transfer and grant-writing support to accelerate incorporation, patent filing, and first business-plan competitions.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Enter via the same customer segment NanoTemper targeted first - academic and biotech/pharma discovery labs doing hard-target biomarker/protein characterization - using research-use-only positioning to avoid early regulatory burden.</li><li>Once technical credibility and publication citations are established in research markets, expand geographically through direct subsidiaries in key biotech hubs (Boston/San Francisco) as NanoTemper did, rather than distributors, to control customer application support.</li><li>Add complementary detection modalities/product lines over time (as NanoTemper added SAW and nanoDSF) so a single-molecule DNA/RNA/protein biomarker platform becomes a multi-application ecosystem, increasing account penetration before diagnostics regulatory filings.</li><li>Only pursue regulated clinical diagnostics after the research-use platform has strong adoption data and publication support, using that evidence base to de-risk regulatory submissions, mirroring NanoTemper&#x27;s decade-plus research-market-first trajectory before any diagnostic-adjacent moves (e.g., diagnostic-grade plate manufacturing).</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Proteins.1 should follow NanoTemper&#x27;s precedent: found the company on a strong physics-based academic insight (here, VTT&#x27;s enzyme-free single-molecule amplification/reading platform), bootstrap early growth through non-dilutive grants and spin-off support rather than early VC, and prove the platform first in research-use settings (oncology/neurology/immunology labs) to build a citation and adoption base. Only after establishing this research-market credibility and building a complementary, cross-validating measurement architecture (as NanoTemper did with Spectral Shift + TRIC) should Proteins.1 expand geographically via direct subsidiaries and move toward regulated clinical diagnostics.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://nanotempertech.com/dianthus/" rel="noopener">nanotempertech.com</a> · <a href="https://nanotempertech.com/about/" rel="noopener">nanotempertech.com</a> · <a href="https://support.nanotempertech.com/hc/en-us/articles/48215154060689-What-is-the-NanoTemper-Hub" rel="noopener">support.nanotempertech.com</a> · <a href="https://www.selectscience.net/company/nanotemper-technologies" rel="noopener">www.selectscience.net</a> · <a href="https://nanotempertech.com/blog/the-nanotemper-story-chapter-1-the-founding/" rel="noopener">nanotempertech.com</a> · <a href="https://www.linkedin.com/posts/philipp-baaske_today-nanotemper-turns-18-in-most-countries-activity-7466763725597868032-6asa" rel="noopener">www.linkedin.com</a> · <a href="https://nanotempertech.com/blog/nanotemper-establishes-presence-usa/" rel="noopener">nanotempertech.com</a></footer>
+  </article>  <article class="brief" id="c-oxford-nanopore-technologies">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Oxford Nanopore Technologies</h3>
+        <span class="mono meta">United Kingdom · nanopore protein sensing</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://nanoporetech.com/" rel="noopener">nanoporetech.com</a>
+      </div>
+    </header>
+    <p class="ctx">Oxford Nanopore provides nanopore-based sequencing technology that enables biological analysis across genomics, epigenomics, and transcriptomics. Their platforms are used by researchers and clinicians worldwide to explore biological questions.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> Real-time nanopore sequencing technology, described as a &#x27;transformative sensing technology&#x27; that provides a multiomic view by exploring genomic, epigenomic, and transcriptomic variation in one run.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Gordon Sanghera
+          <span class="l-role">Founder and former CEO (held CEO post until 2026, now advisory role)</span></p>
+        <p class="l-bg">Co-founded Oxford Nanopore (as Oxford Nanolabs) in 2005 with Dr Spike Willcocks and Professor Hagan Bayley, with seed funding from IP Group plc. Brought experience combining biological and electronic technologies; previously delivered blood glucose-sensing products to market, a technology that transformed diabetes patient care worldwide. Guided the company from single-channel research chemistry through to a commercialised, disruptive sequencing platform, before handing over to Francis Van Parys.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Oxford Nanopore is the clearest precedent for a physics-based, single-molecule sensing platform (nanopore + electronic current read-out) that started from academic IP, built proprietary hardware/chemistry over years, and scaled from single-channel devices to a fully commercial, multi-scale platform (MinION to PromethION) serving research first and now moving into regulated clinical diagnostics (e.g. VCGS ISO 15189 accreditation). Its trajectory from founder-led deep-tech spinout to a multi-omic, real-time sequencing leader with global partnerships is directly analogous to the path Proteins.1 could follow.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Founding on strong academic IP and multidisciplinary academic collaboration</span><span class="f-ev">Founded in 2005 by Gordon Sanghera, Spike Willcocks and Hagan Bayley, combining Bayley&#x27;s protein nanopore work with IP and expertise from Branton, Deamer and Akeson at Harvard, Boston University and UC Santa Cruz.</span></li><li><span class="f-claim">Early seed funding from a specialist IP-commercialisation investor</span><span class="f-ev">Seed funding from IP Group plc enabled the company to spin out of academic research as Oxford Nanolabs.</span></li><li><span class="f-claim">Recruiting proven sequencing-commercialisation talent</span><span class="f-ev">In 2008, Dr John Milton and Clive G. Brown joined the executive team, bringing prior experience developing DNA sequencing technology at Solexa, which was acquired and commercialised by Illumina.</span></li><li><span class="f-claim">Staged hardware scaling before broad commercial launch</span><span class="f-ev">The company progressed from single-channel Axopatch devices to 4-, 9-, then 128-channel sensor chips and bespoke ASICs before building the large-scale arrays used in today&#x27;s commercial products.</span></li><li><span class="f-claim">Public proof-of-concept at a flagship scientific conference ahead of commercial rollout</span><span class="f-ev">In February 2012 at the AGBT conference, Oxford Nanopore presented the first-ever nanopore sequencing data and an overview of the GridION and MinION hardware/software, building field credibility before market entry.</span></li><li><span class="f-claim">Real clinical/regulatory partnership milestones after research traction</span><span class="f-ev">VCGS achieved ISO 15189 accreditation for whole genome sequencing using Oxford Nanopore technology, and Oxford Nanopore expanded its collaboration with MATRIX to implement rapid CNS tumour classification across Norway.</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Mirror ONT&#x27;s staged hardware scaling: launch a low-throughput &#x27;pocket&#x27; instrument for early research adopters before building a high-throughput production-scale version, letting real-world data drive iterative chemistry/hardware improvements.</li><li>Recruit senior talent with a track record in a prior single-molecule/sequencing commercialisation success (as ONT did with ex-Solexa/Illumina hires) to shortcut the path from platform to scaled product.</li><li>Publish first proof-of-concept data at a leading field conference (analogous to ONT&#x27;s AGBT 2012 debut) to build scientific credibility with the protein/biomarker research community before broad launch.</li><li>Position the enzyme-free, physics-based sensing method as a &#x27;richer insights, one-platform&#x27; story (multi-biomarker DNA/RNA/protein in a single run) the way ONT markets its &#x27;multiomic view&#x27; replacing multiple assays.</li><li>Target a specific high-value use case in oncology or neurology (e.g., an early biomarker panel) for a pilot partnership with a clinical genomics/diagnostics lab, using ONT&#x27;s VCGS ISO 15189 accreditation and MATRIX CNS-tumour collaboration as the template for moving research use into regulated diagnostics.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Start in research-use-only markets (oncology, neurology, immunology biomarker discovery) with academic and pharma partners generating peer-reviewed validation data, as ONT did to build 20,000+ publications before clinical expansion.</li><li>Secure a specialist deep-tech/IP-focused seed investor (akin to IP Group plc backing ONT) to fund the multi-year hardware/chemistry development runway before commercial revenue.</li><li>Pursue a flagship clinical genomics/diagnostics lab partnership for accreditation (ISO 15189-style) as a beachhead into regulated diagnostics, following the VCGS precedent.</li><li>Form a collaboration with a hospital network or reference lab for a specific rapid-turnaround clinical application (e.g., rapid biomarker panel for time-critical treatment decisions), mirroring the Oxford Nanopore-MATRIX CNS tumour classification expansion in Norway.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Proteins.1 should follow Oxford Nanopore&#x27;s precedent: build on strong founding IP with staged hardware/chemistry scaling, first proving the enzyme-free platform in research-use applications (oncology, neurology, immunology) to accumulate peer-reviewed validation, much as ONT did before its clinical push. Recruit executives with prior single-molecule sequencing/diagnostics commercialisation experience, and pursue a landmark academic/clinical partnership (like VCGS&#x27;s ISO 15189 accreditation or the MATRIX CNS-tumour collaboration) as the bridge from research tool to regulated diagnostic product.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://nanoporetech.com/" rel="noopener">nanoporetech.com</a> · <a href="https://nanoporetech.com/platform/technology" rel="noopener">nanoporetech.com</a> · <a href="https://nanoporetech.com/platform/accuracy" rel="noopener">nanoporetech.com</a> · <a href="https://www.nature.com/articles/s41587-021-01108-x" rel="noopener">www.nature.com</a> · <a href="https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&amp;CIK=0001411690&amp;type=S-1" rel="noopener">www.sec.gov</a> · <a href="https://nanoporetech.com/about/history" rel="noopener">nanoporetech.com</a> · <a href="https://nanoporetech.com/about/executive-team" rel="noopener">nanoporetech.com</a></footer>
+  </article>  <article class="brief" id="c-pixelgen-technologies">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Pixelgen Technologies</h3>
+        <span class="mono meta">Sweden</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://pixelgen.com/" rel="noopener">pixelgen.com</a>
+      </div>
+    </header>
+    <p class="ctx">Pixelgen Technologies develops tools to analyze the molecular basis of cell function by deciphering the Cell Surface Architecture of single cells. Their flagship product, the Pixelgen Proxiome Kit, enables researchers to study protein interactomics, spatial organization, and clustering on immune cell surfaces.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> Proximity Network Assay - a patented method enabling nanoscale spatial analysis of immune cell proteins, allowing measurement of protein abundance, clustering, and colocalization across the cell surface.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Simon Fredriksson
+          <span class="l-role">CEO &amp; Co-founder, Pixelgen Technologies</span></p>
+        <p class="l-bg">Text identifies him only as &#x27;Simon Fredriksson, Ph.D., CEO &amp; Co-founder of Pixelgen Technologies.&#x27; No further personal biography is given, though he is described as part of &#x27;a team of strong serial entrepreneurs with unicorn outcomes&#x27; (per Industrifonden&#x27;s Patrik Sobocki) and as leading a team that has &#x27;successfully commercialized multiple life sciences products globally&#x27; (per Flat Capital&#x27;s Rickard El Tarzi).</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Pixelgen is a strong role-model for Proteins.1 because it is a recently founded (2020), venture-backed, RUO-first deep-tech spinout with a proprietary, non-standard molecular detection chemistry (DNA-barcoded proximity assay, no optics/fluorescence) targeting immunology/immuno-oncology - almost the exact stage, funding profile, and market entry point Proteins.1 is aiming for. It shows a concrete, staged playbook: ship a first RUO product, iterate it with measurable performance gains, lock in sequencer/platform compatibility, build a regional service-provider network, and raise follow-on capital tied to each of those milestones.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Staged, milestone-linked venture financing (Seed -&gt; $7.3M Series A -&gt; $15.5M Series B)</span><span class="f-ev">Series A ($7.3M) closed in Oct 2023 led by Industrifonden and Navigare Ventures right after &#x27;last month we shipped our first product&#x27;; Series B ($15.5M) closed Aug 2026 led by Flat Capital &#x27;to accelerate global commercialization of its Proxiome Kit.&#x27;</span></li><li><span class="f-claim">Regional go-to-market via a certified third-party service provider rather than building in-house lab infrastructure</span><span class="f-ev">Carolina Molecular Inc. became &#x27;the first certified U.S. service provider for Pixelgen,&#x27; offering the Proximity Network Assay to US academic, pharma and biotech researchers via its own NGS Foundry.</span></li><li><span class="f-claim">Deliberate compatibility with dominant and emerging sequencing platforms to remove adoption friction</span><span class="f-ev">The Proxiome Kit &#x27;generates sequencer-ready libraries that integrate seamlessly with standard NGS platforms,&#x27; is offered by CMI on Illumina NovaSeqX Plus and Element Biosciences Aviti, and was showcased by Roche as the only single-cell protein interactomics solution proven on the new AXELIOS 1 sequencer (R²=0.99 concordance).</span></li><li><span class="f-claim">Iterative product upgrades with quantified performance claims to justify continued adoption</span><span class="f-ev">MPX v2 launch delivered &#x27;a 3.7-fold increase in signal-to-noise ratio, 2.2 times more data per cell, and stronger antibody performance compared with the company&#x27;s first commercial product,&#x27; plus an expanded 84-target panel detecting known and novel protein complexes.</span></li><li><span class="f-claim">Non-dilutive/strategic development support and credible board additions signaling commercialization maturity</span><span class="f-ev">&#x27;Advanced development activities supported by a contract with Wellcome Leap&#x27;; Series B board additions include Flat Capital CEO Rickard El Tarzi and life-sciences veteran Ramon Felciano, with El Tarzi&#x27;s prior role as Chief Strategy &amp; Product Officer at Olink Proteomics &#x27;through its initial public offering and eventual sale.&#x27;</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Launch Proteins.1&#x27;s enzyme-free amplification platform first as an RUO kit targeting a narrow, high-value application (e.g., an immunology or neuro-oncology biomarker panel) the way Pixelgen launched its Proxiome/MPX kits for immunology - build a track record before pursuing regulated diagnostics.</li><li>Design the workflow output to be &#x27;sequencer-ready&#x27; and instrument-agnostic from day one, mirroring Pixelgen&#x27;s integration with Illumina, Element Biosciences and Roche AXELIOS, so Proteins.1 doesn&#x27;t need to compete with or replace existing NGS infrastructure.</li><li>Plan a v1 -&gt; v2 product cadence with clearly quantified performance gains (e.g., sensitivity fold-improvement, sample volume reduction, multiplexing capacity) as Pixelgen did with MPX v2&#x27;s &#x27;3.7-fold SNR&#x27; and &#x27;2.2x more data per cell&#x27; claims - these numbers are what convert early adopters and justify follow-on funding rounds.</li><li>Seek a proof-of-concept collaboration with a major sequencing/instrument maker (a &#x27;Roche AXELIOS&#x27; moment) to validate compatibility and generate credible third-party data (e.g., concordance R² figures) that de-risks adoption for downstream customers.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Structure financing in stages tied to concrete commercial proof points - first product shipment, first named service partner, first platform compatibility deal - as Pixelgen did with its Series A ($7.3M) and Series B ($15.5M) raises, rather than raising large sums pre-revenue.</li><li>Recruit a certified regional service-provider lab (analogous to Carolina Molecular) in each target geography (e.g., US, EU) to extend market reach quickly without building CLIA/CAP infrastructure directly.</li><li>Bring on board members or advisors with prior exits in adjacent &#x27;omics&#x27; categories (e.g., someone with an Olink Proteomics-style trajectory) once nearing Series B, to add commercialization credibility ahead of a diagnostics pivot.</li><li>Pursue non-dilutive translational development funding (a Wellcome Leap-style contract) to bridge the gap between RUO commercialization and future clinical/regulated development, preserving equity for later rounds.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow Pixelgen&#x27;s precedent: launch an enzyme-free protein detection kit as an RUO product into a focused biomarker application (immunology/oncology), then extend reach through instrument-compatibility partnerships (its own &#x27;Roche AXELIOS&#x27; and Illumina/Element Biosciences moments) and a certified regional service-provider network (its &#x27;Carolina Molecular&#x27; deal) rather than building all infrastructure internally. Pair this with staged financing explicitly tied to these commercial and technical milestones (Pixelgen&#x27;s $7.3M Series A after first shipment, $15.5M Series B after service-provider and platform wins), and iterate the product with quantified performance upgrades between rounds. Only after this RUO commercial base and instrument ecosystem are established should Proteins.1 pursue regulated clinical diagnostics, mirroring Pixelgen&#x27;s translational-research-first roadmap.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://www.pixelgen.com/" rel="noopener">www.pixelgen.com</a> · <a href="https://www.pixelgen.com/news/carolina-molecular-partners-with-pixelgen-becomes-first-us-certified-service-provider-for-pixelgen-proxiome-kit/" rel="noopener">www.pixelgen.com</a> · <a href="https://www.linkedin.com/posts/pixelgen-technologies_proximitynetworkassay-pna-axelios-activity-7433136581009436673-2Vcb" rel="noopener">www.linkedin.com</a> · <a href="https://www.pixelgen.com/about-pixelgen-2/" rel="noopener">www.pixelgen.com</a> · <a href="https://www.pixelgen.com/news/pixelgen-technologies-releases-mpx-v2-for-enhanced-cell-surface-protein-phenotyping-and-colocalization-analysis/" rel="noopener">www.pixelgen.com</a> · <a href="https://finance.yahoo.com/healthcare/articles/pixelgen-technologies-closes-15-5m-063000030.html" rel="noopener">finance.yahoo.com</a> · <a href="https://www.pixelgen.com/news/pixelgen-technologies-closes-series-a-financing/" rel="noopener">www.pixelgen.com</a></footer>
+  </article>  <article class="brief" id="c-preomics">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>PreOmics</h3>
+        <span class="mono meta">Germany</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://preomics.com/" rel="noopener">preomics.com</a>
+      </div>
+    </header>
+    <p class="ctx">PreOmics develops sample preparation kits for proteomics workflows used in LC-MS analysis.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> Kit-based proteomics sample preparation for LC-MS analysis, partially automatable on the Agilent Bravo platform requiring off-board centrifugation.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Dr. Garwin Pichler and Dr. Nils A. Kulak
+          <span class="l-role">Co-Founders and Managing Directors, PreOmics GmbH</span></p>
+        <p class="l-bg">Both are scientists who founded PreOmics in 2016 as a spin-out from the laboratory of Professor Matthias Mann, a leading proteomics researcher at the Max Planck Institute of Biochemistry in Martinsried. Pichler is described as Founder &amp; Managing Director and serves as company contact; Kulak co-leads R&amp;D/technology development (e.g., the BeatBox platform).</p>
+        <p class="l-why"><span class="k">Why worth studying</span> PreOmics shows a concrete route from an academic spin-out with a strong scientific pedigree (Max Planck/Matthias Mann lab) to a commercially validated platform company: it built a clear product-market fit around cutting sample-prep time (44 hrs to 2 hrs), formed a technical/commercial partnership with an established instrument leader (Agilent), and ultimately achieved a strategic majority investment from a major life-science instrument company (Bruker) that both funded growth and gave it access to complementary hardware and global commercial channels.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Platform-compatibility partnership with Agilent</span><span class="f-ev">&quot;In conjunction with Agilent, PreOmics&#x27; kits are suitable for use on the Agilent Bravo platform,&quot; allowing labs to partially automate proteomics processing and decreasing hands-on time.</span></li><li><span class="f-claim">Strategic Series B investment and majority acquisition by Bruker</span><span class="f-ev">PreOmics raised €13.5m in a Series B financing provided by Bruker Corporation, which became a majority investor, explicitly to accelerate R&amp;D, marketing, sales, and to combine PreOmics&#x27; sample-prep technology with Bruker&#x27;s timsTOF 4D proteomics platform for more complete automated workflows.</span></li><li><span class="f-claim">High-credibility academic origin from a leading proteomics lab</span><span class="f-ev">PreOmics was founded in 2016 by Dr. Garwin Pichler and Dr. Nils A. Kulak as a spin-out from the laboratory of &#x27;leading proteomics researcher Professor Matthias Mann&#x27; at the Max Planck Institute of Biochemistry.</span></li><li><span class="f-claim">Dramatic workflow time-reduction as core value proposition</span><span class="f-ev">The iST kit replaces workflows previously requiring many reagents and 48 hours with a single kit completed in a 2-hour window, versus a standard ~44-hour proteomics sample-prep process.</span></li><li><span class="f-claim">Flexible business models spanning research kits to CRO services</span><span class="f-ev">For P2-iST Plasma, &#x27;flexible business models are available, from research-use kits to dedicated CRO services,&#x27; allowing PreOmics to serve both academic and biopharma/clinical research customers.</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Design Proteins.1&#x27;s single-molecule detection platform to be compatible/plug-in with widely used lab instrumentation (e.g., existing mass-spec, qPCR, or sequencing platforms) the way PreOmics engineered kits for the Agilent Bravo, so early adopters don&#x27;t need to replace their existing infrastructure.</li><li>Pursue a strategic corporate investor from the instrumentation or diagnostics space (analogous to Bruker) rather than only financial VCs, to secure both capital and a built-in global commercial/distribution channel for later clinical expansion.</li><li>Lead marketing messaging with a concrete, quantifiable workflow improvement (e.g., &#x27;10x faster than standard biomarker detection&#x27; or &#x27;nanogram-to-single-molecule sensitivity in X minutes&#x27;) just as PreOmics quantified time savings (44 hrs -&gt; 2 hrs) as its core value proposition.</li><li>Offer tiered commercial models early — research-use kits/reagents for academic labs plus a fee-for-service (CRO-style) offering for biopharma/oncology customers — to generate revenue and real-world validation data ahead of regulatory submissions.</li><li>Leverage the VTT academic/spin-out pedigree explicitly in messaging and investor materials, the way PreOmics highlighted its origin in Prof. Matthias Mann&#x27;s lab, to build scientific credibility with early adopters and investors.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Launch first as a research-use-only (RUO) tool for oncology/neurology/immunology biomarker discovery labs, mirroring PreOmics&#x27; RUO kit launch before any clinical diagnostic ambitions.</li><li>Seek a co-development/compatibility partnership with an established instrument or platform maker (e.g., a mass-spec, NGS, or protein-analysis instrument company) to embed Proteins.1&#x27;s chemistry into existing workflows, as PreOmics did with Agilent&#x27;s Bravo.</li><li>Target a strategic investment/majority-stake deal with a large diagnostics or instrumentation company once market traction is proven, using this as a growth and global-distribution accelerator (the Bruker precedent), rather than relying solely on traditional VC rounds.</li><li>Build a CRO/service arm alongside kit sales to generate near-term revenue and real-world data while regulated clinical-diagnostic development and approval proceeds in parallel.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow the PreOmics playbook: launch Proteins.1&#x27;s ultra-sensitive detection platform first as a research-use tool designed to integrate with existing lab instrumentation, build credibility from its VTT deep-tech/academic origin, and pursue a strategic partnership or investment from an established instrumentation/diagnostics company (as Bruker did for PreOmics) to fund scale-up and gain global commercial reach. Use a flexible commercial model - RUO kits plus CRO-style services - to generate revenue and validation data on the way toward regulated clinical diagnostics.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://www.preomics.com/products/agilent" rel="noopener">www.preomics.com</a> · <a href="https://www.preomics.com/products/ist" rel="noopener">www.preomics.com</a> · <a href="https://www.preomics.com/video/pepsep-all-you-need-to-know" rel="noopener">www.preomics.com</a> · <a href="https://www.preomics.com/products/app96" rel="noopener">www.preomics.com</a> · <a href="https://clinicaltrials.gov/study/NCT07286539" rel="noopener">clinicaltrials.gov</a> · <a href="https://www.bruker.com/fr/news-and-events/news/2022/bruker-expands-proteomics-strategy-with-preomics.html" rel="noopener">www.bruker.com</a> · <a href="https://www.izb-online.de/en/mediathek/pressrelease/press-izb-martinsried/preomics-receives-euro-135-million-from-bruker-corporation-in-series-b-financing-round/" rel="noopener">www.izb-online.de</a></footer>
+  </article>  <article class="brief" id="c-refeyn">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Refeyn</h3>
+        <span class="mono meta">United Kingdom · mass photometry</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-high">high confidence</span>
+        <a class="home mono" href="https://refeyn.com/" rel="noopener">refeyn.com</a>
+      </div>
+    </header>
+    <p class="ctx">This company develops mass photometry instruments that measure the mass of single biomolecules in solution in their native state without labels. Their systems are used for characterizing proteins, nucleic acids, AAVs, antibodies, VLPs, and membrane proteins.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> Mass photometry measures the light scattered by individual particles landing on a measurement surface; this scattered light interferes with light reflected by the surface, and the interference signal scales linearly with the molecule&#x27;s mass, enabling single-molecule counting and mass measurement.</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name">Gerry Mackay
+          <span class="l-role">CEO</span></p>
+        <p class="l-bg">Brings more than thirty years of leadership experience in the Biopharmaceutical and Life Science industries; most recently a member of the Sartorius Executive Board and Head of their Lab Division; previously CEO of BioOutsource (a contract research organisation sold to Sartorius in 2015); also held executive positions running global operations for Millipore and Entegris across Europe, the US and Asia.</p>
+        <p class="l-why"><span class="k">Why worth studying</span> Refeyn is a strong role model for Proteins.1 because it is a university spinout (Oxford, 2018) built on a genuinely novel, label-free single-molecule physics-based measurement technology (mass photometry) that it successfully commercialized first into the research-use market across multiple &#x27;omics&#x27; (proteins, nucleic acids, viral vectors), before expanding into quality-control/manufacturing applications - a very close analog to Proteins.1&#x27;s own physics-based, enzyme-free, multi-omic single-molecule platform and its stated research-first, clinical-later roadmap.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Recruited an experienced life-sciences-tools CEO to professionalize commercialization</span><span class="f-ev">Gerry Mackay, our CEO, brings more than thirty years of leadership experience in the Biopharmaceutical and Life Science industries to Refeyn... Most recently he was a member of the Sartorius Executive Board and Head of their Lab Division.</span></li><li><span class="f-claim">Anchored technology credibility through a named academic co-founder/scientific authority and seminal publication</span><span class="f-ev">Philipp Kukura... is the founder of Refeyn Ltd... Seminal paper in Science by Kukura lab, demonstrating mass photometry; Refeyn spun out of the University of Oxford.</span></li><li><span class="f-claim">Built a staged product line (TwoMP, SamuxMP, MyMass, automated versions) to serve different budgets/applications rather than one-size-fits-all</span><span class="f-ev">We offer a range of mass photometers to suit different applications and budgets. Find the perfect instrument for your lab.</span></li><li><span class="f-claim">Developed application-specific software modules (StreamlineMP, Antibody Stability Module) to convert a general platform into workflow-specific, high-value tools for biopharma QC</span><span class="f-ev">Cutting the analysis time of antibody data by 80% or more, this new StreamlineMP module&#x27;s automated data analysis complements the high speed, resolution and sensitivity of mass photometry... becoming an essential tool for in-process purity and stability analysis for therapeutic antibodies.</span></li><li><span class="f-claim">Secured staged funding from seed rounds, grants, and a Series A/B plus strategic investors (Northpond Ventures, Horizons Ventures, Foresight Group) totaling $115M</span><span class="f-ev">Refeyn has raised $115M... Investors: Foresight Group, Horizons Ventures, Northpond Ventures, Innovate UK, and Royal Society of Chemistry.</span></li><li><span class="f-claim">Validated technology through direct benchmarking against legacy gold-standard methods (AUC, cryoTEM, SEC) with named industrial partners</span><span class="f-ev">ABL Europe: &#x27;We&#x27;re generating data to compare mass photometry with gold standards like AUC and cryoTEM. Early indications show that it&#x27;s much quicker and equally accurate... It&#x27;s a game changer in AAV characterization, for us as well as our clients.&#x27; — Quentin Bazot.</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Launch first into research-use applications (oncology, neurology, immunology biomarker discovery) with a flagship benchtop instrument, mirroring Refeyn&#x27;s TwoMP launch strategy, before pursuing regulated diagnostics.</li><li>Develop application-specific software/analysis modules (akin to StreamlineMP&#x27;s Antibody Stability Module) tailored to each biomarker class (DNA, RNA, protein) to reduce analysis time and standardize workflows for early adopter labs.</li><li>Publish benchmarking studies directly comparing Proteins.1&#x27;s platform against existing gold-standard single-molecule/protein detection methods (e.g., Simoa, mass spectrometry, ELISA) with named industry or CRO partners, as Refeyn did with ABL Europe versus AUC/cryoTEM.</li><li>Recruit a commercially experienced life-sciences-tools CEO or COO with a track record scaling instrument companies (e.g., from Sartorius, Danaher, Millipore-type backgrounds) to lead go-to-market once the core science is validated.</li><li>Offer tiered instrument/software configurations (entry-level vs. automated high-throughput) to capture both academic and pharma QC customers from day one, as Refeyn did with TwoMP/TwoMP Auto and SamuxMP/SamuxMP Auto.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Follow a university-spinout-to-instrument-company path: leverage VTT&#x27;s foundational IP and academic credibility (as Refeyn leveraged Oxford/Kukura lab) to build initial scientific trust before commercial scaling.</li><li>Target early adopters among academic core facilities and CROs performing biomarker/protein characterization, then expand into pharma QC/manufacturing use cases (as Refeyn moved from academic protein characterization into AAV/antibody GMP QC).</li><li>Pursue non-dilutive grant funding (e.g., Innovate UK-style or EU/Horizon equivalents) alongside seed and Series A rounds to extend runway while building initial commercial traction, mirroring Refeyn&#x27;s grant-seed-Series A/B funding sequence.</li><li>Build strategic relationships with CROs or pharma partners (like Refeyn&#x27;s ABL Europe relationship) to generate public benchmarking data that builds market credibility ahead of regulated clinical diagnostics expansion.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Proteins.1 should follow Refeyn&#x27;s precedent: commercialize first as a research-use instrument/platform company, anchored in strong academic origin and published validation, targeting core biomarker research applications (oncology, neurology, immunology) before regulated diagnostics. Build tiered instrument and software offerings (as with TwoMP/SamuxMP and StreamlineMP modules) to serve both academic and eventual GMP/QC customers, fund growth via a grant-plus-seed-plus-Series-A/B path, and validate credibility through named benchmarking partnerships against legacy gold-standard methods before scaling commercially with an experienced life-sciences-tools executive at the helm.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://refeyn.com/about-mass-photometry" rel="noopener">refeyn.com</a> · <a href="https://refeyn.com/" rel="noopener">refeyn.com</a> · <a href="https://refeyn.com/post/streamlinemp-platform-to-speed-up-key-bioanalytical-workflows" rel="noopener">refeyn.com</a> · <a href="https://www.iptonline.com/articles/refeyn-launches-software-platform-to-automate-mass-photometry-analysis-workflows" rel="noopener">www.iptonline.com</a> · <a href="https://refeyn.com/twomp" rel="noopener">refeyn.com</a> · <a href="https://refeyn.com/about-us" rel="noopener">refeyn.com</a> · <a href="https://pitchbook.com/profiles/company/232310-98" rel="noopener">pitchbook.com</a></footer>
+  </article>  <article class="brief" id="c-depixus">
+    <header class="brief-h">
+      <div class="brief-id">
+        <h3>Depixus</h3>
+        <span class="mono meta">France · single-molecule detection / digital assay</span>
+      </div>
+      <div class="brief-links">
+        <span class="chip chip-medium">medium confidence</span>
+        <a class="home mono" href="https://depixus.com/" rel="noopener">depixus.com</a>
+      </div>
+    </header>
+    <p class="ctx">Depixus develops the MAGNA One platform, which uses magnetic force spectroscopy to provide real-time views of thousands of individual biomolecular interactions happening in parallel.</p><p class="ctx ctx-tech"><span class="k">Mechanism</span> magnetic force spectroscopy</p>
+
+    <section class="blk">
+      <span class="eyebrow">The leader to study</span>
+      <div class="leader">
+        <p class="l-name"><span class="none">Not named in the collected sources.</span>
+          </p>
+        
+        <p class="l-why"><span class="k">Why worth studying</span> Depixus is a deep-tech life-science tools spinout (academic founders Vincent Croquette and David Bensimon) that took a decades-old, lab-only biophysics technique (magnetic force spectroscopy) and engineered it into a scalable, user-friendly commercial instrument (MAGNA One). Like Proteins.1, it is a physics-based, single-molecule platform (no reliance on enzymatic amplification for detection) competing against an entrenched bulk-average incumbent method (SPR), targeting research-use applications in oncology-adjacent drug discovery (target validation, hit-to-lead, mechanism of action) before any regulated/clinical positioning. Its 13-year journey from 2012 founding through grants, accelerators, seed and Series A funding to a 57-person commercial-stage company with patents and named investors offers a concrete precedent for translating single-molecule physics IP into a go-to-market life-science tools business.</p>
+      </div>
+    </section>
+
+    <section class="blk">
+      <span class="eyebrow">What made them succeed</span>
+      <ul class="factors"><li><span class="f-claim">Academic founder credibility anchored in foundational MFS literature</span><span class="f-ev">Research by Depixus&#x27; academic founders Vincent Croquette and David Bensimon and their teams has revealed critical insights into the dynamics and actions of helicases, polymerases, and topoisomerases.</span></li><li><span class="f-claim">Staged non-dilutive and dilutive funding progression (accelerator -&gt; seed -&gt; grant -&gt; Series A -&gt; later-stage VC)</span><span class="f-ev">Funding history: Accelerator/Incubator (2013), Seed Round $7.2M (2016), Grant (2019), Accelerator/Incubator (2020), Series A (2021), Later Stage VC (2024), raised $41.8M total to date.</span></li><li><span class="f-claim">Backing from specialist life-science/biotech investors and public innovation funding bodies</span><span class="f-ev">Investors include Bpifrance, Casdin Capital, Lansdowne Partners, European Innovation Council, and Horizon 2020.</span></li><li><span class="f-claim">Explicit head-to-head positioning against the dominant incumbent method (SPR/Biacore) with a published technical comparison to win over pharma/academic buyers</span><span class="f-ev">&#x27;Comparing Depixus MAGNA One and SPR for analyzing protein-protein interactions&#x27; article explains how MAGNA One delivers single-molecule insights at scale unlike SPR&#x27;s bulk-average data.</span></li><li><span class="f-claim">Patent-protected proprietary hardware innovations (patterned flow cell, TIR bead tracking, pixel-bead mapping) enabling scale/throughput claims</span><span class="f-ev">Patent EP-4784794-A1 &#x27;Device for determining molecular interactions&#x27; (filed 21-Aug-2023) and description of four core patented innovations enabling 35,000-plex arrays.</span></li><li><span class="f-claim">Focused initial go-to-market on research-use applications in drug discovery (target validation, hit-to-lead, lead optimization) rather than clinical diagnostics</span><span class="f-ev">Applications of Depixus MAGNA One in drug development: &#x27;inform hit-to-lead selection and interrogate mechanisms of action, accelerating the development of novel drugs.&#x27;</span></li></ul>
+    </section>
+
+    <section class="blk rec">
+      <span class="eyebrow">For Proteins.1</span>
+      <div class="rec-cols">
+        <div><span class="k">Applications to consider</span><ul class="sugg"><li>Publish a direct technical comparison piece (like the MAGNA One vs SPR article) positioning Proteins.1&#x27;s enzyme-free single-molecule platform against the dominant incumbent (e.g., ELISA, mass spec, or Olink/Simoa) to educate researchers on where it outperforms bulk-average methods for rare/low-abundance biomarkers.</li><li>Publish a direct technical comparison piece (like the MAGNA One vs SPR article) positioning Proteins.1&#x27;s enzyme-free single-molecule platform against the dominant incumbent (e.g., ELISA, mass spec, or Olink/Simoa) to educate researchers on where it outperforms bulk-average methods for rare/low-abundance biomarkers.</li><li>Seek non-dilutive grant funding (EU/national deep-tech programs analogous to Horizon 2020/Bpifrance/EIC) alongside seed VC to extend runway before a Series A, mirroring Depixus&#x27; funding sequence.</li><li>File and disclose core hardware/detection patents early (as Depixus did around its flow-cell and bead-tracking innovations) to build defensible IP that can be cited in investor and customer materials.</li><li>Launch first in academic and pharma research-use markets (target validation, biomarker discovery in oncology/neurology/immunology) before pursuing regulated clinical diagnostics, using published application notes to build a scientific credibility base.</li><li>Recruit or highlight scientific co-founders with deep domain publication records (as Depixus did with Croquette and Bensimon) to lend technical credibility to marketing and fundraising materials.</li></ul></div>
+        <div><span class="k">Market-route moves</span><ul class="sugg"><li>Route to market: position first as a life-science research tools instrument sold to pharma/biotech and academic labs for target validation and biomarker discovery, generating revenue and reference customers before attempting regulated diagnostics, as Depixus has done (still &#x27;Generating Revenue&#x27; status at Series A/B stage without a diagnostics pivot yet).</li><li>Build investor syndicate mixing specialist biotech VC (like Casdin Capital), local sovereign/innovation funds (like Bpifrance), and asset managers (like Lansdowne Partners) to support a capital-intensive hardware instrument business through multiple funding rounds.</li><li>Use content marketing (technical blog articles explaining the underlying physics and comparing to incumbents) as a lead-generation and credibility-building channel targeted at pharma R&amp;D and academic core facilities.</li></ul></div>
+      </div>
+      <div class="route"><span class="k">Suggested sequence for Proteins.1</span><p>Follow Depixus&#x27; precedent: first establish scientific credibility around the founders&#x27; academic depth in the underlying physics, then commercialize into research-use markets (pharma target validation, academic biomarker discovery) with clear head-to-head comparisons against incumbent bulk methods. Fund the capital-intensive hardware/instrument development through a mixed sequence of non-dilutive grants, accelerators, and staged VC rounds from specialist life-science and sovereign investors, protecting core detection innovations with patents along the way. Only after building a research-use revenue base and reference customers should Proteins.1 consider a move toward regulated clinical diagnostics, mirroring Depixus&#x27; still research-tools-focused, revenue-generating trajectory 13 years post-founding.</p></div>
+    </section>
+
+    <footer class="brief-f mono">Sources · <a href="https://depixus.com/" rel="noopener">depixus.com</a> · <a href="https://depixus.com/comparing-depixus-magna-one-and-spr-for-analyzing-protein-protein-interactions/" rel="noopener">depixus.com</a> · <a href="https://depixus.com/what-is-depixus-magna-one-and-how-does-it-work/" rel="noopener">depixus.com</a> · <a href="https://depixus.com/how-depixus-made-magnetic-force-spectroscopy-scalable-and-accessible/" rel="noopener">depixus.com</a> · <a href="https://depixus.com/company/" rel="noopener">depixus.com</a> · <a href="https://pitchbook.com/profiles/company/108052-66" rel="noopener">pitchbook.com</a></footer>
+  </article>
+
+<footer class="pg">
+  Generated 09 Sep 2026, 12:47 UTC from data/eu_competitors.db · answers 1) leader worth studying
+  2) what made them succeed 3) application &amp; market-route suggestions.
+  Questions 1–2 are drawn only from cited sources; question 3 is analytical guidance for Proteins.1.
+</footer>
+</div>
