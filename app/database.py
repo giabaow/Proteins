@@ -46,6 +46,41 @@ class CaseStudy(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+class DiscoveredCompany(Base):
+    """A company surfaced by the landscape discovery sweep (app/agent/discovery.py).
+
+    Keyed by registrable domain so repeated sweeps de-duplicate instead of piling
+    up rows. This is the raw census; promote the interesting ones to CaseStudy.
+    """
+    __tablename__ = "discovered_companies"
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String, default="")
+    domain = Column(String, unique=True, index=True, nullable=False)
+    homepage_url = Column(String, default="")
+    description = Column(Text, default="")           # best search snippet seen
+    category = Column(String, default="")            # seed bucket or "" when found organically
+    source_query = Column(String, default="")        # the query that first surfaced it
+    mention_count = Column(Integer, default=0)       # how many result rows pointed here
+    first_seen = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class DiscoveredArticle(Base):
+    """An article / filing / press item surfaced by the discovery sweep.
+
+    Keyed by normalised URL (no query string or fragment) for de-duplication.
+    """
+    __tablename__ = "discovered_articles"
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String, default="")
+    url = Column(String, unique=True, index=True, nullable=False)
+    domain = Column(String, default="", index=True)
+    snippet = Column(Text, default="")
+    source_query = Column(String, default="")
+    first_seen = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 class EvidenceRecord(Base):
     """One source-backed claim used to justify a map score or recommendation."""
     __tablename__ = "evidence_records"

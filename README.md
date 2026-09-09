@@ -36,10 +36,12 @@ app/
   database.py          SQLite models: Company, Opportunity
   schemas.py           Pydantic request/response models
   scoring.py            Opportunity Index formula + unit sanity-check helpers
+                        (DB also has: CaseStudy, EvidenceRecord, DiscoveredCompany, DiscoveredArticle)
   chroma_store.py        embedded ChromaDB wrapper (add_chunks / query_evidence)
   agent/
     tools.py             search_web, search_sec_filings, fetch_page_text, chunk_text
     pipeline.py           orchestrates: search -> fetch -> chunk -> store -> LLM-extract
+    discovery.py          landscape sweep: search -> classify company/article -> de-dupe -> store
   routers/
     opportunities.py       all /api/* endpoints
 ```
@@ -49,6 +51,9 @@ app/
 | Method | Path | What it does |
 |---|---|---|
 | POST | `/api/research` | Runs the agent for one company: `{"company_name": "Quanterix", "query_hint": "first customers, first application"}` |
+| POST | `/api/discover` | Sweeps the web for every company/article in the Proteins.1 landscape (single-molecule / ultra-sensitive protein diagnostics), classifies and de-dupes them into SQLite. Body is optional: `{"extra_terms": [...], "per_query": 8, "max_queries": 5}`. Each query ≈ 1 Serper credit; omit `max_queries` for the full ~70-query sweep. |
+| GET | `/api/discovered-companies` | The company census, most-mentioned first. Optional `?category=` filter (brief §8.4 buckets). |
+| GET | `/api/discovered-articles` | Discovered articles / filings / press items. Optional `?domain=` filter. |
 | GET | `/api/opportunity-map` | Returns all scored opportunities. Pass `w_unmet_need`, `w_sensitivity_gain`, `w_market`, `w_regulatory_burden` as query params to re-score live from the UI sliders. |
 | POST | `/api/opportunities` | Manually add/edit one opportunity row (disease area, scores 0-10, source_url, rationale) |
 | POST | `/api/evidence` | `{"query": "how did Quanterix get first customers", "company": "Quanterix"}` — semantic search over the raw chunks, for the "click a point, see the source" UI interaction |

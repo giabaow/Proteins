@@ -3,10 +3,20 @@ from sqlalchemy.orm import Session
 
 import json
 
-from app.database import CaseStudy, EvidenceRecord, get_db, Opportunity
+from app.database import (
+    CaseStudy,
+    DiscoveredArticle,
+    DiscoveredCompany,
+    EvidenceRecord,
+    get_db,
+    Opportunity,
+)
 from app.schemas import (
     CaseStudyIn,
     CaseStudyOut,
+    DiscoverRequest,
+    DiscoveredArticleOut,
+    DiscoveredCompanyOut,
     EvidenceRecordIn,
     EvidenceRecordOut,
     EvidenceQuery,
@@ -17,6 +27,7 @@ from app.schemas import (
 )
 from app.scoring import opportunity_index
 from app.chroma_store import query_evidence
+from app.agent.discovery import discover
 from app.agent.pipeline import research_case_study, research_company
 
 router = APIRouter(prefix="/api", tags=["opportunities"])
@@ -188,3 +199,61 @@ def list_evidence_records(opportunity_id: int | None = None, company_name: str |
 def get_evidence(payload: EvidenceQuery):
     """Frontend calls this when the user clicks a point on the map, to show sourced text."""
     return query_evidence(payload.query, payload.company, payload.n_results)
+
+
+def _discovered_company_out(row: DiscoveredCompany) -> DiscoveredCompanyOut:
+    return DiscoveredCompanyOut(
+        id=row.id,
+        name=row.name or "",
+        domain=row.domain,
+        homepage_url=row.homepage_url or "",
+        description=row.description or "",
+        category=row.category or "",
+        source_query=row.source_query or "",
+        mention_count=row.mention_count or 0,
+    )
+
+
+def _discovered_article_out(row: DiscoveredArticle) -> DiscoveredArticleOut:
+    return DiscoveredArticleOut(
+        id=row.id,
+        title=row.title or "",
+        url=row.url,
+        domain=row.domain or "",
+        snippet=row.snippet or "",
+        source_query=row.source_query or "",
+    )
+
+
+@router.post("/discover")
+def discover_landscape(payload: DiscoverRequest, db: Session = Depends(get_db)):
+    """Sweep the web for companies and articles across the Proteins.1 landscape,
+    de-duplicate, and persist them. Each query costs ~1 Serper credit - pass
+    max_queries to keep a run small."""
+    try:
+        return discover(
+            db,
+            extra_terms=payload.extra_terms,
+            per_query=payload.per_query,
+            max_queries=payload.max_queries,
+        )
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/discovered-companies", response_model=list[DiscoveredCompanyOut])
+def list_discovered_companies(category: str | None = None, db: Session = Depends(get_db)):
+    query = db.query(DiscoveredCompany)
+    if category:
+        query = query.filter(DiscoveredCompany.category == category)
+    rows = query.order_by(DiscoveredCompany.mention_count.desc()).all()
+    return [_discovered_company_out(row) for row in rows]
+
+
+@router.get("/discovered-articles", response_model=list[DiscoveredArticleOut])
+def list_discovered_articles(domain: str | None = None, db: Session = Depends(get_db)):
+    query = db.query(DiscoveredArticle)
+    if domain:
+        query = query.filter(DiscoveredArticle.domain == domain)
+    rows = query.order_by(DiscoveredArticle.first_seen.desc()).all()
+    return [_discovered_article_out(row) for row in rows]
