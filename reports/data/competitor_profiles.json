@@ -698,5 +698,128 @@
       "https://clinicaltrials.gov/study/NCT07286539"
     ],
     "created_at": "2026-09-09 12:45:46.190350"
+  },
+  {
+    "id": 11,
+    "company_name": "Olink",
+    "domain": "olink.com",
+    "country": "Sweden",
+    "what_they_do": "Olink provides proteomics technology aimed at helping researchers draw connections between protein signals, disease mechanisms, biomarkers, and potential therapeutic responses.",
+    "technology_approach": "Proximity Extension Assay (PEA): two antibodies attached to partially complementary DNA barcodes bind the same target protein, bringing the barcodes close enough to anneal, enabling DNA extension and amplification, with the resulting double-stranded DNA sequence detected by qPCR or NGS.",
+    "detection_modality": "protein",
+    "sensitivity_claim": "Detection sensitivity reaches fg/mL levels, allowing the identification of hundreds to thousands of low-abundance, disease-related proteins at the omics level.",
+    "sample_requirement": "can use as little as 1 µl of sample input",
+    "target_applications": [
+      "inflammation",
+      "cell regulation",
+      "immune responses",
+      "oncology",
+      "drug target discovery",
+      "translational medicine",
+      "clinical trials",
+      "population-scale genotyping studies",
+      "biomarker screening",
+      "large-cohort translational studies",
+      "Cytokine profiling in immunology research",
+      "Monitoring perturbations in experimental models (cell culture, animal models, organoids)",
+      "Translational discovery in population and cohort studies",
+      "Biomarker discovery in a prediabetes/type 2 diabetes cohort (Białystok PLUS)"
+    ],
+    "stage": "other stated",
+    "funding_summary": "",
+    "key_partnerships": [
+      "GENEWIZ"
+    ],
+    "differentiators": [
+      "enables lower-plex proteomic analysis with the Target 48 and Target 96 panels which quantify 48 and 96 proteins, respectively",
+      "ultra-high-plex assays for simultaneous detection of 3,000 proteins and above",
+      "compatible with numerous sample types, including a variety of bodily fluids",
+      "can use as little as 1 µl of sample input",
+      "high specificity of the platform",
+      "allows identification of low abundant circulating proteins with high-throughput resolution",
+      "PEA combines specificity and scalability, enabling accurate protein biomarker detection without cross-reactivity",
+      "provides quality data on a single platform for comprehensive proteomic analysis",
+      "analyzes thousands of proteins simultaneously with exceptional specificity and scalability",
+      "Can simultaneously detect 96 proteins (92 target proteins and 4 internal controls) in a single sample well using just 1 µL of fluid via microfluidic qPCR",
+      "Can detect up to 5400+ proteins in a single sample well using 8 µL of fluid via NGS readout",
+      "Dynamic range spans 10 logs, covering high, medium, and low-abundance proteins",
+      "Automated sample processing for accuracy and reproducibility",
+      "Compatible with diverse sample types including serum, various plasmas, tissue lysates, cell culture media, cerebrospinal fluid, plaque lysates, urine, cell lysates, microvesicles/exosomes, interstitial fluid, microdialysis fluid, fine-needle biopsy samples, dried blood spots, synovial fluid, saliva, and aqueous humor",
+      "Unique oligonucleotide pairs on each antibody pair prevent cross-reactivity at the immunological level during multiplex detection",
+      "Dual-recognition antibody system delivers high specificity and low background",
+      "Broad matrix compatibility: works with plasma, serum, CSF, tissue lysates, etc.",
+      "Multiplexing capability ranging from 48-plex/96-plex panels up to thousands of proteins in the Reveal/Explore series",
+      "Low sample volume requirement (often only 1-6 µL per run for large panels; ≈4 µL plasma or serum for Reveal)",
+      "Consistent relative quantification across different batches and sample matrices, with correlation coefficients ≥ 0.93 after normalization",
+      "Strong linearity, precision, and accuracy demonstrated with NIST SRM-1950 plasma standard and IL-10/VEGF-D spike-ins (R² ≈ 0.922–0.953)"
+    ],
+    "source_urls": [
+      "https://olink.com/",
+      "https://blog.genewiz.com/how-olink-technology-is-revolutionizing-proteomics-and-multiomics",
+      "https://olink.com/products/olink-explore-series",
+      "https://www.metwarebio.com/olink-proteomics-explained-advantages-vs-ms-methods/",
+      "https://olinkpanel.creative-proteomics.com/knowledge/olink-proteomics-clinical-research.html",
+      "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002104204&type=S-1"
+    ],
+    "created_at": "2026-09-09 12:47:53.975169"
+  },
+  {
+    "id": 12,
+    "company_name": "Genomill Health",
+    "domain": "genomill.com",
+    "country": "Finland",
+    "what_they_do": "Geno1® develops technologies aimed at unlocking the potential of NGS applications for everyday healthcare, including early cancer detection and MRD monitoring.",
+    "technology_approach": "PCR-free, early indexing sequencing workflow using proprietary Bridge Capture™ and Nicking Loop™ technologies to minimize sample cross-contamination and eliminate cleanroom requirements.",
+    "detection_modality": "DNA",
+    "sensitivity_claim": "Extremely Sensitive - Detects rare mutations, enabling early cancer detection and MRD monitoring",
+    "sample_requirement": "works from just a few nanograms of DNA",
+    "target_applications": [
+      "early cancer detection",
+      "MRD monitoring",
+      "Treatment selection",
+      "Minimal residual disease detection",
+      "Early detection",
+      "oncology",
+      "colorectal cancer",
+      "ctDNA analysis"
+    ],
+    "stage": "clinical",
+    "funding_summary": "",
+    "key_partnerships": [
+      "University of Helsinki"
+    ],
+    "differentiators": [
+      "Rapid, Simple & Cross-platform: streamlined for modern DNA sequencing, with minimal hands-on and fast turn-around time",
+      "Extremely Sensitive: detects rare mutations, enabling early cancer detection and MRD monitoring",
+      "Cost-efficient & Decentralized: reduces costs by over 50%, making NGS accessible and affordable for all",
+      "PCR-free & Early indexing: ensures ultra-low sample cross-contamination, eliminating costly cleanroom requirements",
+      "Utilizes off-the-shelf reagents to minimize test costs",
+      "Optimizes use of sequencing capacity for cost-efficiency",
+      "Portable and kittable workflow design for distributed laboratory settings",
+      "Compatible with any sequencing platform",
+      "Supports panels of any size for pan-cancer detection",
+      "Pan-cancer panel detects up to 23,000 mutations relevant for treatment selection",
+      "Tumor-naive tool for monitoring cancer recurrence (MRD)",
+      "Cancer-agnostic tool for detecting first mutational signatures of an emerging tumor",
+      "Portable: Deploy anywhere, on any sequencing platform, free of infrastructure constraints.",
+      "Rapid: Streamlined for modern DNA sequencing platforms, optimized for simplicity.",
+      "PCR-free: No need for PCR cleanrooms and associated infrastructure, no contamination.",
+      "Automated: Runs on simple liquid handling platforms with minimal hands-on effort.",
+      "Cost-efficient: Cut costs by at least 50% compared to market-leading tests.",
+      "High fidelity: Minimal processing translates to minimal information distortion.",
+      "delivers results in ~4 hours",
+      "works from just a few nanograms of DNA",
+      "enables early sample pooling",
+      "scales to any panel size",
+      "showed strong concordance with established methods",
+      "uncovered additional oncogenic mutations in pilot colorectal cancer samples"
+    ],
+    "source_urls": [
+      "https://genomill.com/",
+      "https://genomill.com/oncology/",
+      "https://genomill.com/geno1/",
+      "https://genomill.com/genomill-health-eyes-clinical-adoption-of-targeted-ngs-technology/"
+    ],
+    "created_at": "2026-09-09 12:49:25.461225"
   }
 ]

@@ -594,5 +594,61 @@
       "https://www.izb-online.de/en/mediathek/pressrelease/press-izb-martinsried/preomics-receives-euro-135-million-from-bruker-corporation-in-series-b-financing-round/"
     ],
     "created_at": "2026-09-09 12:46:35.525042"
+  },
+  {
+    "id": 11,
+    "company_name": "Olink",
+    "domain": "olink.com",
+    "country": "Sweden",
+    "leader_name": "",
+    "leader_role": "",
+    "leader_background": "",
+    "why_worth_studying": "Olink is a directly comparable precedent for Proteins.1: a physics/chemistry-based, non-mass-spec protein detection platform (Proximity Extension Assay) that achieves fg/mL sensitivity from microliter-scale samples, sold first into research (oncology, immunology, neurology-adjacent biomarker discovery) before any regulated clinical use, and successfully commercialized via tiered panel products, CRO/service partnerships, and ultimately a public offering.",
+    "success_factors": [
+      {
+        "factor": "Service-provider/CRO partnership to reach bench researchers (GENEWIZ)",
+        "evidence": "GENEWIZ recently launched a solution for protein biomarker detection and surveillance leveraging Olink's technology, discussed by GENEWIZ's Director of Strategic Alliances and Principal Scientist of Process Development."
+      },
+      {
+        "factor": "Tiered product strategy from low-plex to ultra-high-plex panels",
+        "evidence": "Olink PEA technology enables lower-plex proteomic analysis with the Target 48 and Target 96 panels... as well as ultra-high-plex assays for simultaneous detection of 3,000 proteins and above (Explore/Reveal series up to 5400+ proteins)."
+      },
+      {
+        "factor": "Rigorous analytical validation using reference standards to build researcher trust",
+        "evidence": "Researchers used the Olink Reveal platform to quantify ~1,000 proteins in a standard human plasma reference (NIST SRM-1950), adding recombinant IL-10 and VEGF-D spike-ins, confirming linearity (R² ~0.92-0.95), sensitivity, precision and accuracy."
+      },
+      {
+        "factor": "Large population/cohort studies as proof-of-concept for translational biomarker discovery",
+        "evidence": "In the Białystok PLUS cohort (~500 participants), the Olink Reveal panel measured nearly 1,000 proteins in plasma and correlated levels with HbA1c and glucose tolerance data to generate early metabolic-regulation hypotheses."
+      },
+      {
+        "factor": "Progression to public capital markets once platform and commercial traction were established",
+        "evidence": "SEC filings show Olink registering securities under Form S-1/S-1MEF filings (2026), indicating a public offering pathway following its research-market commercialization."
+      }
+    ],
+    "application_suggestions": [
+      "Launch with modest-plex 'starter' research panels (analogous to Olink's Target 48/96) for oncology, neurology and immunology labs before offering an ultra-high-plex 'Explore-style' whole-panel product, so customers can adopt at low cost and expand.",
+      "Partner with an established genomics/proteomics CRO or sequencing service provider (as Olink did with GENEWIZ) to bundle Proteins.1's enzyme-free amplification/readout into an existing customer channel rather than building direct sales from scratch.",
+      "Run and publish analytical validation studies against reference standards (e.g., NIST plasma reference materials, spike-in recovery experiments) early to establish credibility on sensitivity, linearity and reproducibility claims.",
+      "Seed adoption through a named large-cohort translational study (a 'Białystok PLUS' equivalent) in one of the target indications (oncology/neurology/immunology) to generate a flagship publication demonstrating biomarker discovery utility from small samples.",
+      "Design the platform to support both a targeted, DNA/RNA/protein multiplex research readout via qPCR-type instruments and a higher-plex NGS readout option, mirroring Olink's dual qPCR/NGS detection modality to serve both low- and high-throughput customer segments."
+    ],
+    "market_route_suggestions": [
+      "Enter via life-science research market only (biomarker discovery, drug target ID, translational research) exactly as Olink did, deferring regulated diagnostics until platform, panels and cohort data are mature.",
+      "Use a CRO/service-partner model (GENEWIZ-style) for initial revenue and market access before building a direct commercial/instrument-sales organization.",
+      "Pursue peer-reviewed validation publications and reference-standard benchmarking as the core marketing/evidence engine, rather than early regulatory submissions.",
+      "Plan a staged commercialization pathway toward eventual public financing (S-1 style) once research revenue, panel breadth and partnerships are established, using this as the long-term funding route rather than early strategic acquisition."
+    ],
+    "route_summary": "Follow Olink's staged playbook: first commercialize enzyme-free, ultra-sensitive multiplex detection purely for research use (oncology/neurology/immunology biomarker discovery) with tiered panels ranging from small targeted sets to ultra-high-plex offerings. Build credibility through rigorous analytical validation (reference standards, spike-ins) and a flagship large-cohort translational study, while using a CRO/service partnership (as with GENEWIZ) to reach researchers quickly. Only after this research-market traction and validation base is established should Proteins.1 consider moving toward regulated clinical diagnostics, potentially followed by a public financing event as Olink pursued via its S-1 filings.",
+    "confidence": "medium",
+    "source_urls": [
+      "https://olink.com/",
+      "https://blog.genewiz.com/how-olink-technology-is-revolutionizing-proteomics-and-multiomics",
+      "https://olink.com/products/olink-explore-series",
+      "https://www.metwarebio.com/olink-proteomics-explained-advantages-vs-ms-methods/",
+      "https://olinkpanel.creative-proteomics.com/knowledge/olink-proteomics-clinical-research.html",
+      "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002104204&type=S-1"
+    ],
+    "created_at": "2026-09-09 12:48:37.597588"
   }
 ]
