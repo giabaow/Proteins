@@ -71,6 +71,39 @@ class CompetitorProfile(Base):
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
+class LeaderInsight(Base):
+    """Per-competitor synthesis that answers the three study questions:
+      1. the leader worth studying (name / role / background - from sources)
+      2. what made them succeed (concrete, evidenced factors - from sources)
+      3. application + market-route suggestions FOR Proteins.1 (recommendation,
+         reasoned from this company's actual playbook)
+    List fields are JSON-encoded."""
+    __tablename__ = "leader_insights"
+
+    id = Column(Integer, primary_key=True)
+    company_name = Column(String, index=True, nullable=False)
+    domain = Column(String, default="")
+    country = Column(String, default="")
+
+    # Q1
+    leader_name = Column(String, default="")
+    leader_role = Column(String, default="")
+    leader_background = Column(Text, default="")
+    why_worth_studying = Column(Text, default="")
+
+    # Q2  -> JSON list of {"factor": ..., "evidence": ...}
+    success_factors = Column(Text, default="[]")
+
+    # Q3  -> JSON lists of strings + a prose sequence
+    application_suggestions = Column(Text, default="[]")
+    market_route_suggestions = Column(Text, default="[]")
+    route_summary = Column(Text, default="")
+
+    confidence = Column(String, default="")             # high / medium / low
+    source_urls = Column(Text, default="[]")
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 class DiscoveredArticle(Base):
     """A background article / paper / news item on the single-molecule /
     ultra-sensitive protein-detection field. Keyed by normalised URL."""

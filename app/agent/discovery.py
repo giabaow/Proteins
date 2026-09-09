@@ -44,22 +44,39 @@ TOPIC_QUERIES = [
     "photonic biosensor single molecule protein company Europe",
 ]
 
-# A few European companies confidently in this space, to anchor the sweep.
+# European companies confidently in or adjacent to this space, to anchor the
+# sweep. (name, country, homepage-domain). These are always stored as European
+# with their known country; the sweep then looks for more.
 SEED_COMPANIES = [
-    ("Olink", "Sweden"),
-    ("Refeyn", "United Kingdom"),
-    ("Oxford Nanopore Technologies", "United Kingdom"),
-    ("Fluidic Analytics", "United Kingdom"),
-    ("Depixus", "France"),
-    ("Biognosys", "Switzerland"),
-    ("Genomill Health", "Finland"),
-    ("NanoTemper Technologies", "Germany"),
-    ("Pixelgen Technologies", "Sweden"),
-    ("Sengenics", "United Kingdom"),
+    ("Olink", "Sweden", "olink.com"),
+    ("Refeyn", "United Kingdom", "refeyn.com"),
+    ("Oxford Nanopore Technologies", "United Kingdom", "nanoporetech.com"),
+    ("Fluidic Analytics", "United Kingdom", "fluidic.com"),
+    ("Depixus", "France", "depixus.com"),
+    ("Biognosys", "Switzerland", "biognosys.com"),
+    ("Genomill Health", "Finland", "genomill.com"),
+    ("NanoTemper Technologies", "Germany", "nanotempertech.com"),
+    ("Pixelgen Technologies", "Sweden", "pixelgen.com"),
+    ("Sengenics", "United Kingdom", "sengenics.com"),
+    ("Evosep", "Denmark", "evosep.com"),
+    ("PreOmics", "Germany", "preomics.com"),
+    ("Attomarker", "United Kingdom", "attomarker.com"),
+    ("Dynamic Biosensors", "Germany", "dynamic-biosensors.com"),
 ]
+SEED_DOMAIN_COUNTRY = {d: c for (_n, c, d) in SEED_COMPANIES}
 
 # Our own company - never store it as a competitor.
 SELF_DOMAINS = {"proteins1.com", "versilib.eu"}
+
+# Known non-European platform companies - drop regardless of what the snippet says.
+# (Olink is Swedish-founded/operated even though Thermo Fisher owns it - kept.)
+NON_EUROPEAN_DOMAINS = {
+    "quanterix.com", "quantum-si.com", "somalogic.com", "nautilus.bio", "alamarbio.com",
+    "seer.bio", "nomic.bio", "standardbio.com", "illumina.com", "bio-techne.com",
+    "bio-rad.com", "mesoscale.com", "creative-proteomics.com", "thermofisher.com",
+    "isoplexis.com", "abcam.com", "quantabio.com", "moleculardevices.com",
+    "metwarebio.com", "ptglab.com", "cusabio.com", "abclonal.com",
+}
 
 # --- geography -----------------------------------------------------------
 
@@ -103,7 +120,14 @@ _NON_EUROPEAN_HINTS = [
 
 
 def guess_country(domain: str, text: str) -> tuple[str, bool]:
-    """Return (country, is_european). country is "" when undetermined."""
+    """Return (country, is_european). country is "" when undetermined.
+
+    The field is US-dominated, so an unlocatable generic-TLD hit is treated as
+    non-European and dropped - the user wants EU-only. Anything on a European
+    ccTLD, or whose text names a European location, is kept.
+    """
+    if domain in NON_EUROPEAN_DOMAINS:
+        return "", False
     tld = domain.rsplit(".", 1)[-1]
     if tld in _CCTLD_COUNTRY:
         return _CCTLD_COUNTRY[tld], True
@@ -114,7 +138,7 @@ def guess_country(domain: str, text: str) -> tuple[str, bool]:
     for country, hints in _LOCATION_HINTS.items():
         if any(h in blob for h in hints):
             return country, True
-    return "", True  # undetermined - keep, let a human prune
+    return "", True  # generic TLD, no clear signal -> keep, country left blank for review
 
 
 # --- platform classification ------------------------------------------
@@ -148,13 +172,43 @@ PUBLISHER_DOMAINS = {
     "acs.org", "oup.com", "tandfonline.com", "researchgate.net", "semanticscholar.org",
     "rsc.org", "elifesciences.org", "plos.org", "plos.org",
     "sec.gov", "fda.gov", "clinicaltrials.gov", "cordis.europa.eu", "ec.europa.eu",
-    "fiercebiotech.com", "genomeweb.com", "labiotech.eu", "sifted.eu", "endpts.com",
-    "businesswire.com", "prnewswire.com", "globenewswire.com", "biospace.com", "360dx.com",
-    "insideprecisionmedicine.com", "drugtargetreview.com", "technologynetworks.com",
+    "europa.eu", "nih.gov", "nsf.gov", "cas.org",
+    "fiercebiotech.com", "genomeweb.com", "genengnews.com", "labiotech.eu", "sifted.eu",
+    "endpts.com", "biospace.com", "360dx.com", "insideprecisionmedicine.com",
+    "drugtargetreview.com", "technologynetworks.com", "news-medical.net", "azom.com",
+    "azolifesciences.com", "azonano.com", "selectscience.net", "the-scientist.com",
+    "chemistryworld.com", "european-biotechnology.com", "biopharma-reporter.com",
+    "clinicallab.com", "clpmag.com", "mlo-online.com", "drugdiscoverynews.com",
+    "businesswire.com", "prnewswire.com", "globenewswire.com", "eurekalert.org",
     "wikipedia.org", "linkedin.com", "substack.com", "medium.com", "crunchbase.com",
-    "pitchbook.com", "dealroom.co", "youtube.com", "twitter.com", "x.com", "reuters.com",
-    "bloomberg.com",
+    "pitchbook.com", "dealroom.co", "tracxn.com", "cbinsights.com", "globaldata.com",
+    "youtube.com", "twitter.com", "x.com", "facebook.com", "reuters.com", "bloomberg.com",
 }
+# Universities, research institutes, accelerators, startup directories, ecosystem
+# portals - not competitors. Matched as substrings of the registrable domain, plus
+# an explicit set.
+_INSTITUTION_MARKERS = (".edu", ".ac.", "uni-", "-uni.", "university", "universit",
+                        "-lab.", "institute", "institut", "fraunhofer", "mpg.de",
+                        "helmholtz", "cnrs", "inserm", "cea.", "vtt.fi", "sintef")
+_INSTITUTION_DOMAINS = {
+    "tudelft.nl", "ethz.ch", "epfl.ch", "kth.se", "ki.se", "lu.se", "uu.se", "oulu.fi",
+    "helsinki.fi", "aalto.fi", "ox.ac.uk", "cam.ac.uk", "imperial.ac.uk", "ucl.ac.uk",
+    "mpg.de", "max-planck.de", "dtu.dk", "ku.dk", "ntnu.no", "trinitydublin.ie", "tcd.ie",
+    "venture-leaders.ch", "thehub.io", "arcticstartup.com", "eu-startups.com",
+    "nanoinitiative-bayern.de", "sciencebusiness.net", "startupticker.ch", "f6s.com",
+    "biocom.de", "swismedtech.ch", "medtech-zwo.de", "wittenstein.de",
+    "startupblink.com", "marketresearchfuture.com", "grandviewresearch.com",
+    "marketsandmarkets.com", "mordorintelligence.com", "researchandmarkets.com",
+    "fortunebusinessinsights.com", "globenewswire.com", "openpr.com", "instagram.com",
+    "glassdoor.com", "indeed.com", "zoominfo.com", "rocketreach.co", "leadiq.com",
+    "apollo.io", "goodwinlaw.com", "biospectrumasia.com", "labmate-online.com",
+}
+
+
+def is_institution(domain: str) -> bool:
+    return domain in _INSTITUTION_DOMAINS or any(m in domain for m in _INSTITUTION_MARKERS)
+
+
 _NEWS_PATH_HINTS = (
     "/news", "/press", "/press-release", "/newsroom", "/media", "/article", "/articles",
     "/blog", "/insights", "/publication", "/resources/",
@@ -179,8 +233,9 @@ def normalize_url(url: str) -> str:
 
 
 def classify(url: str) -> str:
+    domain = registrable_domain(url)
     path = urlsplit(url).path.lower()
-    if registrable_domain(url) in PUBLISHER_DOMAINS:
+    if domain in PUBLISHER_DOMAINS or is_institution(domain):
         return "article"
     if path.endswith((".pdf", ".doc", ".docx")):
         return "article"
@@ -189,7 +244,30 @@ def classify(url: str) -> str:
     return "company"
 
 
+# Clean display names for domains the derivation mangles.
+CANONICAL_NAMES = {
+    "nanoporetech.com": "Oxford Nanopore Technologies",
+    "refeyn.com": "Refeyn",
+    "olink.com": "Olink",
+    "fluidic.com": "Fluidic Analytics",
+    "fluidicanalytics.com": "Fluidic Analytics",
+    "depixus.com": "Depixus",
+    "biognosys.com": "Biognosys",
+    "genomill.com": "Genomill Health",
+    "nanotempertech.com": "NanoTemper Technologies",
+    "pixelgen.com": "Pixelgen Technologies",
+    "pixelgen.se": "Pixelgen Technologies",
+    "sengenics.com": "Sengenics",
+    "evosep.com": "Evosep",
+    "preomics.com": "PreOmics",
+    "attomarker.com": "Attomarker",
+    "dynamic-biosensors.com": "Dynamic Biosensors",
+}
+
+
 def company_name_from_domain(domain: str) -> str:
+    if domain in CANONICAL_NAMES:
+        return CANONICAL_NAMES[domain]
     stem = domain.rsplit(".", 1)[0].split(".")[-1]
     parts = re.split(r"[-_]", stem)
     return " ".join(p.upper() if len(p) <= 3 else p.capitalize() for p in parts if p)
@@ -199,8 +277,8 @@ def company_name_from_domain(domain: str) -> str:
 
 def _build_queries(extra_terms):
     queries = [(q, "") for q in TOPIC_QUERIES]
-    for name, _country in SEED_COMPANIES:
-        queries.append((f"{name} single molecule protein detection platform", "seed"))
+    for name, _country, _domain in SEED_COMPANIES:
+        queries.append((f"{name} protein detection technology platform", "seed"))
     queries += [(t, "user") for t in (extra_terms or [])]
     return queries
 
@@ -212,7 +290,8 @@ def discover(db: Session, extra_terms=None, per_query: int = 8, max_queries=None
 
     companies: dict[str, dict] = {}
     articles: dict[str, dict] = {}
-    dropped_non_eu = 0
+    dropped_non_eu: set[str] = set()
+    known = {d for (d,) in db.query(DiscoveredCompany.domain).all()}
 
     for query, _tag in queries:
         for hit in search_web(query, max_results=per_query):
@@ -227,10 +306,15 @@ def discover(db: Session, extra_terms=None, per_query: int = 8, max_queries=None
                 domain = registrable_domain(url)
                 if not domain or domain in SELF_DOMAINS:
                     continue
-                country, is_eu = guess_country(domain, text)
-                if not is_eu:
-                    dropped_non_eu += 1
-                    continue
+                if domain in SEED_DOMAIN_COUNTRY:
+                    country = SEED_DOMAIN_COUNTRY[domain]
+                elif domain not in companies and domain not in known:
+                    country, is_eu = guess_country(domain, text)
+                    if not is_eu:
+                        dropped_non_eu.add(domain)
+                        continue
+                else:
+                    country = ""
                 rec = companies.setdefault(domain, {
                     "name": company_name_from_domain(domain),
                     "domain": domain,
@@ -258,6 +342,14 @@ def discover(db: Session, extra_terms=None, per_query: int = 8, max_queries=None
                     "source_query": query,
                 })
 
+    # make sure every seed company is in the census even if the sweep missed its homepage
+    for name, country, domain in SEED_COMPANIES:
+        companies.setdefault(domain, {
+            "name": name, "domain": domain, "homepage_url": f"https://{domain}/",
+            "country": country, "platform_type": "", "description": "",
+            "source_query": "seed", "mentions": 0,
+        })
+
     new_companies, new_articles = _persist(db, companies, articles)
     return {
         "queries_run": len(queries),
@@ -265,7 +357,7 @@ def discover(db: Session, extra_terms=None, per_query: int = 8, max_queries=None
         "articles_found": len(articles),
         "new_companies": new_companies,
         "new_articles": new_articles,
-        "dropped_non_european": dropped_non_eu,
+        "dropped_non_european": len(dropped_non_eu),
         "companies": sorted(companies.values(), key=lambda r: -r["mentions"]),
         "articles": list(articles.values()),
     }

@@ -54,6 +54,33 @@ class CompetitorProfileOut(BaseModel):
     source_urls: list[str]
 
 
+class AnalyzeRequest(BaseModel):
+    company_name: str
+    urls: list[str] = []
+
+
+class SuccessFactor(BaseModel):
+    factor: str
+    evidence: str = ""
+
+
+class LeaderInsightOut(BaseModel):
+    id: int
+    company_name: str
+    domain: str
+    country: str
+    leader_name: str
+    leader_role: str
+    leader_background: str
+    why_worth_studying: str
+    success_factors: list[SuccessFactor]
+    application_suggestions: list[str]
+    market_route_suggestions: list[str]
+    route_summary: str
+    confidence: str
+    source_urls: list[str]
+
+
 class EvidenceQuery(BaseModel):
     query: str
     company: Optional[str] = None

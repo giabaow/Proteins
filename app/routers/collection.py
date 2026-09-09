@@ -3,18 +3,21 @@ import json
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import CompetitorProfile, DiscoveredArticle, DiscoveredCompany, get_db
+from app.database import CompetitorProfile, DiscoveredArticle, DiscoveredCompany, LeaderInsight, get_db
 from app.schemas import (
+    AnalyzeRequest,
     CompetitorProfileOut,
     DiscoverRequest,
     DiscoveredArticleOut,
     DiscoveredCompanyOut,
     EvidenceQuery,
+    LeaderInsightOut,
     ProfileRequest,
+    SuccessFactor,
 )
 from app.chroma_store import query_evidence
 from app.agent.discovery import discover
-from app.agent.pipeline import research_competitor
+from app.agent.pipeline import analyze_leader, research_competitor
 
 router = APIRouter(prefix="/api", tags=["collection"])
 
@@ -132,6 +135,52 @@ def list_competitors(country: str | None = None, db: Session = Depends(get_db)):
     if country:
         query = query.filter(CompetitorProfile.country == country)
     return [_profile_out(r) for r in query.order_by(CompetitorProfile.company_name).all()]
+
+
+def _insight_out(row: LeaderInsight) -> LeaderInsightOut:
+    raw_factors = _decode_list(row.success_factors)
+    factors = [
+        SuccessFactor(factor=f.get("factor", ""), evidence=f.get("evidence", ""))
+        for f in raw_factors if isinstance(f, dict) and f.get("factor")
+    ]
+    return LeaderInsightOut(
+        id=row.id,
+        company_name=row.company_name,
+        domain=row.domain or "",
+        country=row.country or "",
+        leader_name=row.leader_name or "",
+        leader_role=row.leader_role or "",
+        leader_background=row.leader_background or "",
+        why_worth_studying=row.why_worth_studying or "",
+        success_factors=factors,
+        application_suggestions=_decode_list(row.application_suggestions),
+        market_route_suggestions=_decode_list(row.market_route_suggestions),
+        route_summary=row.route_summary or "",
+        confidence=row.confidence or "",
+        source_urls=_decode_list(row.source_urls),
+    )
+
+
+@router.post("/analyze")
+def analyze_competitor_leader(payload: AnalyzeRequest, db: Session = Depends(get_db)):
+    """Answer, for one competitor: (1) the leader worth studying, (2) what made
+    them succeed, (3) application + market-route suggestions for Proteins.1.
+    Retrieves fresh leadership/strategy material, synthesises, and stores a
+    leader_insights row."""
+    try:
+        return analyze_leader(db, payload.company_name, payload.urls)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/insights", response_model=list[LeaderInsightOut])
+def list_insights(country: str | None = None, confidence: str | None = None, db: Session = Depends(get_db)):
+    query = db.query(LeaderInsight)
+    if country:
+        query = query.filter(LeaderInsight.country == country)
+    if confidence:
+        query = query.filter(LeaderInsight.confidence == confidence)
+    return [_insight_out(r) for r in query.order_by(LeaderInsight.company_name).all()]
 
 
 @router.post("/evidence")
