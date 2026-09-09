@@ -23,6 +23,10 @@ cp .env.example .env        # fill in ANTHROPIC_API_KEY
 docker compose up --build
 ```
 
+`search_web()` uses the **Serper.dev** Google Search API when `SERPER_API_KEY`
+is set (free tier: 2,500 one-time credits), and otherwise falls back to the
+no-key DuckDuckGo/Bing path.
+
 ## Folder layout
 
 ```

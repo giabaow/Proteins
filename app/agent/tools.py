@@ -23,8 +23,49 @@ HEADERS = {"User-Agent": "Mozilla/5.0 (compatible; ResearchAgent/1.0; hackathon 
 _splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
 
 
+def _search_serper(query: str, max_results: int) -> list[dict]:
+    """Serper.dev Google Search API - reliable, not rate-limit-prone, needs a key.
+
+    Free tier is 2,500 one-time credits (one credit per query); paid after that.
+    Returns [] (never raises) so callers fall through to the no-key backends on
+    any failure or missing key. Get a key at https://serper.dev/
+    """
+    if not settings.serper_api_key:
+        return []
+    try:
+        response = requests.post(
+            "https://google.serper.dev/search",
+            json={"q": query, "num": max_results},
+            headers={
+                "X-API-KEY": settings.serper_api_key,
+                "Content-Type": "application/json",
+            },
+            timeout=15,
+        )
+        response.raise_for_status()
+        results = response.json().get("organic", [])
+        # Normalise to the {title, href, body} shape the rest of the pipeline
+        # expects from the DDG backend.
+        return [
+            {
+                "title": item.get("title", ""),
+                "href": item.get("link", ""),
+                "body": item.get("snippet", ""),
+            }
+            for item in results
+            if item.get("link")
+        ][:max_results]
+    except (requests.RequestException, ValueError) as exc:
+        print(f"[search_web] Serper.dev search failed: {exc}")
+        return []
+
+
 def search_web(query: str, max_results: int = 5) -> list[dict]:
     """General web search with a reliable API option and no-key fallbacks."""
+    serper_results = _search_serper(query, max_results)
+    if serper_results:
+        return serper_results
+
     # The library defaults to DDG's API endpoint, which frequently returns a
     # transient 202 rate limit. Its HTML and Lite endpoints are independent
     # fallbacks and need no API key.

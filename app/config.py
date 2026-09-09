@@ -9,6 +9,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     anthropic_api_key: str = ""
+    # Optional: Serper.dev Google Search API key. Enables the primary path in
+    # search_web(); empty falls back to the no-key DuckDuckGo/Bing chain.
+    serper_api_key: str = ""
     # SEC requires an identifying User-Agent with a contact email for filing access.
     sec_user_agent: str = ""
 
