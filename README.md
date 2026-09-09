@@ -1,84 +1,71 @@
-# Proteins.1 Opportunity Map — Backend
+# Proteins.1 — EU Platform-Competitor Collector
 
-FastAPI backend for the AI Solution Sprint. Structured data (companies, scored
-opportunities) lives in SQLite; raw research text lives in ChromaDB, chunked
-and source-tagged so every claim on the map traces back to a URL.
+A focused data-collection backend: build a clean, source-traceable census of
+**European companies building a Proteins.1-type platform** — physics/affinity-
+driven single-molecule or ultra-sensitive protein detection, enzyme-free signal
+amplification, single-molecule protein sequencing or sizing.
 
-## Quick start 
+Not in scope: ctDNA / genomic liquid biopsy, antibody / reagent suppliers, CROs,
+and non-European companies (dropped at store time).
+
+No scoring, no opportunity map — this stage only collects and structures. The
+next stage compares these competitors against Proteins.1.
+
+## Quick start
 
 ```bash
-python -m venv venv && source venv/bin/activate   # or venv\Scripts\activate on Windows
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        # then fill in ANTHROPIC_API_KEY
+cp .env.example .env        # fill in ANTHROPIC_API_KEY (+ SERPER_API_KEY for reliable search)
 uvicorn app.main:app --reload
 ```
 
-API docs at http://localhost:8000/docs (FastAPI auto-generates this — good for
-testing endpoints without a frontend yet).
+`docker compose up --build` also works. API docs at http://localhost:8000/docs.
 
-## Quick start (Docker)
+## Data model (`data/eu_competitors.db`)
 
-```bash
-cp .env.example .env        # fill in ANTHROPIC_API_KEY
-docker compose up --build
-```
+| Table | What |
+|---|---|
+| `discovered_companies` | The census. One row per European platform company: `name, domain, country, platform_type, description, mention_count, profiled`. Keyed by domain; repeat sweeps de-duplicate. |
+| `competitor_profiles` | Deep, source-traceable profile for companies worth detailing: `what_they_do, technology_approach, detection_modality, sensitivity_claim, sample_requirement, target_applications[], stage, funding_summary, key_partnerships[], differentiators[], source_urls[]`. Every field is a fact from the company's own pages or empty — never guessed. |
+| `discovered_articles` | Background papers / news on the technology field. |
 
-`search_web()` uses the **Serper.dev** Google Search API when `SERPER_API_KEY`
-is set (free tier: 2,500 one-time credits), and otherwise falls back to the
-no-key DuckDuckGo/Bing path.
-
-## Folder layout
-
-```
-app/
-  main.py            FastAPI app, CORS, startup
-  config.py           env vars + default OI weights
-  database.py          SQLite models: Company, Opportunity
-  schemas.py           Pydantic request/response models
-  scoring.py            Opportunity Index formula + unit sanity-check helpers
-                        (DB also has: CaseStudy, EvidenceRecord, DiscoveredCompany, DiscoveredArticle)
-  chroma_store.py        embedded ChromaDB wrapper (add_chunks / query_evidence)
-  agent/
-    tools.py             search_web, search_sec_filings, fetch_page_text, chunk_text
-    pipeline.py           orchestrates: search -> fetch -> chunk -> store -> LLM-extract
-    discovery.py          landscape sweep: search -> classify company/article -> de-dupe -> store
-  routers/
-    opportunities.py       all /api/* endpoints
-```
+Raw page text is chunked into ChromaDB (`chroma_data/`), source-tagged, for
+semantic lookup via `/api/evidence`.
 
 ## Endpoints
 
-| Method | Path | What it does |
+| Method | Path | |
 |---|---|---|
-| POST | `/api/research` | Runs the agent for one company: `{"company_name": "Quanterix", "query_hint": "first customers, first application"}` |
-| POST | `/api/discover` | Sweeps the web for every company/article in the Proteins.1 landscape (single-molecule / ultra-sensitive protein diagnostics), classifies and de-dupes them into SQLite. Body is optional: `{"extra_terms": [...], "per_query": 8, "max_queries": 5}`. Each query ≈ 1 Serper credit; omit `max_queries` for the full ~70-query sweep. |
-| GET | `/api/discovered-companies` | The company census, most-mentioned first. Optional `?category=` filter (brief §8.4 buckets). |
-| GET | `/api/discovered-articles` | Discovered articles / filings / press items. Optional `?domain=` filter. |
-| GET | `/api/opportunity-map` | Returns all scored opportunities. Pass `w_unmet_need`, `w_sensitivity_gain`, `w_market`, `w_regulatory_burden` as query params to re-score live from the UI sliders. |
-| POST | `/api/opportunities` | Manually add/edit one opportunity row (disease area, scores 0-10, source_url, rationale) |
-| POST | `/api/evidence` | `{"query": "how did Quanterix get first customers", "company": "Quanterix"}` — semantic search over the raw chunks, for the "click a point, see the source" UI interaction |
+| POST | `/api/discover` | Run the landscape sweep. Body optional: `{"extra_terms": [...], "per_query": 8, "max_queries": 6}`. Each query ≈ 1 Serper credit; omit `max_queries` for the full sweep. |
+| GET | `/api/discovered-companies` | The census. Filters: `?country=`, `?platform_type=`, `?profiled=`. |
+| GET | `/api/discovered-articles` | `?domain=` filter. |
+| POST | `/api/profile` | `{"company_name": "Refeyn", "urls": []}` — fetch the company's pages and LLM-extract a `competitor_profiles` row. |
+| GET | `/api/competitors` | The deep profiles. `?country=` filter. |
+| POST | `/api/evidence` | Semantic search over the raw collected text. |
 
-## Ground rules baked into this scaffold
+## Layout
 
-- **No fabricated numbers.** `pipeline.py`'s extraction prompt is instructed to
-  return `null` rather than guess when a fact isn't in the source text —
-  don't loosen this prompt under time pressure.
-- **Weights are never hidden.** `/api/opportunity-map` takes weights as query
-  params so the frontend can expose them as sliders, per the brief's "no
-  black boxes" scoring criterion.
-- **Every Opportunity row has a `source_url` and a `verified` field**
-  (`measured` / `vendor_claim` / `estimate` / `unconfirmed`) — fill these in
-  honestly; an `unconfirmed` row is still useful, a silently-guessed one isn't.
-- **Don't put Proteins.1's own internal figures** (funding, cost structure,
-  target lists — brief §12) into any `Opportunity.rationale` or company
-  summary that will be shown on the public dashboard.
+```
+app/
+  main.py            FastAPI app
+  config.py          env vars + store paths
+  database.py        SQLite models: DiscoveredCompany, CompetitorProfile, DiscoveredArticle
+  schemas.py         Pydantic request/response models
+  chroma_store.py    embedded ChromaDB wrapper
+  agent/
+    tools.py         search_web (Serper + fallbacks), SEC / openFDA / ClinicalTrials, fetch_page_text
+    discovery.py     EU platform-company sweep: search -> classify -> country-filter -> de-dupe -> store
+    pipeline.py      research_competitor: fetch a company's pages -> chunk -> Chroma -> LLM-extract profile
+  routers/
+    collection.py    all /api/* endpoints
+```
 
-## Next steps to wire up
+## Ground rules
 
-1. Seed a few opportunities via `POST /api/opportunities` or a small seed
-   script, using facts you've already gathered by hand.
-2. Point a Streamlit/React frontend at `/api/opportunity-map` for the 2x2
-   plot and at `/api/evidence` for the click-through detail panel.
-3. If `research_company()` is too slow live during the demo, pre-run it for
-   your 3-5 key comparables beforehand and cache the results — call it live
-   on stage only for a "wow, it can research anything" moment.
+- **No fabricated facts.** The profile prompt returns `null` / `[]` rather than
+  guessing when something isn't in the source text. Keep it that way.
+- **Every profile keeps its `source_urls`.**
+- **European only.** `discovery.py` drops hits whose country resolves to a
+  non-European location; undetermined-country hits are kept with `country=""`
+  for a human to prune.

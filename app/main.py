@@ -2,9 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.database import init_db
-from app.routers.opportunities import router as opportunities_router
+from app.routers.collection import router as collection_router
 
-app = FastAPI(title="Proteins.1 Opportunity Map API")
+app = FastAPI(title="Proteins.1 EU Platform-Competitor Collector")
 
 # Wide open for a hackathon demo - tighten before showing this to anyone outside the room.
 app.add_middleware(
@@ -14,7 +14,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(opportunities_router)
+app.include_router(collection_router)
 
 
 @app.on_event("startup")

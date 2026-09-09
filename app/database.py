@@ -1,12 +1,19 @@
 """
-SQLite via SQLAlchemy. One file, no server to run - fine for a 1-2 day sprint.
-Holds the STRUCTURED side of the data (companies, opportunities, evidence pointers).
-Raw text lives in ChromaDB (see chroma_store.py), not here.
+SQLite via SQLAlchemy. One file, no server to run.
+
+Two tiers of collected data:
+  - DiscoveredCompany : the census - every European single-molecule / ultra-
+    sensitive protein-detection platform the discovery sweep turns up.
+  - CompetitorProfile : a structured deep profile for the ones worth detailing,
+    LLM-extracted from their own pages (facts only, never guessed).
+  - DiscoveredArticle : background literature / news on the technology space.
+
+Raw page text lives in ChromaDB (see chroma_store.py), source-tagged.
 """
 import os
 from datetime import datetime, timezone
 
-from sqlalchemy import create_engine, Column, Integer, String, Float, Text, DateTime
+from sqlalchemy import create_engine, Column, Integer, String, Text, DateTime, Boolean
 from sqlalchemy.orm import declarative_base, sessionmaker
 
 from app.config import settings
@@ -18,58 +25,55 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 Base = declarative_base()
 
 
-class Company(Base):
-    """A comparable / competitor company used as a case study."""
-    __tablename__ = "companies"
-
-    id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True, index=True, nullable=False)
-    summary = Column(Text, default="")
-    source_url = Column(String, default="")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
-
-class CaseStudy(Base):
-    """Structured, source-traceable notes about one comparable company."""
-    __tablename__ = "case_studies"
-
-    id = Column(Integer, primary_key=True)
-    company_name = Column(String, index=True, nullable=False)
-    leader_name = Column(String, default="")
-    leader_background = Column(Text, default="")
-    # JSON list: [{"factor": "...", "source_url": "..."}]
-    success_factors = Column(Text, default="[]")
-    application = Column(Text, default="")
-    market_route = Column(Text, default="")
-    source_urls = Column(Text, default="[]")
-    verified = Column(String, default="unconfirmed")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
-
 class DiscoveredCompany(Base):
-    """A company surfaced by the landscape discovery sweep (app/agent/discovery.py).
-
-    Keyed by registrable domain so repeated sweeps de-duplicate instead of piling
-    up rows. This is the raw census; promote the interesting ones to CaseStudy.
-    """
+    """One European company building a Proteins.1-type platform (single-molecule
+    / ultra-sensitive protein detection, novel signal amplification, single-
+    molecule protein sequencing/sizing). Keyed by registrable domain so repeat
+    sweeps de-duplicate."""
     __tablename__ = "discovered_companies"
 
     id = Column(Integer, primary_key=True)
     name = Column(String, default="")
     domain = Column(String, unique=True, index=True, nullable=False)
     homepage_url = Column(String, default="")
-    description = Column(Text, default="")           # best search snippet seen
-    category = Column(String, default="")            # seed bucket or "" when found organically
-    source_query = Column(String, default="")        # the query that first surfaced it
-    mention_count = Column(Integer, default=0)       # how many result rows pointed here
+    country = Column(String, default="", index=True)     # best-guess, "" if undetermined
+    is_european = Column(Boolean, default=True)
+    platform_type = Column(String, default="")           # e.g. "mass photometry", "PEA", "nanopore"
+    description = Column(Text, default="")               # best search snippet seen
+    source_query = Column(String, default="")
+    mention_count = Column(Integer, default=0)
+    profiled = Column(Boolean, default=False)            # has a CompetitorProfile row
     first_seen = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-class DiscoveredArticle(Base):
-    """An article / filing / press item surfaced by the discovery sweep.
+class CompetitorProfile(Base):
+    """Structured, source-traceable profile of one competitor. Every string field
+    is either a fact stated on the company's own pages or null - never inferred.
+    List fields are JSON-encoded strings."""
+    __tablename__ = "competitor_profiles"
 
-    Keyed by normalised URL (no query string or fragment) for de-duplication.
-    """
+    id = Column(Integer, primary_key=True)
+    company_name = Column(String, index=True, nullable=False)
+    domain = Column(String, default="")
+    country = Column(String, default="")
+
+    what_they_do = Column(Text, default="")             # 1-2 sentence plain summary
+    technology_approach = Column(Text, default="")      # the mechanism, in their words
+    detection_modality = Column(String, default="")     # protein / DNA / RNA / multi-omic
+    sensitivity_claim = Column(Text, default="")        # verbatim if stated
+    sample_requirement = Column(Text, default="")       # volume / type if stated
+    target_applications = Column(Text, default="[]")    # JSON list: oncology, neurology, ...
+    stage = Column(String, default="")                  # research-use / clinical / commercial
+    funding_summary = Column(Text, default="")
+    key_partnerships = Column(Text, default="[]")       # JSON list
+    differentiators = Column(Text, default="[]")        # JSON list of concrete claims
+    source_urls = Column(Text, default="[]")            # JSON list
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
+class DiscoveredArticle(Base):
+    """A background article / paper / news item on the single-molecule /
+    ultra-sensitive protein-detection field. Keyed by normalised URL."""
     __tablename__ = "discovered_articles"
 
     id = Column(Integer, primary_key=True)
@@ -79,50 +83,6 @@ class DiscoveredArticle(Base):
     snippet = Column(Text, default="")
     source_query = Column(String, default="")
     first_seen = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
-
-class EvidenceRecord(Base):
-    """One source-backed claim used to justify a map score or recommendation."""
-    __tablename__ = "evidence_records"
-
-    id = Column(Integer, primary_key=True)
-    opportunity_id = Column(Integer, index=True, nullable=True)
-    company_name = Column(String, index=True, default="")
-    # Brief §14.1: unmet_need, clinical_decision, payer_path, evidence_cost,
-    # sample_access, incumbent_intensity, time_to_revenue, defensibility.
-    dimension = Column(String, nullable=False)
-    claim = Column(Text, nullable=False)
-    source_url = Column(String, nullable=False)
-    excerpt = Column(Text, default="")
-    evidence_status = Column(String, default="unconfirmed")
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
-
-class Opportunity(Base):
-    """
-    One (disease area x marker class x customer segment x revenue model) candidate,
-    scored on the 4 dimensions of the Opportunity Index (brief §14.3).
-    Every score MUST be traceable - source_url is not optional in practice.
-    """
-    __tablename__ = "opportunities"
-
-    id = Column(Integer, primary_key=True)
-    disease_area = Column(String, nullable=False)
-    marker_class = Column(String, default="")
-    customer_segment = Column(String, default="")
-    revenue_model = Column(String, default="")
-
-    # Each 0-10, see app/scoring.py for what they mean
-    unmet_need = Column(Float, default=0.0)
-    sensitivity_gain = Column(Float, default=0.0)
-    market_size = Column(Float, default=0.0)
-    regulatory_burden = Column(Float, default=0.0)
-
-    rationale = Column(Text, default="")   # short human/LLM-written justification
-    source_url = Column(String, default="")  # primary evidence link - keep this filled in
-    verified = Column(String, default="unconfirmed")  # "measured" | "vendor_claim" | "estimate" | "unconfirmed"
-
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
 def init_db():
