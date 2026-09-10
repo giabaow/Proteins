@@ -129,10 +129,10 @@ _gridlines = "".join(
     f'<text x="{_sx(t):.1f}" y="{_y0+22}" class="ax-t" text-anchor="middle">${t}M</text>'
     for t in _xticks
 )
-# faint "frontier tech, lean funding" quadrant (top-left) where Proteins.1 sits
-_qx, _qy = _sx(60), _sy(7)
-_quad = (f'<rect x="{_x0}" y="{_y1}" width="{_qx-_x0:.1f}" height="{_qy-_y1:.1f}" class="quad"/>'
-         f'<text x="{_x0+10}" y="{_y1+18}" class="quad-t">frontier tech &middot; lean funding</text>')
+# faint "frontier tech, lean funding" band (top-left) where Proteins.1 sits.
+# No label on the plot - it collides with the marks; explained in the caption.
+_qx, _qy = _sx(50), _sy(7)
+_quad = f'<rect x="{_x0}" y="{_y1}" width="{_qx-_x0:.1f}" height="{_qy-_y1:.1f}" class="quad"/>'
 
 _dots = ""
 for p in sorted(_plot, key=lambda p: p["self"]):  # self drawn last, on top
@@ -599,14 +599,16 @@ __Q1_ROWS__
           <span><i class="sw sw-self"></i>Proteins.1</span>
         </div>
 __LANDSCAPE_SVG__
-        <p class="scatter-note">Y is deterministic from each platform&rsquo;s mechanism (nanopore /
-        single-molecule / enzyme-free &asymp; 9, mass photometry &asymp; 8, PEA &asymp; 7, mass-spec
-        &asymp; 5&ndash;6). X uses each company&rsquo;s own stated total where available &mdash;
-        edit <code>reports/data/funding_seed.json</code> to add sourced figures. Proteins.1: &euro;4.7M
-        per the challenge brief.</p>
+        <p class="scatter-note"><strong>__PLOTTED_N__ of __TOTAL_N__ plotted.</strong>
+        The shaded band is &ldquo;frontier tech, lean funding&rdquo; &mdash; where Proteins.1 sits.
+        Y is deterministic from each platform&rsquo;s mechanism (nanopore / single-molecule /
+        enzyme-free &asymp; 9, mass photometry &asymp; 8, PEA &asymp; 7, mass-spec &asymp; 5&ndash;6).
+        X needs a funding total &mdash; run <code>POST /api/position</code> with an API key, or add
+        sourced figures to <code>reports/data/funding_seed.json</code>. Proteins.1: &euro;4.7M, per
+        the challenge brief.</p>
       </div>
       <div class="pending">
-        <span class="k">Funding not disclosed &mdash; position pending a sourced figure</span>
+        <span class="k">No funding figure yet &mdash; not plotted</span>
         <ul>__LANDSCAPE_PENDING__</ul>
       </div>
     </div>
@@ -942,6 +944,8 @@ out = (TEMPLATE
        .replace("__Q1_ROWS__", q1_rows)
        .replace("__LANDSCAPE_SVG__", scatter_svg)
        .replace("__LANDSCAPE_PENDING__", pending_html)
+       .replace("__PLOTTED_N__", str(len(_plot)))
+       .replace("__TOTAL_N__", str(len(_pts)))
        .replace("__Q2_CARDS__", q2_cards)
        .replace("__REC_FROM__", rec_from or "the top companies")
        .replace("__REC_HEADLINE__", e(rec.get("headline")))
