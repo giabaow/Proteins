@@ -3,6 +3,8 @@ Embedded ChromaDB - runs in-process, persists to disk, no separate server.
 Holds the RAW TEXT side of the data (chunked source pages), keyed by company +
 source URL so we can trace every claim back to where it came from.
 """
+from __future__ import annotations
+
 import chromadb
 
 from app.config import settings

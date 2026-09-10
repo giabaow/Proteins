@@ -12,6 +12,8 @@ Discipline: the LLM only ever summarises text it was given; every row keeps its
 source_urls; a fact not in the text is "" / [], never a guess. The ranking is
 pure arithmetic over those outputs - no LLM, so it is repeatable.
 """
+from __future__ import annotations
+
 import json
 import re
 

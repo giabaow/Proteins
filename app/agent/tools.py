@@ -6,6 +6,8 @@ LangChain/LangGraph if you want a more autonomous agent loop.
 Rate limiting: a 1s sleep before each fetch is intentional - don't remove it
 during the demo, a 403 mid-pitch is worse than a slightly slower pipeline.
 """
+from __future__ import annotations
+
 import time
 import xml.etree.ElementTree as ET
 from urllib.parse import urlsplit

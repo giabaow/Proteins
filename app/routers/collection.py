@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 import json
+from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -90,8 +93,8 @@ def discover_landscape(payload: DiscoverRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/discovered-companies", response_model=list[DiscoveredCompanyOut])
-def list_discovered(country: str | None = None, platform_type: str | None = None,
-                    analysed: bool | None = None, db: Session = Depends(get_db)):
+def list_discovered(country: Optional[str] = None, platform_type: Optional[str] = None,
+                    analysed: Optional[bool] = None, db: Session = Depends(get_db)):
     q = db.query(DiscoveredCompany)
     if country:
         q = q.filter(DiscoveredCompany.country == country)
@@ -103,7 +106,7 @@ def list_discovered(country: str | None = None, platform_type: str | None = None
 
 
 @router.get("/discovered-articles", response_model=list[DiscoveredArticleOut])
-def list_articles(domain: str | None = None, db: Session = Depends(get_db)):
+def list_articles(domain: Optional[str] = None, db: Session = Depends(get_db)):
     q = db.query(DiscoveredArticle)
     if domain:
         q = q.filter(DiscoveredArticle.domain == domain)
@@ -133,7 +136,7 @@ def rank(payload: RankRequest, db: Session = Depends(get_db)):
 
 
 @router.get("/companies", response_model=list[CompanyOut])
-def list_companies(leaders_only: bool = False, country: str | None = None, db: Session = Depends(get_db)):
+def list_companies(leaders_only: bool = False, country: Optional[str] = None, db: Session = Depends(get_db)):
     q = db.query(Company)
     if leaders_only:
         q = q.filter(Company.is_leader.is_(True))

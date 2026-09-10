@@ -103,7 +103,7 @@ serves at `GET /`.
 
 ### 1. Prerequisites
 
-- **Python 3.11+** (the Docker image uses 3.11; `str | None` annotations need ≥ 3.10)
+- **Python 3.9+** (macOS system `python3` is fine; the Docker image uses 3.11)
 - Optional keys (the app runs without them, with reduced quality):
   - `ANTHROPIC_API_KEY` — required for `analyze_company` / `synthesize_recommendation` (the LLM steps). Without it, facts and playbooks come back empty.
   - `SERPER_API_KEY` — Google Search via [serper.dev](https://serper.dev) (free tier 2,500 queries). Without it, web search falls back to DuckDuckGo/Bing, which rate-limit heavily.
