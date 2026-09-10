@@ -8,3 +8,4 @@ services:
     volumes:
       - ./data:/app/data
       - ./chroma_data:/app/chroma_data
+      - ./reports:/app/reports          # so a regenerated frontend.html shows without a rebuild

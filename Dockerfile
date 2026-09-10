@@ -6,6 +6,8 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app ./app
+COPY reports ./reports
+COPY scripts ./scripts
 
 # SQLite + Chroma data persist here - mount as a volume in docker-compose
 RUN mkdir -p /app/data /app/chroma_data

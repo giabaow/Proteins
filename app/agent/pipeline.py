@@ -392,7 +392,7 @@ def _score_ecosystem(company: Company):
     return 0, "location unresolved"
 
 
-def rank_companies(db: Session, top_n: int = 5) -> dict:
+def rank_companies(db: Session, top_n: int = 10) -> dict:
     """Score every analysed company; flag the top `top_n` is_leader. Pure
     arithmetic over the stored fields - no LLM, re-runnable."""
     discovered = {d.name: d for d in db.query(DiscoveredCompany)}
