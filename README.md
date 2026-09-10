@@ -109,8 +109,9 @@ serves at `GET /`.
 
 ---
 ## Demo
-See the demo at:
+![Alt text](demo.png)
 
+See the demo at:
 https://proteins1-landscape-mnu3.onrender.com
 
 
