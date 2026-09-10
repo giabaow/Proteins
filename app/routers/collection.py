@@ -29,6 +29,7 @@ from app.agent.discovery import discover
 from app.agent.pipeline import (
     analyze_company,
     pick_opportunity,
+    position_companies,
     rank_companies,
     synthesize_recommendation,
 )
@@ -87,6 +88,8 @@ def _company_out(row: Company) -> CompanyOut:
         score_route=row.score_route or 0, score_evidence=row.score_evidence or 0,
         score_ecosystem=row.score_ecosystem or 0, score_notes=_obj(row.score_notes),
         relevance_score=row.relevance_score or 0.0, rank=row.rank or 0, is_leader=bool(row.is_leader),
+        technology_score=row.technology_score or 0.0, technology_score_note=row.technology_score_note or "",
+        funding_usd_m=row.funding_usd_m or 0.0, funding_basis=row.funding_basis or "",
         source_urls=_list(row.source_urls),
     )
 
@@ -179,6 +182,17 @@ def get_recommendation(db: Session = Depends(get_db)):
         "market_route": _list(row.market_route),
         "sequence": row.sequence or "",
     }
+
+
+@router.post("/position")
+def position(research_funding: bool = True, db: Session = Depends(get_db)):
+    """Set each analysed company's technology_score (fixed rubric) and
+    funding_usd_m (web search + LLM when a key is set, else parsed from the
+    collected text) - the two axes of the frontend landscape scatter."""
+    try:
+        return position_companies(db, research_funding=research_funding)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
 @router.post("/pick-opportunity")

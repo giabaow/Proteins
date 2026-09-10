@@ -145,7 +145,11 @@
       "https://attomarker.com/attomarker-launches-acceleration-round/",
       "https://attomarker.com/category/investment-news/"
     ],
-    "created_at": "2026-09-09 13:17:25.845592"
+    "created_at": "2026-09-09 13:17:25.845592",
+    "technology_score": 5.5,
+    "technology_score_note": "mechanism unclassified; high multiplex (+0.5)",
+    "funding_usd_m": 0.15,
+    "funding_basis": "parsed from a figure stated in the collected sources"
   },
   {
     "id": 2,
@@ -281,7 +285,11 @@
       "https://clinicaltrials.gov/study/NCT07202390",
       "https://biognosys.com/news/biognosys-completes-series-g-financing-round-to-accelerate-its-expansion-into-clinical-trials-market/"
     ],
-    "created_at": "2026-09-09 13:17:25.845595"
+    "created_at": "2026-09-09 13:17:25.845595",
+    "technology_score": 5.5,
+    "technology_score_note": "mass-spec / sample-prep - capable but an established category",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 3,
@@ -409,7 +417,11 @@
       "https://depixus.com/company/",
       "https://pitchbook.com/profiles/company/108052-66"
     ],
-    "created_at": "2026-09-09 13:17:25.845596"
+    "created_at": "2026-09-09 13:17:25.845596",
+    "technology_score": 8.0,
+    "technology_score_note": "single-molecule detection / digital assay",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 4,
@@ -530,7 +542,11 @@
       "https://www.linkedin.com/posts/ulrich-rant-61000848_after-many-years-at-the-helm-as-ceo-since-activity-7221763906111733760-O8DU",
       "https://globalventuring.com/university/dynamic-biosensors-detects-6m/"
     ],
-    "created_at": "2026-09-09 13:17:25.845597"
+    "created_at": "2026-09-09 13:17:25.845597",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 5,
@@ -669,7 +685,11 @@
       "https://www.evosep.com/project/the-story-of-evosep/",
       "https://pitchbook.com/profiles/company/167505-22"
     ],
-    "created_at": "2026-09-09 13:17:25.845597"
+    "created_at": "2026-09-09 13:17:25.845597",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 6,
@@ -717,7 +737,11 @@
       "https://europepmc.org/article/MED/42230373",
       "https://europepmc.org/article/MED/42513036"
     ],
-    "created_at": "2026-09-09 13:17:25.845598"
+    "created_at": "2026-09-09 13:17:25.845598",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 7,
@@ -800,7 +824,11 @@
       "https://genomill.com/geno1/",
       "https://genomill.com/genomill-health-eyes-clinical-adoption-of-targeted-ngs-technology/"
     ],
-    "created_at": "2026-09-09 13:17:25.845599"
+    "created_at": "2026-09-09 13:17:25.845599",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 8,
@@ -918,7 +946,11 @@
       "https://www.linkedin.com/posts/philipp-baaske_today-nanotemper-turns-18-in-most-countries-activity-7466763725597868032-6asa",
       "https://nanotempertech.com/blog/nanotemper-establishes-presence-usa/"
     ],
-    "created_at": "2026-09-09 13:17:25.845599"
+    "created_at": "2026-09-09 13:17:25.845599",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 9,
@@ -1038,7 +1070,11 @@
       "https://olinkpanel.creative-proteomics.com/knowledge/olink-proteomics-clinical-research.html",
       "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=0002104204&type=S-1"
     ],
-    "created_at": "2026-09-09 13:17:25.845600"
+    "created_at": "2026-09-09 13:17:25.845600",
+    "technology_score": 7.0,
+    "technology_score_note": "proximity extension assay (PEA)",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 10,
@@ -1167,7 +1203,11 @@
       "https://nanoporetech.com/about/history",
       "https://nanoporetech.com/about/executive-team"
     ],
-    "created_at": "2026-09-09 13:17:25.845600"
+    "created_at": "2026-09-09 13:17:25.845600",
+    "technology_score": 9.5,
+    "technology_score_note": "nanopore protein sensing; high multiplex (+0.5)",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 11,
@@ -1215,7 +1255,11 @@
       "https://europepmc.org/article/MED/41668388",
       "https://europepmc.org/article/MED/41094887"
     ],
-    "created_at": "2026-09-09 13:17:25.845601"
+    "created_at": "2026-09-09 13:17:25.845601",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 12,
@@ -1342,7 +1386,11 @@
       "https://finance.yahoo.com/healthcare/articles/pixelgen-technologies-closes-15-5m-063000030.html",
       "https://www.pixelgen.com/news/pixelgen-technologies-closes-series-a-financing/"
     ],
-    "created_at": "2026-09-09 13:17:25.845601"
+    "created_at": "2026-09-09 13:17:25.845601",
+    "technology_score": 5.0,
+    "technology_score_note": "mechanism unclassified",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 13,
@@ -1441,7 +1489,11 @@
       "https://www.bruker.com/fr/news-and-events/news/2022/bruker-expands-proteomics-strategy-with-preomics.html",
       "https://www.izb-online.de/en/mediathek/pressrelease/press-izb-martinsried/preomics-receives-euro-135-million-from-bruker-corporation-in-series-b-financing-round/"
     ],
-    "created_at": "2026-09-09 13:17:25.845602"
+    "created_at": "2026-09-09 13:17:25.845602",
+    "technology_score": 5.5,
+    "technology_score_note": "mass-spec / sample-prep - capable but an established category",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   },
   {
     "id": 14,
@@ -1604,6 +1656,10 @@
       "https://refeyn.com/about-us",
       "https://pitchbook.com/profiles/company/232310-98"
     ],
-    "created_at": "2026-09-09 13:17:25.845602"
+    "created_at": "2026-09-09 13:17:25.845602",
+    "technology_score": 8.0,
+    "technology_score_note": "mass photometry",
+    "funding_usd_m": 0.0,
+    "funding_basis": ""
   }
 ]

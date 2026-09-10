@@ -5,8 +5,8 @@ Proteins.1-type platform** — physics/affinity-driven single-molecule or
 ultra-sensitive protein detection, enzyme-free signal amplification,
 single-molecule protein sequencing or sizing.
 
-It runs a pipeline — **discover → analyse → rank → synthesise → pick** — and
-serves a single-page frontend at `GET /` with two tabs:
+It runs a pipeline — **discover → analyse → rank → synthesise → pick → position** —
+and serves a single-page frontend at `GET /` with two tabs:
 
 - **Overview** — answers four questions: who leads the field (top 10 by
   relevance score), what made the top 3 succeed, the consolidated application +
@@ -45,6 +45,7 @@ flowchart TB
             RANK["pipeline.py :: rank_companies()<br/>5-axis relevance score (no LLM)<br/>→ rank, is_leader (top 10)"]
             SYN["pipeline.py :: synthesize_recommendation()<br/>LLM over the top 3 playbooks<br/>→ one recommendation (Q3)"]
             OPP["pipeline.py :: pick_opportunity()<br/>LLM over the landscape + articles<br/>→ disease-biomarker + first customer (Q4)"]
+            POS["pipeline.py :: position_companies()<br/>tech-modernity rubric (no LLM) +<br/>funding (search+LLM) → landscape XY"]
         end
 
         ROUT["routers/collection.py<br/>GET / · /api/discover · /api/analyze<br/>/api/rank · /api/synthesize · /api/companies<br/>/api/recommendation · /api/evidence"]
@@ -74,7 +75,9 @@ flowchart TB
     SQL --> RANK --> SQL
     SQL --> SYN --> SQL
     SQL --> OPP --> SQL
+    SQL --> POS --> SQL
     LLM <--> OPP
+    LLM <--> POS
     ROUT <--> SQL
     ROUT <--> CHR
     SQL --> EXP --> BUILD --> FE
@@ -161,9 +164,15 @@ curl -X POST localhost:8000/api/analyze  -H 'content-type: application/json' -d 
 curl -X POST "localhost:8000/api/rank"      -H 'content-type: application/json' -d '{"top_n":10}'
 curl -X POST "localhost:8000/api/synthesize?top_k=3"
 curl -X POST localhost:8000/api/pick-opportunity
+curl -X POST localhost:8000/api/position          # tech + funding axes for the landscape scatter
 curl localhost:8000/api/companies?leaders_only=true
 curl localhost:8000/api/opportunity
 ```
+
+The landscape scatter's **funding** axis needs figures the companies rarely
+publish. `/api/position` (with an `ANTHROPIC_API_KEY`) searches the web for each
+one; otherwise, hand-fill `reports/data/funding_seed.json` with sourced totals —
+the frontend prefers the seed over the pipeline value.
 
 ### 5. Refresh the frontend after a run
 
@@ -194,7 +203,7 @@ docker compose exec backend python -m scripts.collect
 | Table | What |
 |---|---|
 | `discovered_companies` | The census. One row per European platform company: `name, domain, country, platform_type, description, mention_count, analysed`. Keyed by domain; repeat sweeps de-duplicate. |
-| `companies` | An **analysed** company: structured facts (`what_they_do, technology_approach, detection_modality, sensitivity_claim, sample_requirement, target_applications[], stage, funding_summary, key_partnerships[], differentiators[]` — from its own pages, never guessed), the **playbook** (`leader_name/role/background, why_worth_studying, success_factors[], application_suggestions[], market_route_suggestions[], route_summary, confidence`), and the **relevance score** (`score_platform/stage/route/evidence/ecosystem, score_notes, relevance_score, rank, is_leader`). |
+| `companies` | An **analysed** company: structured facts (`what_they_do, technology_approach, detection_modality, sensitivity_claim, sample_requirement, target_applications[], stage, funding_summary, key_partnerships[], differentiators[]` — from its own pages, never guessed), the **playbook** (`leader_name/role/background, why_worth_studying, success_factors[], application_suggestions[], market_route_suggestions[], route_summary, confidence`), the **relevance score** (`score_platform/stage/route/evidence/ecosystem, score_notes, relevance_score, rank, is_leader`), and the **landscape position** (`technology_score` 0–10, `funding_usd_m`, `funding_basis`). |
 | `recommendation` | Single row. The consolidated `headline`, `applications[]`, `market_route[]`, `sequence` for Proteins.1, synthesised from the top-3 playbooks. |
 | `opportunity_pick` | Single row (Q4). `disease_area, biomarker, why_it_fits, unmet_need, competitive_gap, first_customer, first_customer_why, runner_up, evidence[]`. |
 | `discovered_articles` | Background papers / news / filings on the technology field. |
@@ -217,6 +226,7 @@ semantic lookup via `POST /api/evidence`.
 | GET | `/api/recommendation` | The consolidated recommendation (Overview Q3). |
 | POST | `/api/pick-opportunity` | Pick the one disease–biomarker opportunity that most benefits from the platform, and the first paying customer (Overview Q4). |
 | GET | `/api/opportunity` | That pick. |
+| POST | `/api/position` | Set each analysed company's `technology_score` (fixed rubric) and `funding_usd_m` (web search + LLM when a key is set, else parsed from collected text) — the axes of the landscape scatter. `?research_funding=false` to skip the search. |
 | POST | `/api/evidence` | `{"query":"...", "company":"Refeyn", "n_results":3}` — semantic search over the raw collected text. |
 
 ## Layout

@@ -1,0 +1,17 @@
+{
+  "_README": "Hand-curated funding overrides for the landscape scatter (X axis). The pipeline only knows what the companies' own pages stated (usually nothing), so fill usd_m with a SOURCED total-funding-raised figure in USD millions and put the source in basis. Leave usd_m null to fall back to the pipeline value / mark 'not disclosed'. Keys must match the company name exactly. Proteins.1's own point is set in reports/build_frontend_page.py (SELF).",
+  "Oxford Nanopore Technologies": { "usd_m": null, "basis": "" },
+  "Refeyn": { "usd_m": null, "basis": "" },
+  "Depixus": { "usd_m": null, "basis": "" },
+  "Attomarker": { "usd_m": null, "basis": "" },
+  "Dynamic Biosensors": { "usd_m": null, "basis": "" },
+  "Evosep": { "usd_m": null, "basis": "" },
+  "Pixelgen Technologies": { "usd_m": null, "basis": "" },
+  "NanoTemper Technologies": { "usd_m": null, "basis": "" },
+  "Olink": { "usd_m": null, "basis": "" },
+  "PreOmics": { "usd_m": null, "basis": "" },
+  "Biognosys": { "usd_m": null, "basis": "" },
+  "Genomill Health": { "usd_m": null, "basis": "" },
+  "Fluidic Analytics": { "usd_m": null, "basis": "" },
+  "PicoQuant": { "usd_m": null, "basis": "" }
+}

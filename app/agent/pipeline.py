@@ -611,3 +611,143 @@ def pick_opportunity(db: Session) -> dict:
         "runner_up": row.runner_up,
         "evidence": evidence,
     }
+
+
+# ---------------------------------------------------------------------------
+# Step 6 - place every analysed company on two axes for the frontend scatter:
+#   Y = technology modernity (fixed rubric over the platform, no LLM)
+#   X = funding raised in USD millions (search + LLM when keys are set;
+#       otherwise parsed from whatever funding text the pages gave us)
+# ---------------------------------------------------------------------------
+
+# platform_type (from discovery) -> technology-modernity base score, 0-10
+_TECH_MODERNITY = {
+    "nanopore protein sensing": 9.0,
+    "single-molecule protein sequencing": 9.0,
+    "enzyme-free signal amplification": 9.0,
+    "single-molecule detection / digital assay": 8.0,
+    "affinity / photonic single-molecule readout": 8.0,
+    "mass photometry": 8.0,
+    "proximity extension assay (PEA)": 7.0,
+    "microfluidic protein analysis": 6.0,
+}
+
+
+def _technology_score(company: Company, disc: DiscoveredCompany | None) -> tuple[float, str]:
+    pt = (disc.platform_type if disc else "") or ""
+    base = _TECH_MODERNITY.get(pt)
+    note_bits = []
+    if base is None:
+        t = (company.technology_approach or "").lower()
+        if any(k in t for k in ("single molecule", "single-molecule", "nanopore", "enzyme-free", "enzyme free")):
+            base, why = 8.5, "single-molecule / enzyme-free mechanism (from tech description)"
+        elif any(k in t for k in ("mass photometry", "interferometric", "plasmon", "photonic")):
+            base, why = 8.0, "label-free single-molecule optics"
+        elif any(k in t for k in ("microfluidic", "diffusional")):
+            base, why = 6.0, "microfluidic protein analysis"
+        elif "proximity extension" in t:
+            base, why = 7.0, "proximity extension + sequencing readout"
+        elif any(k in t for k in ("mass spectrometry", "chromatography", "sample prep", "sample-prep")):
+            base, why = 5.5, "mass-spec / sample-prep - capable but an established category"
+        else:
+            base, why = 5.0, "mechanism unclassified"
+        note_bits.append(why)
+    else:
+        note_bits.append(pt)
+
+    bump = 0.0
+    t = " ".join([company.technology_approach or "", company.sensitivity_claim or ""]).lower()
+    if "attomolar" in t:
+        bump += 0.5
+        note_bits.append("attomolar sensitivity claimed (+0.5)")
+    if any(k in t for k in ("multiplex", "multi-omic", "multiomic", "thousands of proteins")):
+        bump += 0.5
+        note_bits.append("high multiplex (+0.5)")
+    score = max(0.0, min(10.0, round(base + bump, 1)))
+    return score, "; ".join(note_bits)
+
+
+_MONEY = re.compile(
+    r"(?:([$€£])\s?)?([\d]+(?:,\d{3})*(?:\.\d+)?)\s?(billion|bn|million|mm|mn|m|k|b)?\b",
+    re.IGNORECASE,
+)
+_CCY_TO_USD = {"$": 1.0, "€": 1.08, "£": 1.27, None: 1.0}
+_MULT_M = {"billion": 1000.0, "bn": 1000.0, "b": 1000.0,
+           "million": 1.0, "mm": 1.0, "mn": 1.0, "m": 1.0, "k": 0.001}
+
+
+def _parse_funding(text: str) -> tuple[float, str]:
+    """Largest plausible funding figure in `text`, in USD millions. Only counts
+    figures that carry a currency symbol OR a scale word (million/billion), so a
+    bare year like 2023 is ignored. (0, '') if none found."""
+    if not text:
+        return 0.0, ""
+    best = 0.0
+    for ccy, num, unit in _MONEY.findall(text):
+        if not ccy and not unit:
+            continue  # bare number - could be a year, a count, anything
+        amount = float(num.replace(",", ""))
+        unit = (unit or "").lower()
+        if unit in _MULT_M:
+            usd_m = amount * _CCY_TO_USD[ccy or None] * _MULT_M[unit]
+        else:  # currency symbol, no scale word: a literal amount
+            usd_m = amount * _CCY_TO_USD[ccy or None] / 1_000_000
+        best = max(best, usd_m)
+    if best <= 0:
+        return 0.0, ""
+    return round(best, 2), "parsed from a figure stated in the collected sources"
+
+
+_FUNDING_PROMPT = """From the text about {company}, give its TOTAL funding raised to date in US dollars \
+(convert EUR at 1.08, GBP at 1.27). Use ONLY figures stated in the text. If the text gives rounds, sum \
+the disclosed ones. If nothing usable, return null.
+
+Return ONLY JSON: {{"funding_usd_m": number | null, "basis": string}}  - basis names the figure you \
+used (e.g. "Series B, EUR 30M, 2023" or "sum of seed + Series A"). No markdown."""
+
+
+def _research_funding(company_name: str) -> tuple[float, str]:
+    urls = []
+    for hit in search_web(f"{company_name} total funding raised Series million", max_results=5):
+        u = hit.get("href")
+        if u and u not in urls:
+            urls.append(u)
+    text = []
+    for u in urls[:4]:
+        page, _err = fetch_page_text(u, return_error=True)
+        if page:
+            text.append(f"[SOURCE] {u}\n{page[:5000]}")
+    if not text:
+        return 0.0, ""
+    data = _llm_json(_FUNDING_PROMPT.format(company=company_name), "\n\n".join(text)[:40000], max_tokens=3000)
+    v = data.get("funding_usd_m")
+    if isinstance(v, (int, float)) and v > 0:
+        return round(float(v), 1), (data.get("basis") or "from public reports").strip()
+    return 0.0, ""
+
+
+def position_companies(db: Session, research_funding: bool = True) -> dict:
+    """Set technology_score + funding_usd_m on every Company. Tech score is a
+    fixed rubric (no LLM). Funding uses a web search + LLM when a key is set,
+    else falls back to parsing the collected funding text."""
+    discovered = {d.name: d for d in db.query(DiscoveredCompany)}
+    rows = db.query(Company).order_by(Company.rank).all()
+    out = []
+    use_llm = research_funding and bool(settings.anthropic_api_key)
+    for row in rows:
+        score, note = _technology_score(row, discovered.get(row.name))
+        row.technology_score = score
+        row.technology_score_note = note
+
+        usd, basis = (0.0, "")
+        if use_llm:
+            usd, basis = _research_funding(row.name)
+        if usd <= 0:
+            usd, basis = _parse_funding(row.funding_summary or "")
+        row.funding_usd_m = usd
+        row.funding_basis = basis
+        out.append({"name": row.name, "technology_score": score,
+                    "funding_usd_m": usd, "funding_basis": basis or "not disclosed"})
+    db.commit()
+    return {"positioned": len(out), "funding_source": "search+LLM" if use_llm else "parsed text",
+            "companies": out}

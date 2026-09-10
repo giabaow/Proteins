@@ -21,6 +21,7 @@ from app.agent.discovery import discover
 from app.agent.pipeline import (
     analyze_company,
     pick_opportunity,
+    position_companies,
     rank_companies,
     synthesize_recommendation,
 )
@@ -76,6 +77,8 @@ log(f"recommendation from {rec.get('from_companies')}: {len(rec.get('application
 opp = pick_opportunity(db)
 log(f"opportunity pick: {opp.get('disease_area')} / {opp.get('biomarker')} "
     f"-> first customer: {opp.get('first_customer')}")
+pos = position_companies(db)
+log(f"positioned {pos['positioned']} on the tech/funding axes ({pos['funding_source']})")
 log("=== SNAPSHOT ===")
 log(f"discovered_companies : {db.query(DiscoveredCompany).count()}")
 log(f"companies            : {db.query(Company).count()}")

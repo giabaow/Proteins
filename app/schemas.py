@@ -82,6 +82,11 @@ class CompanyOut(BaseModel):
     rank: int
     is_leader: bool
 
+    technology_score: float
+    technology_score_note: str
+    funding_usd_m: float
+    funding_basis: str
+
     source_urls: list[str]
 
 

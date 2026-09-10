@@ -10,6 +10,7 @@ Reads reports/data/*.json  ->  writes reports/frontend.html
 """
 import html
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -23,6 +24,17 @@ articles = json.loads((DATA / "discovered_articles.json").read_text())
 rec = (json.loads((DATA / "recommendation.json").read_text()) or [{}])[0]
 _opp_path = DATA / "opportunity_pick.json"
 opp = (json.loads(_opp_path.read_text()) or [{}])[0] if _opp_path.exists() else {}
+_seed_path = DATA / "funding_seed.json"
+FUNDING_SEED = json.loads(_seed_path.read_text()) if _seed_path.exists() else {}
+
+# Proteins.1's own point on the landscape - from the challenge brief.
+SELF = {
+    "name": "Proteins.1",
+    "technology_score": 9.5,
+    "technology_score_note": "enzyme-free single-molecule amplification, molecule-agnostic (protein/DNA/RNA), pre-commercial frontier",
+    "funding_usd_m": 5.1,
+    "funding_basis": "~€4.7M raised, per the challenge brief",
+}
 
 MAXPTS = {"platform": 5, "stage": 5, "route": 5, "evidence": 3, "ecosystem": 2}
 MAX_TOTAL = 32.5
@@ -68,6 +80,91 @@ q1_rows = "\n".join(f"""        <tr>
           <td>{bar(c['relevance_score'])}</td>
           <td class="mono sc">{c['relevance_score']:.1f}</td>
         </tr>""" for i, c in enumerate(top10[3:], start=4))
+
+# ---- Landscape scatter: technology (Y) vs funding (X) -----------------
+def _funding_for(c):
+    """(usd_m, basis) - hand-curated seed wins, else the pipeline value."""
+    seed = FUNDING_SEED.get(c["name"])
+    if isinstance(seed, dict) and isinstance(seed.get("usd_m"), (int, float)) and seed["usd_m"] > 0:
+        return float(seed["usd_m"]), (seed.get("basis") or "curated figure")
+    v = c.get("funding_usd_m") or 0
+    return (float(v), c.get("funding_basis") or "") if v > 0 else (0.0, "")
+
+
+_pts = [{"name": c["name"], "tech": c.get("technology_score") or 0,
+         "note": c.get("technology_score_note") or "",
+         "usd": _funding_for(c)[0], "basis": _funding_for(c)[1], "self": False}
+        for c in top10]
+_pts.append({"name": SELF["name"], "tech": SELF["technology_score"], "note": SELF["technology_score_note"],
+             "usd": SELF["funding_usd_m"], "basis": SELF["funding_basis"], "self": True})
+
+_plot = [p for p in _pts if p["usd"] > 0]
+_pending = [p for p in _pts if p["usd"] <= 0]
+
+# SVG geometry
+_W, _H = 760, 470
+_ML, _MR, _MT, _MB = 64, 24, 24, 56
+_x0, _x1 = _ML, _W - _MR
+_y0, _y1 = _H - _MB, _MT
+_FMIN, _FMAX = 3.0, max(2000.0, *( [p["usd"] for p in _plot] or [2000.0] ))
+_lx0, _lx1 = math.log10(_FMIN), math.log10(_FMAX)
+
+
+def _sx(usd):
+    return _x0 + (math.log10(max(usd, _FMIN)) - _lx0) / (_lx1 - _lx0) * (_x1 - _x0)
+
+
+def _sy(t):
+    return _y0 + (t / 10.0) * (_y1 - _y0)
+
+
+_xticks = [3, 10, 30, 100, 300, 1000]
+_xticks = [t for t in _xticks if _FMIN <= t <= _FMAX]
+_gridlines = "".join(
+    f'<line x1="{_x0}" y1="{_sy(t):.1f}" x2="{_x1}" y2="{_sy(t):.1f}" class="grid"/>'
+    f'<text x="{_x0-10}" y="{_sy(t)+4:.1f}" class="ax-t" text-anchor="end">{t}</text>'
+    for t in (0, 2, 4, 6, 8, 10)
+) + "".join(
+    f'<line x1="{_sx(t):.1f}" y1="{_y0}" x2="{_sx(t):.1f}" y2="{_y1}" class="grid"/>'
+    f'<text x="{_sx(t):.1f}" y="{_y0+22}" class="ax-t" text-anchor="middle">${t}M</text>'
+    for t in _xticks
+)
+# faint "frontier tech, lean funding" quadrant (top-left) where Proteins.1 sits
+_qx, _qy = _sx(60), _sy(7)
+_quad = (f'<rect x="{_x0}" y="{_y1}" width="{_qx-_x0:.1f}" height="{_qy-_y1:.1f}" class="quad"/>'
+         f'<text x="{_x0+10}" y="{_y1+18}" class="quad-t">frontier tech &middot; lean funding</text>')
+
+_dots = ""
+for p in sorted(_plot, key=lambda p: p["self"]):  # self drawn last, on top
+    cx, cy = _sx(p["usd"]), _sy(p["tech"])
+    cls = "dot self" if p["self"] else "dot"
+    r = 9 if p["self"] else 6
+    _dots += (f'<circle cx="{cx:.1f}" cy="{cy:.1f}" r="{r}" class="{cls}" '
+              f'data-n="{e(p["name"])}" data-t="{p["tech"]}" data-u="{p["usd"]:.1f}" '
+              f'data-b="{e(p["basis"])}" data-note="{e(p["note"])}"/>')
+    if p["self"]:
+        _dots += (f'<line x1="{cx:.1f}" y1="{cy:.1f}" x2="{cx:.1f}" y2="{_y0}" class="cross"/>'
+                  f'<line x1="{cx:.1f}" y1="{cy:.1f}" x2="{_x0}" y2="{cy:.1f}" class="cross"/>')
+    lx = cx + (11 if cx < _x1 - 90 else -11)
+    anch = "start" if cx < _x1 - 90 else "end"
+    _dots += (f'<text x="{lx:.1f}" y="{cy-9:.1f}" text-anchor="{anch}" '
+              f'class="lbl{" lbl-self" if p["self"] else ""}">{e(p["name"])}</text>')
+
+scatter_svg = f"""<svg viewBox="0 0 {_W} {_H}" class="scatter" role="img"
+  aria-label="Scatter of the top-10 EU peers and Proteins.1 by technology modernity (0-10) versus funding raised (USD millions, log scale)">
+  {_quad}
+  {_gridlines}
+  <line x1="{_x0}" y1="{_y0}" x2="{_x1}" y2="{_y0}" class="axis"/>
+  <line x1="{_x0}" y1="{_y0}" x2="{_x0}" y2="{_y1}" class="axis"/>
+  <text x="{(_x0+_x1)/2:.0f}" y="{_H-14}" class="ax-title" text-anchor="middle">Funding raised &mdash; USD millions (log scale)</text>
+  <text x="18" y="{(_y0+_y1)/2:.0f}" class="ax-title" text-anchor="middle" transform="rotate(-90 18 {(_y0+_y1)/2:.0f})">Technology modernity (0&ndash;10)</text>
+  {_dots}
+</svg>"""
+
+pending_html = ("".join(
+    f'<li><span class="p-n">{e(p["name"])}</span><span class="p-t mono">tech {p["tech"]}</span>'
+    f'<span class="p-note">{e(p["note"])}</span></li>' for p in _pending)
+    or '<li class="muted">All positioned.</li>')
 
 # ---- Q2: what made the top 3 succeed -----------------------------------
 def q2_card(c):
@@ -289,6 +386,43 @@ table{border-collapse:collapse;width:100%;font-size:14px;}
 .q4-empty code{font-family:"JetBrains Mono",monospace;background:var(--card);border:1px solid var(--border);
   border-radius:6px;padding:2px 8px;font-size:.86rem;}
 
+/* landscape scatter */
+.scatter-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--r);
+  box-shadow:var(--sh-sm);padding:22px 24px 16px;}
+.legend{display:flex;gap:22px;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--ink-2);margin-bottom:6px;}
+.legend .sw{display:inline-block;width:11px;height:11px;border-radius:50%;margin-right:7px;vertical-align:-1px;}
+.sw-peer{background:#64748B;}
+.sw-self{background:var(--brand);box-shadow:0 0 0 2px #fff,0 0 0 3px var(--brand);}
+.scatter{width:100%;height:auto;display:block;overflow:visible;font-family:"JetBrains Mono",monospace;}
+.scatter .grid{stroke:#EEF0F5;stroke-width:1;}
+.scatter .axis{stroke:var(--border-2);stroke-width:1.5;}
+.scatter .ax-t{fill:var(--ink-3);font-size:10px;}
+.scatter .ax-title{fill:var(--ink-2);font-size:11px;font-weight:600;letter-spacing:.02em;}
+.scatter .quad{fill:var(--brand-wash-2,#F4F2FF);}
+.scatter .quad-t{fill:#A9A2E8;font-size:10px;letter-spacing:.04em;}
+.scatter .dot{fill:#64748B;stroke:#fff;stroke-width:1.5;cursor:pointer;transition:r .1s;}
+.scatter .dot:hover{r:8;}
+.scatter .dot.self{fill:var(--brand);stroke:#fff;stroke-width:2.5;}
+.scatter .dot.self:hover{r:11;}
+.scatter .cross{stroke:var(--brand);stroke-width:1;stroke-dasharray:3 3;opacity:.4;}
+.scatter .lbl{fill:var(--ink-3);font-size:10px;}
+.scatter .lbl-self{fill:var(--brand-ink);font-size:11.5px;font-weight:700;}
+.scatter-note{font-size:.82rem;color:var(--ink-3);margin:10px 0 0;line-height:1.5;}
+.scatter-note code{font-family:"JetBrains Mono",monospace;background:var(--bg-softer);border-radius:5px;padding:1px 6px;font-size:.78rem;}
+.pending{margin-top:22px;}
+.pending .k{display:block;font-family:"JetBrains Mono",monospace;font-size:10.5px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:10px;}
+.pending ul{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+.pending li{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 12px;font-size:12.5px;}
+.pending .p-n{font-weight:600;}
+.pending .p-t{color:var(--brand-ink);margin-left:8px;font-size:11px;}
+.pending .p-note{display:block;color:var(--ink-3);font-size:11px;margin-top:3px;}
+#scatter-tip{position:fixed;z-index:80;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;
+  line-height:1.45;padding:9px 12px;border-radius:8px;box-shadow:var(--sh-lg);max-width:260px;opacity:0;transition:opacity .1s;}
+#scatter-tip.on{opacity:1;}
+#scatter-tip b{font-family:"Sora",sans-serif;}
+#scatter-tip .tv{font-family:"JetBrains Mono",monospace;color:#C7C3F5;}
+
 /* CTA band */
 .cta-band{background:var(--bg-softer);border-radius:var(--r);padding:48px;text-align:center;}
 .cta-band h2{font-size:1.7rem;font-weight:700;}
@@ -450,7 +584,35 @@ __Q1_ROWS__
     </div>
   </section>
 
-  <section id="q2">
+  <section id="landscape">
+    <div class="container">
+      <div class="sec-head">
+        <span class="eyebrow">Where everyone sits</span>
+        <h2>The landscape on two axes</h2>
+        <p>Each of the top ten, and Proteins.1, placed by <strong>technology modernity</strong>
+        (a fixed rubric over the detection mechanism) against <strong>funding raised</strong>
+        (USD, log scale). Proteins.1 sits top-left: frontier tech, lean funding.</p>
+      </div>
+      <div class="scatter-wrap">
+        <div class="legend">
+          <span><i class="sw sw-peer"></i>EU top-10 peer</span>
+          <span><i class="sw sw-self"></i>Proteins.1</span>
+        </div>
+__LANDSCAPE_SVG__
+        <p class="scatter-note">Y is deterministic from each platform&rsquo;s mechanism (nanopore /
+        single-molecule / enzyme-free &asymp; 9, mass photometry &asymp; 8, PEA &asymp; 7, mass-spec
+        &asymp; 5&ndash;6). X uses each company&rsquo;s own stated total where available &mdash;
+        edit <code>reports/data/funding_seed.json</code> to add sourced figures. Proteins.1: &euro;4.7M
+        per the challenge brief.</p>
+      </div>
+      <div class="pending">
+        <span class="k">Funding not disclosed &mdash; position pending a sourced figure</span>
+        <ul>__LANDSCAPE_PENDING__</ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="q2" class="alt">
     <div class="container">
       <div class="sec-head">
         <span class="eyebrow">Question 2</span>
@@ -464,7 +626,7 @@ __Q2_CARDS__
     </div>
   </section>
 
-  <section id="q3" class="alt">
+  <section id="q3">
     <div class="container">
       <div class="sec-head">
         <span class="eyebrow">Question 3</span>
@@ -496,7 +658,7 @@ __REC_ROUTE__
     </div>
   </section>
 
-  <section id="q4">
+  <section id="q4" class="alt">
     <div class="container">
       <div class="sec-head">
         <span class="eyebrow">Question 4</span>
@@ -625,7 +787,10 @@ function coBody(c){
   return ''
   +'<div class="sec-blk"><span class="k">What they do</span>'
   +(c.what_they_do?'<p class="prose">'+esc(c.what_they_do)+'</p>':'<p class="none">not captured</p>')
-  +kv([['Mechanism',c.technology_approach],['Modality',c.detection_modality],['Sensitivity',c.sensitivity_claim],['Sample',c.sample_requirement],['Stage',c.stage],['Funding',c.funding_summary],['Applications',arr(c.target_applications).join(', ')],['Partnerships',arr(c.key_partnerships).join(', ')]])
+  +kv([['Mechanism',c.technology_approach],['Modality',c.detection_modality],['Sensitivity',c.sensitivity_claim],['Sample',c.sample_requirement],['Stage',c.stage],['Funding',c.funding_summary],
+       ['Technology score',(c.technology_score?c.technology_score+' / 10 - '+esc(c.technology_score_note||''):'')],
+       ['Funding (USD m)',(c.funding_usd_m?'$'+c.funding_usd_m+'M'+(c.funding_basis?' - '+esc(c.funding_basis):''):'not disclosed')],
+       ['Applications',arr(c.target_applications).join(', ')],['Partnerships',arr(c.key_partnerships).join(', ')]])
   +'</div>'
   +'<div class="sec-blk"><span class="k">The leader to study</span><p><strong>'+(esc(c.leader_name)||'<span class="none">not named</span>')+'</strong>'+(c.leader_role?' <span class="none">'+esc(c.leader_role)+'</span>':'')+'</p>'
   +(c.leader_background?'<p class="prose">'+esc(c.leader_background)+'</p>':'')
@@ -705,6 +870,24 @@ function renderArticles(){
 }
 ['ar-q','ar-domain'].forEach(id=>document.getElementById(id).addEventListener('input',renderArticles));
 
+/* landscape scatter hover */
+(function(){
+  const svg=document.querySelector('.scatter'); if(!svg) return;
+  const tip=document.createElement('div'); tip.id='scatter-tip'; document.body.appendChild(tip);
+  svg.querySelectorAll('.dot').forEach(d=>{
+    d.addEventListener('mousemove',ev=>{
+      const u=parseFloat(d.dataset.u);
+      tip.innerHTML='<b>'+esc(d.dataset.n)+'</b><br>'
+        +'<span class="tv">technology '+d.dataset.t+'/10</span> &mdash; '+esc(d.dataset.note)+'<br>'
+        +'<span class="tv">funding $'+(u>=1000?(u/1000).toFixed(1)+'B':u.toFixed(u<10?1:0)+'M')+'</span>'
+        +(d.dataset.b?' &mdash; '+esc(d.dataset.b):'');
+      tip.style.left=Math.min(ev.clientX+14,innerWidth-270)+'px';
+      tip.style.top=(ev.clientY+14)+'px'; tip.classList.add('on');
+    });
+    d.addEventListener('mouseleave',()=>tip.classList.remove('on'));
+  });
+})();
+
 renderCompanies();renderCensus();renderArticles();
 </script>
 """
@@ -757,6 +940,8 @@ out = (TEMPLATE
        .replace("__PREVIEW_ROWS__", preview_rows)
        .replace("__Q1_TOP3__", q1_top3)
        .replace("__Q1_ROWS__", q1_rows)
+       .replace("__LANDSCAPE_SVG__", scatter_svg)
+       .replace("__LANDSCAPE_PENDING__", pending_html)
        .replace("__Q2_CARDS__", q2_cards)
        .replace("__REC_FROM__", rec_from or "the top companies")
        .replace("__REC_HEADLINE__", e(rec.get("headline")))

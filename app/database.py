@@ -89,6 +89,12 @@ class Company(Base):
     rank = Column(Integer, default=0)
     is_leader = Column(Boolean, default=False, index=True)
 
+    # --- landscape XY axes (see app/agent/pipeline.py position_companies) ---
+    technology_score = Column(Float, default=0.0)         # 0-10, how modern the detection approach is
+    technology_score_note = Column(Text, default="")
+    funding_usd_m = Column(Float, default=0.0)            # best total funding in USD millions; 0 = not known
+    funding_basis = Column(Text, default="")             # where the figure comes from ("" = not disclosed)
+
     source_urls = Column(Text, default="[]")
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
@@ -144,6 +150,29 @@ class DiscoveredArticle(Base):
 
 def init_db():
     Base.metadata.create_all(bind=engine)
+    _add_missing_columns()
+
+
+def _add_missing_columns():
+    """create_all() adds missing tables but not missing columns. For a SQLite
+    file that predates a model change, add any simple scalar columns that the
+    models declare and the table lacks (SQLite ALTER TABLE ADD COLUMN)."""
+    from sqlalchemy import inspect, text
+
+    _sql_type = {"INTEGER": "INTEGER", "VARCHAR": "TEXT", "TEXT": "TEXT",
+                 "FLOAT": "REAL", "BOOLEAN": "INTEGER", "DATETIME": "TIMESTAMP"}
+    insp = inspect(engine)
+    tables = set(insp.get_table_names())
+    with engine.begin() as conn:
+        for table in Base.metadata.sorted_tables:
+            if table.name not in tables:
+                continue
+            have = {c["name"] for c in insp.get_columns(table.name)}
+            for col in table.columns:
+                if col.name in have or col.primary_key:
+                    continue
+                ddl = _sql_type.get(str(col.type).split("(")[0].upper(), "TEXT")
+                conn.execute(text(f'ALTER TABLE "{table.name}" ADD COLUMN "{col.name}" {ddl}'))
 
 
 def get_db():
