@@ -138,8 +138,8 @@ regenerate it after a new collection run (step 5).
 ### 4. Run a full collection (populates the DB)
 
 ```bash
-PYTHONPATH=. python scripts/collect.py            # discover → analyse (≤16 companies) → rank → synthesise
-PYTHONPATH=. python scripts/collect.py 8          # cap analysis to 8 companies (fewer LLM/API calls)
+PYTHONPATH=. python3 scripts/collect.py            # discover → analyse (≤16 companies) → rank → synthesise
+PYTHONPATH=. python3 scripts/collect.py 8          # cap analysis to 8 companies (fewer LLM/API calls)
 ```
 
 Cost per full run: ~30 Serper credits for discovery + ~1 per analysed company,

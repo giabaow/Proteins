@@ -1,0 +1,24 @@
+# Render blueprint - https://render.com/docs/blueprint-spec
+# Deploys the FastAPI app as a web service. GET / serves the committed
+# reports/frontend.html (data embedded), so the site is fully functional
+# read-only with no database. Running a collection needs a paid persistent
+# disk; for a showcase, regenerate frontend.html locally and push.
+services:
+  - type: web
+    name: proteins1-landscape
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # entered in the Render dashboard, not stored here:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SERPER_API_KEY
+        sync: false
+      - key: SEC_USER_AGENT
+        sync: false
