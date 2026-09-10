@@ -6,56 +6,56 @@
       "Oxford Nanopore Technologies",
       "Depixus"
     ],
-    "headline": "Commercialise the enzyme-free single-molecule platform first as a research-use instrument for rare/low-abundance biomarker detection, proving superiority over bulk-average incumbents with named benchmarking partners, before using that credibility and revenue base to bridge into regulated diagnostics.",
+    "headline": "Commercialize Proteins.1 as a research-use, single-molecule biomarker instrument company first—anchored in strong academic/IP credibility, validated by head-to-head benchmarking against incumbent bulk methods, and funded through a grants-plus-staged-VC path—before pursuing regulated diagnostics.",
     "applications": [
       {
-        "application": "Ultra-sensitive oncology biomarker discovery (rare circulating proteins, early-detection panels)",
-        "rationale": "All three peers (Refeyn, ONT, Depixus) built their initial commercial base on single-molecule sensitivity beating bulk methods for low-abundance targets; oncology is the highest-value, most fundable entry point."
+        "application": "Oncology, neurology, and immunology biomarker discovery in research labs (rare/low-abundance protein and nucleic acid targets)",
+        "rationale": "All three peers (Refeyn, Oxford Nanopore, Depixus) launched into these exact research verticals before any diagnostics pivot, using them to build peer-reviewed validation and reference customers."
       },
       {
-        "application": "Neurology biomarker panels (neurodegenerative disease protein signatures)",
-        "rationale": "Oxford Nanopore's MATRIX CNS-tumour and VCGS ISO15189 path shows how a neurology/CNS beachhead can later anchor a clinical accreditation partnership."
+        "application": "Pharma/biotech target validation and biomarker workflows (as a complement to SPR, ELISA, mass spec, Simoa/Olink)",
+        "rationale": "Depixus built its go-to-market on drug-discovery target validation with published SPR comparisons; Refeyn expanded from academic characterization into pharma QC/manufacturing use."
       },
       {
-        "application": "Drug-discovery target validation and hit-to-lead biomolecular interaction profiling",
-        "rationale": "Depixus built its research-use GTM entirely around pharma target validation, positioning MAGNA One head-to-head against SPR/Biacore for interaction data at single-molecule resolution."
+        "application": "Multi-omic, single-platform biomarker panels (DNA+RNA+protein from one enzyme-free run)",
+        "rationale": "Oxford Nanopore's 'richer insights, one-platform' multiomic positioning is directly analogous to Proteins.1's unique ability to read DNA/RNA/protein together—an underexploited differentiator versus single-modality peers."
       },
       {
-        "application": "Multi-modal single-run DNA/RNA/protein biomarker panels ('one-platform' multiomic pitch)",
-        "rationale": "Refeyn and ONT both differentiate on replacing multiple bulk assays with one richer single-molecule readout; Proteins.1's cross-biomolecule capability is a natural extension of this positioning."
+        "application": "CRO/core-facility characterization services as an early revenue and credibility channel",
+        "rationale": "Refeyn's ABL Europe partnership and Depixus' pharma reference customers show CRO/core-facility adoption builds both revenue and public validation ahead of clinical expansion."
       },
       {
-        "application": "Biopharma QC/characterization (proteins, antibodies, viral vectors) as a later expansion",
-        "rationale": "Refeyn's trajectory from academic protein characterization into AAV/antibody GMP QC shows a natural second wave once instruments and software modules mature."
+        "application": "Bridge pilot into regulated diagnostics via a flagship clinical/genomics lab partnership (e.g., rapid oncology or CNS biomarker panel)",
+        "rationale": "Oxford Nanopore's VCGS ISO 15189 and MATRIX CNS-tumour collaborations are the explicit template for later-stage diagnostics entry once research traction is proven."
       }
     ],
     "market_route": [
       {
-        "step": "Anchor scientific credibility on VTT IP and named academic authority",
-        "detail": "Publish the seminal enzyme-free physics paper and align a recognized academic co-founder/authority figure with the platform, mirroring Refeyn (Kukura), ONT, and Depixus (Croquette/Bensimon) precedents to build early trust."
+        "step": "Anchor scientific credibility",
+        "detail": "Lead with VTT-originated IP and named academic/scientific co-founders, publishing the seminal physics/method paper, mirroring Refeyn (Kukura), Oxford Nanopore, and Depixus (Croquette/Bensimon) academic-anchor patterns."
       },
       {
-        "step": "Publish head-to-head benchmarking studies against incumbents",
-        "detail": "Run and publish comparisons vs. Simoa, ELISA, mass spectrometry, SPR and AUC with named CRO/pharma/academic partners, following Refeyn's ABL Europe and Depixus's SPR-comparison playbooks to convert skepticism into adoption."
+        "step": "Publish head-to-head benchmarking",
+        "detail": "Run and publish direct comparison studies against gold-standard incumbents (ELISA, mass spec, Simoa/Olink, SPR/Biacore) with named CRO/pharma partners, as Refeyn did with ABL Europe and Depixus did vs. SPR—this is the single most repeated success factor across all three peers."
       },
       {
-        "step": "Launch a tiered benchtop instrument line for research-use-only markets",
-        "detail": "Offer an entry-level and an automated/higher-throughput configuration from day one (as with Refeyn's TwoMP/SamuxMP and ONT's pocket-to-production scaling), targeting academic core facilities and CROs first."
+        "step": "Launch a tiered, staged instrument line",
+        "detail": "Release an entry-level benchtop system for academic/CRO adopters first, followed by an automated/high-throughput version for pharma QC, plus application-specific software modules per biomarker class (DNA/RNA/protein), following Refeyn's TwoMP→SamuxMP and Oxford Nanopore's pocket→production scaling."
       },
       {
-        "step": "Fund via a blended non-dilutive + staged dilutive path",
-        "detail": "Combine EU/Horizon and national deep-tech grants with seed and Series A/B rounds from specialist life-science/deep-tech investors (as all three peers did), preserving runway for multi-year hardware/chemistry iteration."
+        "step": "Fund via mixed non-dilutive and dilutive capital",
+        "detail": "Sequence EU/Horizon/Business Finland grants and accelerator support alongside seed and Series A/B rounds from specialist deep-tech/life-science investors (IP-commercialisation and biotech-focused VCs), extending runway through the capital-intensive hardware development phase, as all three peers did."
       },
       {
-        "step": "Build application-specific software modules and recruit commercial leadership",
-        "detail": "Develop workflow-specific analysis modules per biomarker class (DNA/RNA/protein), and bring in a life-sciences-tools commercial executive with prior single-molecule/instrument scaling experience once core science is validated."
+        "step": "Recruit commercial leadership and protect IP",
+        "detail": "Bring in a CEO/COO with a track record scaling single-molecule or sequencing instrument companies (ex-Illumina/Solexa/Sartorius/Danaher-type), while filing core hardware/detection patents early to build a defensible position citable to investors and customers."
       },
       {
-        "step": "Secure a flagship clinical/diagnostics partnership as the bridge to regulated use",
-        "detail": "After building a research-use revenue base and reference customers, pursue an ISO15189-style accreditation partnership or landmark clinical lab collaboration (ONT/VCGS/MATRIX model) to move from research tool to regulated diagnostic."
+        "step": "Establish a flagship clinical partnership as the diagnostics bridge",
+        "detail": "After 2-3 years of research-use revenue and publication traction, pursue one landmark accredited clinical/genomics lab collaboration (ISO 15189-style) in oncology or neurology to pilot the transition from research tool to regulated diagnostic, following Oxford Nanopore's VCGS/MATRIX precedent."
       }
     ],
-    "sequence": "First, establish scientific credibility through VTT-anchored IP, a named academic authority, and published benchmarking data against gold-standard incumbents (ELISA, mass spec, Simoa, SPR, AUC). Simultaneously launch a tiered research-use instrument (entry and automated versions) into academic core facilities, CROs, and pharma R&D for oncology, neurology, and drug-discovery target-validation applications, funded through a blended grant-plus-staged-VC path. As adoption and reference data accumulate, layer in application-specific software modules and recruit an experienced life-sciences-tools commercial leader to scale go-to-market and expand into pharma QC/characterization use cases. Only once a solid research-use revenue base and published validation record exist should Proteins.1 pursue a landmark clinical/diagnostics partnership (e.g., ISO15189 accreditation) as the deliberate bridge into regulated diagnostics, rather than attempting clinical entry prematurely.",
+    "sequence": "Years 0-2: solidify academic/IP credibility, publish benchmarking data against incumbent methods, and launch an entry-level benchtop instrument into academic and CRO research-use markets in oncology/neurology/immunology, funded by grants plus seed capital. Years 1-3: build out application-specific software modules per biomarker class, add a higher-throughput/automated instrument tier, and convert CRO/pharma pilots into recurring revenue and reference customers while raising a Series A/B from specialist life-science investors. In parallel, recruit an experienced instrument-company commercial leader and file core IP. Years 3-5: leverage the accumulated publication base and pharma relationships to secure one flagship accredited clinical-lab partnership as a regulated-diagnostics beachhead, only scaling into clinical markets once research-use revenue and validation are firmly established.",
     "created_at": "2026-09-10 06:13:15.031879"
   }
 ]

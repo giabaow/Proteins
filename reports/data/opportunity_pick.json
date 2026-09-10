@@ -1,15 +1,36 @@
 [
   {
     "id": 1,
-    "disease_area": "",
-    "biomarker": "",
-    "why_it_fits": "",
-    "unmet_need": "",
-    "competitive_gap": "",
-    "first_customer": "",
-    "first_customer_why": "",
-    "runner_up": "",
-    "evidence": [],
+    "disease_area": "Neuro-oncology / CNS tumor liquid biopsy (glioma and brain metastasis monitoring via CSF and low-volume plasma)",
+    "biomarker": "Multiplex CSF/plasma panel combining tumor-derived mutant proteins and ctDNA fragments with glial injury/tumor proteins (e.g., mutant EGFRvIII, IDH1-R132H protein, GFAP, and tumor ctDNA from the same <100 µL draw) for detection and MRD monitoring after resection/radiotherapy",
+    "why_it_fits": "CNS tumor markers shed at extremely low levels into CSF and especially peripheral blood because of the blood-brain barrier, well below what bulk immunoassays or even Simoa-class digital ELISA can reliably multiplex; current workflows require separate DNA (ctDNA) and protein assays run on different platforms from precious, tiny CSF volumes. A molecule-agnostic, single-molecule chip that reads protein AND nucleic acid from the same <100 µL CSF/plasma sample in one multiplexed run is decisive here, not incremental, because it removes the need to split scarce sample across ddPCR/NGS and separate protein assays, and can catch post-surgical MRD signal that today's methods miss due to dilution below their floor.",
+    "unmet_need": "There is no validated, sensitive, low-volume liquid biopsy for glioma/CNS tumor MRD and recurrence monitoring; current options (imaging, repeat biopsy, or splitting tiny CSF samples across separate DNA/protein assays) are invasive, low-sensitivity, or sample-limited, leaving a real gap for a single-run multiplex protein+nucleic acid readout from <100 µL CSF.",
+    "competitive_gap": "Genomill Health is strong on ultra-sensitive ctDNA/NGS panels (pan-cancer, colorectal focus) but is DNA-only and not molecule-agnostic, so it cannot co-detect protein markers like mutant IDH1 or GFAP from the same aliquot. Olink and Biognosys deliver high-plex protein data but are femtomolar-class, antibody/MS-based, need more sample volume, and don't touch nucleic acids in the same assay. Oxford Nanopore does multiomic sequencing but is not built for ultra-low-volume, single-molecule protein quantification alongside DNA in one clinical workflow. None combine sub-attomolar single-molecule sensitivity, true DNA+RNA+protein multiplexing, and <100 µL CSF compatibility in one chip - this is Proteins.1's white space.",
+    "first_customer": "Oncology KOL / neuro-oncology translational research group running a post-surgical glioma MRD or recurrence-monitoring cohort (academic medical center or comprehensive cancer center with a biobank of longitudinal CSF/plasma samples)",
+    "first_customer_why": "These groups already have banked, volume-limited CSF/plasma cohorts from resection and treatment time-points, an unmet need for a sensitive MRD readout, and grant/pharma-partnership budget to pay for a fee-for-service multiplex assay run rather than buying capital equipment. They can generate publishable proof-of-concept data quickly, creating a reference customer for pharma translational-medicine partnerships (e.g., companies developing IDH inhibitors or glioma immunotherapies) that need companion biomarker data in early trials.",
+    "runner_up": "Alzheimer's/Parkinson's synaptic and neuroinflammatory panel (e.g., alpha-synuclein seed-amplification-adjacent species, synaptic vesicle proteins like neurogranin/SNAP-25, and IL-6/TNF co-panel) for early prodromal staging - but plasma p-tau217 itself is already well served by Simoa/other platforms, so the opportunity lies specifically in the harder-to-multiplex synaptic/neuroinflammatory co-panel below current sensitivity floors, not in p-tau217 itself.",
+    "evidence": [
+      {
+        "point": "Genomill's pan-cancer ctDNA panel is DNA-only and tumor-informed/naive but does not multiplex with protein from the same sample",
+        "source": "Genomill Health competitor profile"
+      },
+      {
+        "point": "Olink and Biognosys require more sample volume and are optimized for femtomolar-range circulating proteins, already crowded for markers like p-tau217",
+        "source": "Olink; Biognosys competitor profiles"
+      },
+      {
+        "point": "Attomolar-sensitivity digital platforms (Simoa, NULISA) are cited as the current best-in-class, setting the bar that ultra-sensitivity claims must clear to be decisive",
+        "source": "NULISA: a proteomic liquid biopsy platform with attomolar sensitivity"
+      },
+      {
+        "point": "Platform is explicitly molecule-agnostic (same chip reads protein, DNA, RNA) and needs <100 µL sample, matching CSF volume constraints in neuro-oncology",
+        "source": "platform property"
+      },
+      {
+        "point": "Nanopore-based single-molecule protein sensing is an active research frontier but not yet a clinical multiplexed protein+nucleic acid product",
+        "source": "Nanopore sensors for single molecular protein detection - PMC"
+      }
+    ],
     "from_inputs": [
       "14 analysed companies",
       "141 article titles"
