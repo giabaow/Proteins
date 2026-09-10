@@ -1,0 +1,61 @@
+[
+  {
+    "id": 1,
+    "from_companies": [
+      "Refeyn",
+      "Oxford Nanopore Technologies",
+      "Depixus"
+    ],
+    "headline": "Commercialise the enzyme-free single-molecule platform first as a research-use instrument for rare/low-abundance biomarker detection, proving superiority over bulk-average incumbents with named benchmarking partners, before using that credibility and revenue base to bridge into regulated diagnostics.",
+    "applications": [
+      {
+        "application": "Ultra-sensitive oncology biomarker discovery (rare circulating proteins, early-detection panels)",
+        "rationale": "All three peers (Refeyn, ONT, Depixus) built their initial commercial base on single-molecule sensitivity beating bulk methods for low-abundance targets; oncology is the highest-value, most fundable entry point."
+      },
+      {
+        "application": "Neurology biomarker panels (neurodegenerative disease protein signatures)",
+        "rationale": "Oxford Nanopore's MATRIX CNS-tumour and VCGS ISO15189 path shows how a neurology/CNS beachhead can later anchor a clinical accreditation partnership."
+      },
+      {
+        "application": "Drug-discovery target validation and hit-to-lead biomolecular interaction profiling",
+        "rationale": "Depixus built its research-use GTM entirely around pharma target validation, positioning MAGNA One head-to-head against SPR/Biacore for interaction data at single-molecule resolution."
+      },
+      {
+        "application": "Multi-modal single-run DNA/RNA/protein biomarker panels ('one-platform' multiomic pitch)",
+        "rationale": "Refeyn and ONT both differentiate on replacing multiple bulk assays with one richer single-molecule readout; Proteins.1's cross-biomolecule capability is a natural extension of this positioning."
+      },
+      {
+        "application": "Biopharma QC/characterization (proteins, antibodies, viral vectors) as a later expansion",
+        "rationale": "Refeyn's trajectory from academic protein characterization into AAV/antibody GMP QC shows a natural second wave once instruments and software modules mature."
+      }
+    ],
+    "market_route": [
+      {
+        "step": "Anchor scientific credibility on VTT IP and named academic authority",
+        "detail": "Publish the seminal enzyme-free physics paper and align a recognized academic co-founder/authority figure with the platform, mirroring Refeyn (Kukura), ONT, and Depixus (Croquette/Bensimon) precedents to build early trust."
+      },
+      {
+        "step": "Publish head-to-head benchmarking studies against incumbents",
+        "detail": "Run and publish comparisons vs. Simoa, ELISA, mass spectrometry, SPR and AUC with named CRO/pharma/academic partners, following Refeyn's ABL Europe and Depixus's SPR-comparison playbooks to convert skepticism into adoption."
+      },
+      {
+        "step": "Launch a tiered benchtop instrument line for research-use-only markets",
+        "detail": "Offer an entry-level and an automated/higher-throughput configuration from day one (as with Refeyn's TwoMP/SamuxMP and ONT's pocket-to-production scaling), targeting academic core facilities and CROs first."
+      },
+      {
+        "step": "Fund via a blended non-dilutive + staged dilutive path",
+        "detail": "Combine EU/Horizon and national deep-tech grants with seed and Series A/B rounds from specialist life-science/deep-tech investors (as all three peers did), preserving runway for multi-year hardware/chemistry iteration."
+      },
+      {
+        "step": "Build application-specific software modules and recruit commercial leadership",
+        "detail": "Develop workflow-specific analysis modules per biomarker class (DNA/RNA/protein), and bring in a life-sciences-tools commercial executive with prior single-molecule/instrument scaling experience once core science is validated."
+      },
+      {
+        "step": "Secure a flagship clinical/diagnostics partnership as the bridge to regulated use",
+        "detail": "After building a research-use revenue base and reference customers, pursue an ISO15189-style accreditation partnership or landmark clinical lab collaboration (ONT/VCGS/MATRIX model) to move from research tool to regulated diagnostic."
+      }
+    ],
+    "sequence": "First, establish scientific credibility through VTT-anchored IP, a named academic authority, and published benchmarking data against gold-standard incumbents (ELISA, mass spec, Simoa, SPR, AUC). Simultaneously launch a tiered research-use instrument (entry and automated versions) into academic core facilities, CROs, and pharma R&D for oncology, neurology, and drug-discovery target-validation applications, funded through a blended grant-plus-staged-VC path. As adoption and reference data accumulate, layer in application-specific software modules and recruit an experienced life-sciences-tools commercial leader to scale go-to-market and expand into pharma QC/characterization use cases. Only once a solid research-use revenue base and published validation record exist should Proteins.1 pursue a landmark clinical/diagnostics partnership (e.g., ISO15189 accreditation) as the deliberate bridge into regulated diagnostics, rather than attempting clinical entry prematurely.",
+    "created_at": "2026-09-10 06:13:15.031879"
+  }
+]

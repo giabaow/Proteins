@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import Company, DiscoveredArticle, DiscoveredCompany, get_db
+from app.database import Company, DiscoveredArticle, DiscoveredCompany, Recommendation, get_db
 from app.schemas import (
     AnalyzeRequest,
     CompanyOut,
@@ -16,7 +16,7 @@ from app.schemas import (
 )
 from app.chroma_store import query_evidence
 from app.agent.discovery import discover
-from app.agent.pipeline import analyze_company, rank_companies
+from app.agent.pipeline import analyze_company, rank_companies, synthesize_recommendation
 
 router = APIRouter(prefix="/api", tags=["collection"])
 
@@ -140,6 +140,30 @@ def list_companies(leaders_only: bool = False, country: str | None = None, db: S
     if country:
         q = q.filter(Company.country == country)
     return [_company_out(r) for r in q.order_by(Company.rank).all()]
+
+
+@router.post("/synthesize")
+def synthesize(top_k: int = 3, db: Session = Depends(get_db)):
+    """Build the consolidated application + market-route recommendation for
+    Proteins.1 from the top-k companies' playbooks (frontend Overview, Q3)."""
+    try:
+        return synthesize_recommendation(db, top_k=top_k)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/recommendation")
+def get_recommendation(db: Session = Depends(get_db)):
+    row = db.query(Recommendation).filter(Recommendation.id == 1).first()
+    if row is None:
+        raise HTTPException(status_code=404, detail="no recommendation yet - run POST /api/synthesize")
+    return {
+        "from_companies": _list(row.from_companies),
+        "headline": row.headline or "",
+        "applications": _list(row.applications),
+        "market_route": _list(row.market_route),
+        "sequence": row.sequence or "",
+    }
 
 
 @router.post("/evidence")

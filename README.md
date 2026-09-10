@@ -49,12 +49,15 @@ whose playbook is most transferable to Proteins.1.
 
 | Method | Path | |
 |---|---|---|
+| GET | `/` | **The frontend** — one page, Overview + Data tabs. Serves `reports/frontend.html`. |
 | POST | `/api/discover` | Run the landscape sweep. Body optional: `{"extra_terms": [...], "per_query": 8, "max_queries": 6}`. ~1 Serper credit per query. |
 | GET | `/api/discovered-companies` | The census. Filters: `?country=`, `?platform_type=`, `?analysed=`. |
 | GET | `/api/discovered-articles` | `?domain=` filter. |
 | POST | `/api/analyze` | `{"company_name": "Refeyn", "urls": []}` — fetch pages, extract facts, synthesise the playbook into a `companies` row. |
-| POST | `/api/rank` | `{"top_n": 5}` — score every analysed company; flag the leaders. |
+| POST | `/api/rank` | `{"top_n": 10}` — score every analysed company; flag the leaders. |
 | GET | `/api/companies` | The analysed companies, by rank. `?leaders_only=true`, `?country=`. |
+| POST | `/api/synthesize` | `?top_k=3` — build the consolidated recommendation for Proteins.1 from the top-k playbooks. |
+| GET | `/api/recommendation` | The consolidated recommendation (Overview Q3). |
 | POST | `/api/evidence` | Semantic search over the raw collected text. |
 
 ## Layout
@@ -63,7 +66,7 @@ whose playbook is most transferable to Proteins.1.
 app/
   main.py            FastAPI app
   config.py          env vars + store paths
-  database.py        SQLite models: DiscoveredCompany, Company, DiscoveredArticle
+  database.py        SQLite models: DiscoveredCompany, Company, Recommendation, DiscoveredArticle
   schemas.py         Pydantic request/response models
   chroma_store.py    embedded ChromaDB wrapper
   agent/

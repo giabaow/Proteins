@@ -1,5 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 
 from app.database import init_db
 from app.routers.collection import router as collection_router
@@ -16,10 +19,19 @@ app.add_middleware(
 
 app.include_router(collection_router)
 
+_FRONTEND = Path(__file__).resolve().parent.parent / "reports" / "frontend.html"
 
-@app.on_event("startup")
-def on_startup():
-    init_db()
+
+@app.get("/", include_in_schema=False)
+def frontend():
+    """The single frontend page (Overview + Data tabs). Regenerate with
+    `python reports/build_frontend_page.py`."""
+    if _FRONTEND.exists():
+        return FileResponse(_FRONTEND, media_type="text/html")
+    return JSONResponse(
+        {"detail": "frontend not built - run: python reports/build_frontend_page.py"},
+        status_code=503,
+    )
 
 
 @app.get("/health")

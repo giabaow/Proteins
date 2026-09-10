@@ -21,7 +21,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.chroma_store import add_chunks
-from app.database import Company, DiscoveredCompany
+from app.database import Company, DiscoveredCompany, Recommendation
 from app.agent.tools import (
     search_web,
     search_sec_filings,
@@ -435,4 +435,81 @@ def rank_companies(db: Session, top_n: int = 5) -> dict:
                        "evidence": r.score_evidence, "ecosystem": r.score_ecosystem}}
             for _t, r in scored
         ],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Step 4 - synthesise ONE consolidated recommendation for Proteins.1 from the
+# playbooks of the top-scoring companies (Overview / question 3)
+# ---------------------------------------------------------------------------
+
+RECOMMENDATION_PROMPT = """You are advising Proteins.1 - a seed-stage Finnish deep-tech company (VTT \
+spinout) with a physics-based, ENZYME-FREE platform that amplifies and reads single protein molecules \
+across DNA, RNA and proteins from tiny samples, at a sensitivity current instruments cannot reach. \
+Early targets: oncology, neurology, immunology in RESEARCH use; regulated clinical diagnostics later.
+
+You are given the playbooks (leader, success factors, and their own suggestions for Proteins.1) of \
+the 2-3 highest-relevance European peer companies. Synthesise ONE consolidated recommendation - not a \
+per-company list. Merge overlapping advice, resolve contradictions, and keep it specific and \
+actionable for a company at Proteins.1's stage.
+
+Return ONLY JSON, no markdown fences:
+{
+  "headline": string,                         // one sentence - the core takeaway
+  "applications": [                            // 3-5 concrete application bets, most important first
+     {"application": string, "rationale": string}   // rationale cites which peer(s) support it
+  ],
+  "market_route": [                            // 4-6 ordered go-to-market moves
+     {"step": string, "detail": string}
+  ],
+  "sequence": string                          // 3-5 sentences - the recommended order over time
+}
+"""
+
+
+def synthesize_recommendation(db: Session, top_k: int = 3) -> dict:
+    """Build the single Recommendation row from the top-k companies by score."""
+    top = (db.query(Company).filter(Company.relevance_score > 0)
+           .order_by(Company.rank).limit(top_k).all())
+    if not top:
+        return {"error": "no ranked companies"}
+
+    blocks = []
+    for c in top:
+        factors = [f.get("factor", "") for f in json.loads(c.success_factors or "[]") if isinstance(f, dict)]
+        blocks.append(
+            f"### {c.name} ({c.country}) - relevance {c.relevance_score}\n"
+            f"what they do: {c.what_they_do}\n"
+            f"leader: {c.leader_name} ({c.leader_role})\n"
+            f"success factors: {'; '.join(factors)}\n"
+            f"their application suggestions for Proteins.1: {'; '.join(json.loads(c.application_suggestions or '[]'))}\n"
+            f"their market-route suggestions: {'; '.join(json.loads(c.market_route_suggestions or '[]'))}\n"
+            f"their route summary: {c.route_summary}"
+        )
+    data = _llm_json(RECOMMENDATION_PROMPT, "\n\n".join(blocks)[:60000], max_tokens=6000)
+
+    def _pairs(key, a, b):
+        out = []
+        for item in (data.get(key) or []):
+            if isinstance(item, dict) and item.get(a):
+                out.append({a: str(item[a]).strip(), b: str(item.get(b, "")).strip()})
+        return out
+
+    row = db.query(Recommendation).filter(Recommendation.id == 1).first()
+    if row is None:
+        row = Recommendation(id=1)
+        db.add(row)
+    row.from_companies = json.dumps([c.name for c in top])
+    row.headline = (data.get("headline") or "").strip()
+    row.applications = json.dumps(_pairs("applications", "application", "rationale"))
+    row.market_route = json.dumps(_pairs("market_route", "step", "detail"))
+    row.sequence = (data.get("sequence") or "").strip()
+    db.commit()
+    db.refresh(row)
+    return {
+        "from_companies": [c.name for c in top],
+        "headline": row.headline,
+        "applications": json.loads(row.applications),
+        "market_route": json.loads(row.market_route),
+        "sequence": row.sequence,
     }

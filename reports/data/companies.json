@@ -659,7 +659,7 @@
     },
     "relevance_score": 18.0,
     "rank": 6,
-    "is_leader": 0,
+    "is_leader": 1,
     "source_urls": [
       "https://www.evosep.com/evosep-one/",
       "https://www.evosep.com/support/documentation-old/",
@@ -908,7 +908,7 @@
     },
     "relevance_score": 15.5,
     "rank": 8,
-    "is_leader": 0,
+    "is_leader": 1,
     "source_urls": [
       "https://nanotempertech.com/dianthus/",
       "https://nanotempertech.com/about/",
@@ -1029,7 +1029,7 @@
     },
     "relevance_score": 15.5,
     "rank": 9,
-    "is_leader": 0,
+    "is_leader": 1,
     "source_urls": [
       "https://olink.com/",
       "https://blog.genewiz.com/how-olink-technology-is-revolutionizing-proteomics-and-multiomics",
@@ -1332,7 +1332,7 @@
     },
     "relevance_score": 18.0,
     "rank": 7,
-    "is_leader": 0,
+    "is_leader": 1,
     "source_urls": [
       "https://www.pixelgen.com/",
       "https://www.pixelgen.com/news/carolina-molecular-partners-with-pixelgen-becomes-first-us-certified-service-provider-for-pixelgen-proxiome-kit/",
@@ -1431,7 +1431,7 @@
     },
     "relevance_score": 13.5,
     "rank": 10,
-    "is_leader": 0,
+    "is_leader": 1,
     "source_urls": [
       "https://www.preomics.com/products/agilent",
       "https://www.preomics.com/products/ist",
