@@ -112,11 +112,14 @@ serves at `GET /`.
 ### 2. Setup
 
 ```bash
-python -m venv venv
-source venv/bin/activate                 # Windows: venv\Scripts\activate
+python3 -m venv venv                      # macOS/Linux: use python3 (there is no `python`). Windows: py -m venv venv
+source venv/bin/activate                  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 cp .env.example .env                      # then edit .env and add your keys
 ```
+
+Every `python ...` / `pip ...` command below assumes this venv is **activated**
+(the venv provides a bare `python`); otherwise substitute `python3`.
 
 ### 3. Run the API + frontend
 
