@@ -8,6 +8,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     anthropic_api_key: str = ""
+    # Only needed if the key above is an ORG-level key not scoped to a workspace
+    # (the API then requires the workspace id). A workspace-scoped key needs none.
+    anthropic_workspace_id: str = ""
     # Optional: Serper.dev Google Search API key. Enables the primary path in
     # search_web(); empty falls back to the no-key DuckDuckGo/Bing chain.
     serper_api_key: str = ""
