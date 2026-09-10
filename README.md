@@ -108,7 +108,13 @@ platform and the first customer who would pay for it.
 serves at `GET /`.
 
 ---
+## Demo
+See the demo at:
 
+https://proteins1-landscape-mnu3.onrender.com
+
+
+---
 ## How to run
 
 ### 1. Prerequisites
