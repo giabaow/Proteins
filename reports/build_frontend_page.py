@@ -21,6 +21,8 @@ census = json.loads((DATA / "discovered_companies.json").read_text())
 companies = json.loads((DATA / "companies.json").read_text())
 articles = json.loads((DATA / "discovered_articles.json").read_text())
 rec = (json.loads((DATA / "recommendation.json").read_text()) or [{}])[0]
+_opp_path = DATA / "opportunity_pick.json"
+opp = (json.loads(_opp_path.read_text()) or [{}])[0] if _opp_path.exists() else {}
 
 MAXPTS = {"platform": 5, "stage": 5, "route": 5, "evidence": 3, "ecosystem": 2}
 MAX_TOTAL = 32.5
@@ -99,6 +101,13 @@ route = "\n".join(f"""        <li>
           <div><span class="step-h">{e(s.get('step'))}</span><span class="step-d">{e(s.get('detail'))}</span></div>
         </li>""" for i, s in enumerate(rec.get("market_route") or [], start=1))
 rec_from = ", ".join(e(n) for n in (rec.get("from_companies") or []))
+
+# ---- Q4: the disease-biomarker opportunity + first customer ------------
+opp_has = bool((opp.get("biomarker") or "").strip())
+opp_evidence = "\n".join(f"""        <li>
+          <span class="app-h">{e(x.get('point'))}</span>
+          {f'<span class="ev-src">{e(x.get("source"))}</span>' if x.get('source') else ''}
+        </li>""" for x in (opp.get("evidence") or []))
 
 PAYLOAD = json.dumps({"census": census, "companies": companies, "articles": articles,
                       "maxpts": MAXPTS, "max_total": MAX_TOTAL},
@@ -257,6 +266,28 @@ table{border-collapse:collapse;width:100%;font-size:14px;}
   border-radius:var(--r-sm);padding:22px 24px;}
 .seq .k{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);}
 .seq p{margin:8px 0 0;color:var(--ink-2);font-size:1.02rem;}
+
+/* Q4 opportunity pick */
+.pick-head{background:var(--grad);color:#fff;border-radius:var(--r);padding:32px 36px;box-shadow:var(--sh-lg);margin-bottom:30px;}
+.pick-head .k{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;}
+.pick-marker{font-family:"Sora",sans-serif;font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700;line-height:1.2;margin:8px 0 14px;letter-spacing:-.02em;}
+.pick-head p{margin:0;font-size:1.02rem;line-height:1.55;opacity:.96;max-width:70ch;}
+.pick-cols{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.pick-cols h3{font-size:1.1rem;font-weight:700;margin-bottom:12px;}
+.pick-cols .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:20px 22px;box-shadow:var(--sh-sm);height:100%;}
+.pick-cols .card p{margin:0 0 12px;font-size:.94rem;color:var(--ink-2);}
+.pick-cols .card p:last-child{margin-bottom:0;}
+.pick-cols .who{font-weight:700;color:var(--ink);font-size:1rem;}
+.ev-list{list-style:none;padding:0;margin:22px 0 0;display:flex;flex-direction:column;gap:12px;}
+.ev-list li{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;box-shadow:var(--sh-sm);}
+.ev-src{display:inline-block;margin-top:6px;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  color:var(--brand-ink);background:var(--brand-wash);border-radius:var(--r-pill);padding:2px 9px;}
+.runner{margin-top:24px;font-size:.92rem;color:var(--ink-3);}
+.runner b{color:var(--ink-2);font-weight:600;}
+.q4-empty{background:var(--bg-softer);border:1px dashed var(--border-2);border-radius:var(--r);
+  padding:32px;text-align:center;color:var(--ink-2);}
+.q4-empty code{font-family:"JetBrains Mono",monospace;background:var(--card);border:1px solid var(--border);
+  border-radius:6px;padding:2px 8px;font-size:.86rem;}
 
 /* CTA band */
 .cta-band{background:var(--bg-softer);border-radius:var(--r);padding:48px;text-align:center;}
@@ -462,6 +493,19 @@ __REC_ROUTE__
         <span class="k">Over time</span>
         <p>__REC_SEQ__</p>
       </div>
+    </div>
+  </section>
+
+  <section id="q4">
+    <div class="container">
+      <div class="sec-head">
+        <span class="eyebrow">Question 4</span>
+        <h2>The opportunity to pursue first</h2>
+        <p>Which specific disease&ndash;biomarker opportunity benefits most from Proteins.1&rsquo;s
+        ultra-sensitive, multiplexed platform &mdash; and which customer would pay for it first.
+        Reasoned against the competitor landscape and the article set.</p>
+      </div>
+__Q4_BODY__
     </div>
   </section>
 
@@ -672,6 +716,37 @@ preview_rows = "\n".join(
             <span class="pscore">{c['relevance_score']:.1f}</span>
           </div>""" for i, c in enumerate(top3, start=1))
 
+if opp_has:
+    q4_body = f"""      <div class="pick-head">
+        <span class="k">{e(opp.get('disease_area'))}</span>
+        <div class="pick-marker">{e(opp.get('biomarker'))}</div>
+        <p>{e(opp.get('why_it_fits'))}</p>
+      </div>
+      <div class="pick-cols">
+        <div><h3>Why the platform is decisive here</h3>
+          <div class="card">
+            <p><strong>Unmet need.</strong> {e(opp.get('unmet_need'))}</p>
+            <p><strong>Why no competitor owns it.</strong> {e(opp.get('competitive_gap'))}</p>
+          </div>
+        </div>
+        <div><h3>Who pays for it first</h3>
+          <div class="card">
+            <p class="who">{e(opp.get('first_customer'))}</p>
+            <p>{e(opp.get('first_customer_why'))}</p>
+          </div>
+        </div>
+      </div>
+      <ul class="ev-list">
+{opp_evidence}
+      </ul>
+      {f'<p class="runner"><b>Runner-up.</b> {e(opp.get("runner_up"))}</p>' if opp.get('runner_up') else ''}"""
+else:
+    q4_body = """      <div class="q4-empty">
+        Not generated yet. Run <code>POST /api/pick-opportunity</code> (or
+        <code>scripts/collect.py</code>) with an <code>ANTHROPIC_API_KEY</code> set, then
+        <code>python reports/export_json.py &amp;&amp; python reports/build_frontend_page.py</code>.
+      </div>"""
+
 out = (TEMPLATE
        .replace("__GENERATED__", generated)
        .replace("__MAX_TOTAL__", f"{MAX_TOTAL:.0f}")
@@ -688,6 +763,7 @@ out = (TEMPLATE
        .replace("__REC_APPS__", apps)
        .replace("__REC_ROUTE__", route)
        .replace("__REC_SEQ__", e(rec.get("sequence")))
+       .replace("__Q4_BODY__", q4_body)
        .replace("__OPT_C__", OPT_C)
        .replace("__OPT_P__", OPT_P)
        .replace("__OPT_D__", OPT_D)

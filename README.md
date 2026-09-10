@@ -5,12 +5,13 @@ Proteins.1-type platform** — physics/affinity-driven single-molecule or
 ultra-sensitive protein detection, enzyme-free signal amplification,
 single-molecule protein sequencing or sizing.
 
-It runs a four-step pipeline — **discover → analyse → rank → synthesise** — and
+It runs a pipeline — **discover → analyse → rank → synthesise → pick** — and
 serves a single-page frontend at `GET /` with two tabs:
 
-- **Overview** — answers three questions: who leads the field (top 10 by
-  relevance score), what made the top 3 succeed, and the consolidated
-  application + go-to-market route for Proteins.1.
+- **Overview** — answers four questions: who leads the field (top 10 by
+  relevance score), what made the top 3 succeed, the consolidated application +
+  go-to-market route for Proteins.1, and the single disease–biomarker
+  opportunity to pursue first with its first paying customer.
 - **Data** — the full census, every analysed company with its playbook and
   score, and every background article, all searchable.
 
@@ -42,7 +43,8 @@ flowchart TB
             DISC["discovery.py :: discover()<br/>sweep → classify company/article<br/>→ country-filter (EU only) → de-dupe"]
             ANA["pipeline.py :: analyze_company()<br/>fetch pages → chunk → LLM extract<br/>facts + playbook"]
             RANK["pipeline.py :: rank_companies()<br/>5-axis relevance score (no LLM)<br/>→ rank, is_leader (top 10)"]
-            SYN["pipeline.py :: synthesize_recommendation()<br/>LLM over the top 3 playbooks<br/>→ one recommendation"]
+            SYN["pipeline.py :: synthesize_recommendation()<br/>LLM over the top 3 playbooks<br/>→ one recommendation (Q3)"]
+            OPP["pipeline.py :: pick_opportunity()<br/>LLM over the landscape + articles<br/>→ disease-biomarker + first customer (Q4)"]
         end
 
         ROUT["routers/collection.py<br/>GET / · /api/discover · /api/analyze<br/>/api/rank · /api/synthesize · /api/companies<br/>/api/recommendation · /api/evidence"]
@@ -71,6 +73,8 @@ flowchart TB
     ANA --> CHR
     SQL --> RANK --> SQL
     SQL --> SYN --> SQL
+    SQL --> OPP --> SQL
+    LLM <--> OPP
     ROUT <--> SQL
     ROUT <--> CHR
     SQL --> EXP --> BUILD --> FE
@@ -91,7 +95,10 @@ relevance = 2·platform + 1.5·stage + 1.5·route + 1·evidence + 1·ecosystem  
 ```
 and flags the top 10 `is_leader`. `synthesize_recommendation()` makes one more
 LLM call over the three highest-scoring playbooks to produce the single
-consolidated recommendation shown in the Overview.
+consolidated recommendation shown in the Overview (Q3). `pick_opportunity()`
+makes a final LLM call over the whole competitor landscape + article set to
+answer Q4 — the one disease–biomarker opportunity that most benefits from the
+platform and the first customer who would pay for it.
 
 `reports/export_json.py` dumps the DB to `reports/data/*.json`;
 `reports/build_frontend_page.py` embeds those into `frontend.html`, which the app
@@ -153,7 +160,9 @@ curl -X POST localhost:8000/api/discover -H 'content-type: application/json' -d 
 curl -X POST localhost:8000/api/analyze  -H 'content-type: application/json' -d '{"company_name":"Refeyn"}'
 curl -X POST "localhost:8000/api/rank"      -H 'content-type: application/json' -d '{"top_n":10}'
 curl -X POST "localhost:8000/api/synthesize?top_k=3"
+curl -X POST localhost:8000/api/pick-opportunity
 curl localhost:8000/api/companies?leaders_only=true
+curl localhost:8000/api/opportunity
 ```
 
 ### 5. Refresh the frontend after a run
@@ -187,6 +196,7 @@ docker compose exec backend python -m scripts.collect
 | `discovered_companies` | The census. One row per European platform company: `name, domain, country, platform_type, description, mention_count, analysed`. Keyed by domain; repeat sweeps de-duplicate. |
 | `companies` | An **analysed** company: structured facts (`what_they_do, technology_approach, detection_modality, sensitivity_claim, sample_requirement, target_applications[], stage, funding_summary, key_partnerships[], differentiators[]` — from its own pages, never guessed), the **playbook** (`leader_name/role/background, why_worth_studying, success_factors[], application_suggestions[], market_route_suggestions[], route_summary, confidence`), and the **relevance score** (`score_platform/stage/route/evidence/ecosystem, score_notes, relevance_score, rank, is_leader`). |
 | `recommendation` | Single row. The consolidated `headline`, `applications[]`, `market_route[]`, `sequence` for Proteins.1, synthesised from the top-3 playbooks. |
+| `opportunity_pick` | Single row (Q4). `disease_area, biomarker, why_it_fits, unmet_need, competitive_gap, first_customer, first_customer_why, runner_up, evidence[]`. |
 | `discovered_articles` | Background papers / news / filings on the technology field. |
 
 Raw page text is chunked into ChromaDB (`chroma_data/`), source-tagged, for
@@ -205,6 +215,8 @@ semantic lookup via `POST /api/evidence`.
 | GET | `/api/companies` | The analysed companies, by rank. `?leaders_only=true`, `?country=`. |
 | POST | `/api/synthesize` | `?top_k=3` — build the consolidated recommendation from the top-k playbooks. |
 | GET | `/api/recommendation` | The consolidated recommendation (Overview Q3). |
+| POST | `/api/pick-opportunity` | Pick the one disease–biomarker opportunity that most benefits from the platform, and the first paying customer (Overview Q4). |
+| GET | `/api/opportunity` | That pick. |
 | POST | `/api/evidence` | `{"query":"...", "company":"Refeyn", "n_results":3}` — semantic search over the raw collected text. |
 
 ## Layout

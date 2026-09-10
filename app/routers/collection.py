@@ -6,7 +6,14 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
-from app.database import Company, DiscoveredArticle, DiscoveredCompany, Recommendation, get_db
+from app.database import (
+    Company,
+    DiscoveredArticle,
+    DiscoveredCompany,
+    OpportunityPick,
+    Recommendation,
+    get_db,
+)
 from app.schemas import (
     AnalyzeRequest,
     CompanyOut,
@@ -19,7 +26,12 @@ from app.schemas import (
 )
 from app.chroma_store import query_evidence
 from app.agent.discovery import discover
-from app.agent.pipeline import analyze_company, rank_companies, synthesize_recommendation
+from app.agent.pipeline import (
+    analyze_company,
+    pick_opportunity,
+    rank_companies,
+    synthesize_recommendation,
+)
 
 router = APIRouter(prefix="/api", tags=["collection"])
 
@@ -166,6 +178,35 @@ def get_recommendation(db: Session = Depends(get_db)):
         "applications": _list(row.applications),
         "market_route": _list(row.market_route),
         "sequence": row.sequence or "",
+    }
+
+
+@router.post("/pick-opportunity")
+def pick(db: Session = Depends(get_db)):
+    """Pick the one disease-biomarker opportunity that benefits most from
+    Proteins.1's ultra-sensitive multiplexed platform, and the first customer
+    who would pay for it (frontend Overview, Q4)."""
+    try:
+        return pick_opportunity(db)
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@router.get("/opportunity")
+def get_opportunity(db: Session = Depends(get_db)):
+    row = db.query(OpportunityPick).filter(OpportunityPick.id == 1).first()
+    if row is None:
+        raise HTTPException(status_code=404, detail="no pick yet - run POST /api/pick-opportunity")
+    return {
+        "disease_area": row.disease_area or "",
+        "biomarker": row.biomarker or "",
+        "why_it_fits": row.why_it_fits or "",
+        "unmet_need": row.unmet_need or "",
+        "competitive_gap": row.competitive_gap or "",
+        "first_customer": row.first_customer or "",
+        "first_customer_why": row.first_customer_why or "",
+        "runner_up": row.runner_up or "",
+        "evidence": _list(row.evidence),
     }
 
 

@@ -149,6 +149,28 @@ table{border-collapse:collapse;width:100%;font-size:14px;}
 .seq .k{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);}
 .seq p{margin:8px 0 0;color:var(--ink-2);font-size:1.02rem;}
 
+/* Q4 opportunity pick */
+.pick-head{background:var(--grad);color:#fff;border-radius:var(--r);padding:32px 36px;box-shadow:var(--sh-lg);margin-bottom:30px;}
+.pick-head .k{font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;}
+.pick-marker{font-family:"Sora",sans-serif;font-size:clamp(1.5rem,3vw,2.1rem);font-weight:700;line-height:1.2;margin:8px 0 14px;letter-spacing:-.02em;}
+.pick-head p{margin:0;font-size:1.02rem;line-height:1.55;opacity:.96;max-width:70ch;}
+.pick-cols{display:grid;grid-template-columns:1fr 1fr;gap:30px;}
+.pick-cols h3{font-size:1.1rem;font-weight:700;margin-bottom:12px;}
+.pick-cols .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:20px 22px;box-shadow:var(--sh-sm);height:100%;}
+.pick-cols .card p{margin:0 0 12px;font-size:.94rem;color:var(--ink-2);}
+.pick-cols .card p:last-child{margin-bottom:0;}
+.pick-cols .who{font-weight:700;color:var(--ink);font-size:1rem;}
+.ev-list{list-style:none;padding:0;margin:22px 0 0;display:flex;flex-direction:column;gap:12px;}
+.ev-list li{background:var(--card);border:1px solid var(--border);border-radius:var(--r-sm);padding:14px 16px;box-shadow:var(--sh-sm);}
+.ev-src{display:inline-block;margin-top:6px;font-family:"JetBrains Mono",monospace;font-size:10.5px;
+  color:var(--brand-ink);background:var(--brand-wash);border-radius:var(--r-pill);padding:2px 9px;}
+.runner{margin-top:24px;font-size:.92rem;color:var(--ink-3);}
+.runner b{color:var(--ink-2);font-weight:600;}
+.q4-empty{background:var(--bg-softer);border:1px dashed var(--border-2);border-radius:var(--r);
+  padding:32px;text-align:center;color:var(--ink-2);}
+.q4-empty code{font-family:"JetBrains Mono",monospace;background:var(--card);border:1px solid var(--border);
+  border-radius:6px;padding:2px 8px;font-size:.86rem;}
+
 /* CTA band */
 .cta-band{background:var(--bg-softer);border-radius:var(--r);padding:48px;text-align:center;}
 .cta-band h2{font-size:1.7rem;font-weight:700;}
@@ -554,6 +576,23 @@ ul.arrow li::before{content:"\2192";position:absolute;left:0;color:var(--brand);
       <div class="seq">
         <span class="k">Over time</span>
         <p>First, establish scientific credibility through VTT-anchored IP, a named academic authority, and published benchmarking data against gold-standard incumbents (ELISA, mass spec, Simoa, SPR, AUC). Simultaneously launch a tiered research-use instrument (entry and automated versions) into academic core facilities, CROs, and pharma R&amp;D for oncology, neurology, and drug-discovery target-validation applications, funded through a blended grant-plus-staged-VC path. As adoption and reference data accumulate, layer in application-specific software modules and recruit an experienced life-sciences-tools commercial leader to scale go-to-market and expand into pharma QC/characterization use cases. Only once a solid research-use revenue base and published validation record exist should Proteins.1 pursue a landmark clinical/diagnostics partnership (e.g., ISO15189 accreditation) as the deliberate bridge into regulated diagnostics, rather than attempting clinical entry prematurely.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="q4">
+    <div class="container">
+      <div class="sec-head">
+        <span class="eyebrow">Question 4</span>
+        <h2>The opportunity to pursue first</h2>
+        <p>Which specific disease&ndash;biomarker opportunity benefits most from Proteins.1&rsquo;s
+        ultra-sensitive, multiplexed platform &mdash; and which customer would pay for it first.
+        Reasoned against the competitor landscape and the article set.</p>
+      </div>
+      <div class="q4-empty">
+        Not generated yet. Run <code>POST /api/pick-opportunity</code> (or
+        <code>scripts/collect.py</code>) with an <code>ANTHROPIC_API_KEY</code> set, then
+        <code>python reports/export_json.py &amp;&amp; python reports/build_frontend_page.py</code>.
       </div>
     </div>
   </section>

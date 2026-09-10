@@ -17,13 +17,14 @@ _JSON_LIST_FIELDS = {
     "companies": ("target_applications", "key_partnerships", "differentiators",
                   "success_factors", "application_suggestions", "market_route_suggestions", "source_urls"),
     "recommendation": ("from_companies", "applications", "market_route"),
+    "opportunity_pick": ("evidence", "from_inputs"),
 }
 _JSON_OBJ_FIELDS = {"companies": ("score_notes",)}
 
 db = sqlite3.connect(DB)
 db.row_factory = sqlite3.Row
 
-for table in ("discovered_companies", "companies", "recommendation", "discovered_articles"):
+for table in ("discovered_companies", "companies", "recommendation", "opportunity_pick", "discovered_articles"):
     rows = []
     for r in db.execute(f"select * from {table}"):
         d = dict(r)

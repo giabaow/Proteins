@@ -18,7 +18,12 @@ warnings.filterwarnings("ignore")
 from app import database
 from app.database import Company, DiscoveredArticle, DiscoveredCompany, SessionLocal
 from app.agent.discovery import discover
-from app.agent.pipeline import analyze_company, rank_companies, synthesize_recommendation
+from app.agent.pipeline import (
+    analyze_company,
+    pick_opportunity,
+    rank_companies,
+    synthesize_recommendation,
+)
 
 LIMIT = int(sys.argv[1]) if len(sys.argv) > 1 else 16
 TOP_N = 10        # companies flagged is_leader
@@ -68,6 +73,9 @@ log(f"ranked {res['ranked']}; leaders: {res['leaders']}")
 rec = synthesize_recommendation(db, top_k=TOP_K)
 log(f"recommendation from {rec.get('from_companies')}: {len(rec.get('applications', []))} apps, "
     f"{len(rec.get('market_route', []))} route steps")
+opp = pick_opportunity(db)
+log(f"opportunity pick: {opp.get('disease_area')} / {opp.get('biomarker')} "
+    f"-> first customer: {opp.get('first_customer')}")
 log("=== SNAPSHOT ===")
 log(f"discovered_companies : {db.query(DiscoveredCompany).count()}")
 log(f"companies            : {db.query(Company).count()}")

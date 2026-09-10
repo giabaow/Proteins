@@ -22,7 +22,7 @@ from sqlalchemy.orm import Session
 
 from app.config import settings
 from app.chroma_store import add_chunks
-from app.database import Company, DiscoveredCompany, Recommendation
+from app.database import Company, DiscoveredArticle, DiscoveredCompany, OpportunityPick, Recommendation
 from app.agent.tools import (
     search_web,
     search_sec_filings,
@@ -513,4 +513,101 @@ def synthesize_recommendation(db: Session, top_k: int = 3) -> dict:
         "applications": json.loads(row.applications),
         "market_route": json.loads(row.market_route),
         "sequence": row.sequence,
+    }
+
+
+# ---------------------------------------------------------------------------
+# Step 5 - pick ONE disease-biomarker opportunity for Proteins.1 and the first
+# customer who would pay for it (Overview, question 4)
+# ---------------------------------------------------------------------------
+
+OPPORTUNITY_PROMPT = """You advise Proteins.1 - a seed-stage Finnish deep-tech company (VTT spinout). Its \
+platform is a physics-based, ENZYME-FREE method that amplifies and reads SINGLE protein molecules, is \
+MOLECULE-AGNOSTIC (same chip reads protein, DNA and RNA), highly MULTIPLEXED, needs <100 uL of sample, \
+and reaches a sensitivity current instruments cannot. Target areas: oncology, neurology, immunology - \
+research use first, regulated diagnostics later.
+
+Answer ONE question: which specific disease + biomarker (or biomarker panel) opportunity would benefit \
+MOST from this ultra-sensitive, multiplexed platform, and which customer would pay for it first?
+
+You are given (a) the analysed European competitor landscape - what each company does and which \
+applications it already targets, and (b) a sample of background article titles from the field. Use \
+them to judge what is already crowded and what is open.
+
+Rules for a strong answer:
+- The winning opportunity is one where ultra-sensitivity + multiplex is DECISIVE, not incremental: a \
+clinically valuable marker that is currently BELOW the commercial detection floor (too dilute / too \
+early / masked), OR a panel that today needs several separate assays. Femtomolar-range markers that \
+existing platforms already serve (e.g. plasma p-tau217) are NOT the answer - say so if relevant.
+- Name a SPECIFIC marker or panel, not just a disease area.
+- competitive_gap must reference the provided landscape - which competitors are near this and why \
+they do not own it.
+- first_customer is a concrete buyer persona (e.g. "pharma translational-medicine director", \
+"biobank / cohort principal investigator", "CRO / central lab", "oncology KOL running an early-\
+detection cohort"). Pick the one with budget NOW who buys services/data rather than instruments, so \
+first revenue is fast.
+- evidence: 2-5 short {point, source} items; source can be an article title from the sample, a \
+competitor name, or "platform property" when it follows from the platform description.
+- runner_up: one alternative disease+biomarker in 1-2 sentences.
+
+Return ONLY JSON, no markdown fences:
+{
+  "disease_area": string,
+  "biomarker": string,
+  "why_it_fits": string,          // 2-4 sentences
+  "unmet_need": string,           // 1-3 sentences
+  "competitive_gap": string,      // 1-3 sentences, names competitors
+  "first_customer": string,       // the persona
+  "first_customer_why": string,   // 2-3 sentences
+  "runner_up": string,
+  "evidence": [ {"point": string, "source": string} ]
+}
+"""
+
+
+def pick_opportunity(db: Session) -> dict:
+    """Build the single OpportunityPick row from the competitor landscape + articles."""
+    companies = db.query(Company).order_by(Company.rank).all()
+    landscape = "\n".join(
+        f"- {c.name} ({c.country}): {c.what_they_do or 'n/a'} "
+        f"| applications: {', '.join(json.loads(c.target_applications or '[]')) or 'n/a'} "
+        f"| differentiators: {', '.join(json.loads(c.differentiators or '[]')) or 'n/a'}"
+        for c in companies
+    ) or "(no analysed companies yet)"
+
+    titles = [a.title for a in db.query(DiscoveredArticle).all() if a.title]
+    article_sample = "\n".join(f"- {t}" for t in titles[:80]) or "(no articles yet)"
+
+    user = (f"COMPETITOR LANDSCAPE ({len(companies)} analysed):\n{landscape}\n\n"
+            f"ARTICLE TITLES (sample of {min(len(titles), 80)}):\n{article_sample}")
+    data = _llm_json(OPPORTUNITY_PROMPT, user[:60000], max_tokens=6000)
+
+    evidence = []
+    for item in (data.get("evidence") or []):
+        if isinstance(item, dict) and item.get("point"):
+            evidence.append({"point": str(item["point"]).strip(), "source": str(item.get("source", "")).strip()})
+        elif isinstance(item, str) and item.strip():
+            evidence.append({"point": item.strip(), "source": ""})
+
+    row = db.query(OpportunityPick).filter(OpportunityPick.id == 1).first()
+    if row is None:
+        row = OpportunityPick(id=1)
+        db.add(row)
+    for f in ("disease_area", "biomarker", "why_it_fits", "unmet_need", "competitive_gap",
+              "first_customer", "first_customer_why", "runner_up"):
+        setattr(row, f, (data.get(f) or "").strip())
+    row.evidence = json.dumps(evidence)
+    row.from_inputs = json.dumps([f"{len(companies)} analysed companies", f"{len(titles)} article titles"])
+    db.commit()
+    db.refresh(row)
+    return {
+        "disease_area": row.disease_area,
+        "biomarker": row.biomarker,
+        "why_it_fits": row.why_it_fits,
+        "unmet_need": row.unmet_need,
+        "competitive_gap": row.competitive_gap,
+        "first_customer": row.first_customer,
+        "first_customer_why": row.first_customer_why,
+        "runner_up": row.runner_up,
+        "evidence": evidence,
     }
