@@ -75,8 +75,8 @@ app/
     pipeline.py      analyze_company (facts + playbook) + rank_companies (relevance score, is_leader)
   routers/
     collection.py    all /api/* endpoints
-reports/             build_companies_page.py, build_leaders_page.py, export_json.py + data/*.json
-scripts/             collect.py (end-to-end run), migrate_to_companies.py (one-off)
+reports/             build_frontend_page.py, export_json.py + data/*.json
+scripts/             collect.py (end-to-end run)
 ```
 
 ## Ground rules

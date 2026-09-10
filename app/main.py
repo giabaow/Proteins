@@ -19,6 +19,12 @@ app.add_middleware(
 
 app.include_router(collection_router)
 
+
+@app.on_event("startup")
+def on_startup():
+    init_db()
+
+
 _FRONTEND = Path(__file__).resolve().parent.parent / "reports" / "frontend.html"
 
 

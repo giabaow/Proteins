@@ -542,6 +542,7 @@ __REC_ROUTE__
 <script id="data" type="application/json">__PAYLOAD__</script>
 <script>
 const D=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const arr=v=>Array.isArray(v)?v:[];
 const host=u=>{try{return new URL(u).host}catch(e){return u}};
@@ -594,15 +595,15 @@ function coBody(c){
   +'<div class="sec-blk"><span class="k">Sources</span><p class="srcs">'+(arr(c.source_urls).map(u=>'<a href="'+esc(u)+'" rel="noopener">'+esc(host(u))+'</a>').join(' &middot; ')||'<span class="none">none recorded</span>')+'</p></div>';
 }
 function renderCompanies(){
-  const q=co_q.value.toLowerCase().trim(),ct=co_country.value,lo=co_leaders.checked,so=co_sort.value;
+  const q=$('co-q').value.toLowerCase().trim(),ct=$('co-country').value,lo=$('co-leaders').checked,so=$('co-sort').value;
   let rows=D.companies.slice();
   if(ct)rows=rows.filter(c=>c.country===ct);
   if(lo)rows=rows.filter(c=>c.is_leader);
   if(q)rows=rows.filter(c=>JSON.stringify(c).toLowerCase().includes(q));
   rows.sort((a,b)=>so==='name'?a.name.localeCompare(b.name):so==='score'?(b.relevance_score||0)-(a.relevance_score||0):(a.rank||99)-(b.rank||99));
-  co_count.textContent=rows.length+' / '+D.companies.length;
+  $('co-count').textContent=rows.length+' / '+D.companies.length;
   const open=new Set([...document.querySelectorAll('#co-list .co-body:not([hidden])')].map(x=>x.dataset.n));
-  co_list.innerHTML=rows.map((c,i)=>{
+  $('co-list').innerHTML=rows.map((c,i)=>{
     const cf=(c.confidence||'unrated').toLowerCase();
     const o=open.has(c.name)||(open.size===0&&i===0&&!q&&!ct&&!lo);
     return '<div class="co"><button class="co-h" aria-expanded="'+o+'" data-n="'+esc(c.name)+'">'
@@ -620,7 +621,7 @@ function renderCompanies(){
 /* census */
 let cs={k:'mention_count',a:false};
 function renderCensus(){
-  const q=cs_q.value.toLowerCase().trim(),ct=cs_country.value,pl=cs_platform.value,an=cs_analysed.checked;
+  const q=$('cs-q').value.toLowerCase().trim(),ct=$('cs-country').value,pl=$('cs-platform').value,an=$('cs-analysed').checked;
   let rows=D.census.slice();
   if(ct)rows=rows.filter(r=>r.country===ct);
   if(pl)rows=rows.filter(r=>r.platform_type===pl);
@@ -629,7 +630,7 @@ function renderCensus(){
   rows.sort((a,b)=>{let x=a[cs.k],y=b[cs.k];
     if(typeof x==='string'||typeof y==='string')return cs.a?String(x).localeCompare(String(y)):String(y).localeCompare(String(x));
     return cs.a?(x||0)-(y||0):(y||0)-(x||0);});
-  cs_count.textContent=rows.length+' / '+D.census.length;
+  $('cs-count').textContent=rows.length+' / '+D.census.length;
   document.querySelector('#cs-table tbody').innerHTML=rows.map(r=>
     '<tr class="expandable"><td><strong>'+esc(r.name)+'</strong> '+(r.domain?'<a href="https://'+esc(r.domain)+'" rel="noopener" class="none">'+esc(r.domain)+'</a>':'')+'</td>'
     +'<td class="mono">'+esc(r.country||'?')+'</td><td class="mono none">'+esc(r.platform_type||'')+'</td>'
@@ -648,13 +649,13 @@ document.querySelectorAll('#cs-table th').forEach(th=>th.addEventListener('click
 
 /* articles */
 function renderArticles(){
-  const q=ar_q.value.toLowerCase().trim(),dm=ar_domain.value;
+  const q=$('ar-q').value.toLowerCase().trim(),dm=$('ar-domain').value;
   let rows=D.articles.slice();
   if(dm)rows=rows.filter(a=>a.domain===dm);
   if(q)rows=rows.filter(a=>(a.title+' '+a.domain+' '+a.snippet).toLowerCase().includes(q));
   rows.sort((a,b)=>(a.domain||'').localeCompare(b.domain||'')||(a.title||'').localeCompare(b.title||''));
-  ar_count.textContent=rows.length+' / '+D.articles.length;
-  ar_list.innerHTML=rows.map(a=>'<div class="art"><div class="art-t"><a href="'+esc(a.url)+'" rel="noopener">'+(esc(a.title)||esc(a.url))+'</a></div>'
+  $('ar-count').textContent=rows.length+' / '+D.articles.length;
+  $('ar-list').innerHTML=rows.map(a=>'<div class="art"><div class="art-t"><a href="'+esc(a.url)+'" rel="noopener">'+(esc(a.title)||esc(a.url))+'</a></div>'
     +'<div class="art-m">'+esc(a.domain||host(a.url))+' &nbsp;&middot;&nbsp; found by: '+esc(a.source_query||'-')+'</div>'
     +(a.snippet?'<div class="art-s">'+esc(a.snippet)+'</div>':'')+'</div>').join('')||'<p class="none">No articles match.</p>';
 }
